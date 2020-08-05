@@ -1,0 +1,167 @@
+package com.sevensoupcans.sfsoftware.util.graphics;
+
+import static org.lwjgl.opengl.EXTFramebufferObject.*;
+
+import org.lwjgl.opengl.ARBShaderObjects;
+import org.lwjgl.opengl.Display;
+import org.lwjgl.opengl.EXTFramebufferObject;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL14;
+import org.lwjgl.opengl.GL30;
+
+public class FrameBuffer 
+{
+	private int colorTextureID;
+	private int framebufferID;
+	private int depthRenderBufferID;	
+
+	private int width;
+	private int height;
+	
+	private int currentShader;
+	
+	public FrameBuffer(int width, int height) 
+	{
+		// init our fbo	
+		framebufferID = glGenFramebuffersEXT();								// create a new framebuffer
+		colorTextureID = GL11.glGenTextures();								// and a new texture used as a color buffer
+		depthRenderBufferID = glGenRenderbuffersEXT();						// And finally a new depthbuffer
+
+		glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, framebufferID); 			// switch to the new framebuffer
+
+		// initialize color texture
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, colorTextureID);				// Bind the colorbuffer texture
+		
+		GL11.glTexParameterf(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR);		// make it linear filtered
+		GL11.glTexParameterf(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST); //GL11.GL_NEAREST_MIPMAP_LINEAR);		// make it linear filtered
+		
+		GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA8, width, height, 0, GL11.GL_RGBA, GL11.GL_INT, (java.nio.ByteBuffer) null);	// Create the texture data
+		glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT,GL_COLOR_ATTACHMENT0_EXT, GL11.GL_TEXTURE_2D, colorTextureID, 0); // attach it to the framebuffer
+
+		// initialize depth renderbuffer
+		glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, depthRenderBufferID);	// bind the depth renderbuffer
+		glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, GL14.GL_DEPTH_COMPONENT24, width, height);	// get the data space for it
+		glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT,GL_DEPTH_ATTACHMENT_EXT,GL_RENDERBUFFER_EXT, depthRenderBufferID); // bind it to the renderbuffer
+
+		glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);									// Switch back to normal framebuffer rendering	
+		
+		setWidth(width);
+		setHeight(height);
+
+		if(getStatus() != GL30.GL_FRAMEBUFFER_COMPLETE)
+		{			
+			//GL30.glDeleteFramebuffers(framebufferID);			
+			System.out.println("There was an issue with FBO Id " + framebufferID + ". Status: " + getStatus());
+		}
+		
+	}
+	
+	public void draw(int x, int y)
+	{
+		draw(x, y, getWidth(), getHeight());
+	}
+	
+	public void draw(int x, int y, int width, int height)
+	{
+		draw(x, y, width, height, 0, 0, width, height);
+	}
+	
+	public void draw(int x, int y, int width, int height, int srcX, int srcY, int srcWidth, int srcHeight)
+	{
+		GL11.glPushMatrix();
+		GL11.glMatrixMode(GL11.GL_PROJECTION);
+		GL11.glLoadIdentity();
+		GL11.glOrtho(0, Display.getWidth(), Display.getHeight(), 0, 1, -1);
+		GL11.glViewport(0, 0, Display.getWidth(), Display.getHeight());
+		GL11.glMatrixMode(GL11.GL_MODELVIEW);
+		GL11.glLoadIdentity();
+		GL11.glEnable(GL11.GL_TEXTURE_2D);
+				
+		int attributeLoc = ARBShaderObjects.glGetUniformLocationARB(currentShader, "texture");
+		ARBShaderObjects.glUseProgramObjectARB(currentShader);								
+		ARBShaderObjects.glUniform1iARB(attributeLoc, getTextureId());				
+		
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, getTextureId()); 
+		
+		float fSrcX = ((float)srcX / getWidth());
+		float fSrcY = ((float)srcY / getHeight());
+		float fSrcWidth = (((float)srcX + (float)srcWidth) / getWidth());
+		float fSrcHeight = (((float)srcY + (float)srcHeight) / getHeight());			
+		
+		GL11.glPushMatrix();		
+		
+		// Need to reset the color or else things get weird...
+		GL11.glColor4f(1, 1, 1, 1);
+		GL11.glBegin(GL11.GL_QUADS);					
+			// Top Left
+			//GL11.glTexCoord2f(0.0f, 1.0f); 
+			GL11.glTexCoord2f(fSrcX, 1 - fSrcY);
+			GL11.glVertex2i(x, y);  		
+			// Top Right
+			//GL11.glTexCoord2f(1.0f, 1.0f); 
+			GL11.glTexCoord2f(fSrcWidth, 1 - fSrcY);
+			GL11.glVertex2i(x + width,  y); 		
+			// Bottom Right
+			//GL11.glTexCoord2f(1.0f, 0.0f);
+			GL11.glTexCoord2f(fSrcWidth,1 - fSrcHeight);
+			GL11.glVertex2i(x + width, y + height);		
+			// Bottom Left		
+			//GL11.glTexCoord2f(0.0f, 0.0f); 		
+			GL11.glTexCoord2f(fSrcX, 1 - fSrcHeight);
+			GL11.glVertex2i(x, y + height);	
+		GL11.glEnd();
+		      
+		GL11.glPopMatrix();	
+		GL11.glPopAttrib();
+		
+		ARBShaderObjects.glUseProgramObjectARB(0);
+	}
+	
+	public int getId()
+	{
+		return framebufferID;
+	}
+	
+	public int getStatus()
+	{
+		return EXTFramebufferObject.glCheckFramebufferStatusEXT(this.getId());
+	}
+	
+	public int getTextureId()
+	{
+		return colorTextureID;
+	}
+	
+	public void setCurrentShader(int programId)
+	{
+		/*if(programId == 0)
+		{
+			useShader = false;
+		}
+		{
+			useShader = true;
+		}*/
+		
+		currentShader = programId;
+		ARBShaderObjects.glUseProgramObjectARB(programId);		
+	}
+
+	public int getWidth() 
+	{
+		return width;
+	}
+
+	private void setWidth(int width) 
+	{
+		this.width = width;
+	}
+
+	public int getHeight() {
+		return height;
+	}
+
+	private void setHeight(int height) {
+		this.height = height;
+	}	
+	
+}

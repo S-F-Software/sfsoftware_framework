@@ -1,0 +1,357 @@
+package com.sevensoupcans.sfsoftware.game;
+
+import java.awt.Font;
+
+import org.lwjgl.LWJGLException;
+import org.lwjgl.opengl.Display;
+import org.lwjgl.opengl.DisplayMode;
+import org.newdawn.slick.openal.SoundStore;
+
+import com.sevensoupcans.sfsoftware.util.Clock;
+import com.sevensoupcans.sfsoftware.util.Sound;
+import com.sevensoupcans.sfsoftware.util.graphics.Graphics;
+import com.sevensoupcans.sfsoftware.util.graphics.RGBA;
+import com.sevensoupcans.sfsoftware.util.graphics.TextureFont;
+import com.sevensoupcans.sfsoftware.util.input.InputDevice;
+import com.sevensoupcans.sfsoftware.util.input.Kboard;
+import com.sevensoupcans.sfsoftware.util.input.Mouse;
+import com.sevensoupcans.sfsoftware.util.resources.FileUtils;
+import com.sevensoupcans.sfsoftware.util.ui.LoggedList;
+import com.sevensoupcans.sfsoftware.util.ui.TextConsole;
+
+public abstract class Game 
+{
+	protected final TextConsole console = new TextConsole(this);	
+	
+	private GameState gameState = GameState.TITLE_SCREEN;
+	private long gameCounter = 0;
+	private boolean running = true;
+	private String gameTitle;
+	
+	protected boolean debugMode;	
+	
+	// Default input device will always be keyboard.
+	protected InputDevice inputDevice = new Kboard();
+	
+	public boolean isPaused = false;			
+
+	private final int SCREEN_HEIGHT = 600;
+	private final int SCREEN_WIDTH = 800;
+
+	/**
+	 * Handles drawing of the loading screen
+	 * 
+	 * @param loadingDetails An ArrayList containing loading detail text
+	 * @param font The TextureFont used to handle drawing the detail text
+	 */
+	protected void drawLoadingScreen(java.util.ArrayList<String> loadingDetails, TextureFont font)
+	{
+		Graphics.clear();
+		
+		int size = loadingDetails.size();
+		for(String s : loadingDetails)
+		{
+			font.drawString(35, (getScreenHeight() - 60) - (font.getHeight() * (size - 1)), s);
+			size--;
+		}
+		Graphics.drawQuad(0, 0, getScreenWidth(), (getScreenHeight() / 2), 0, 0, 0, 1);
+		Graphics.drawQuad(0, (getScreenHeight() / 2), getScreenWidth(), (getScreenHeight() / 2), new RGBA(0,0,0,1), new RGBA(0,0,0,1), new RGBA(0,0,0,0), new RGBA(0,0,0,0));
+		Graphics.update();
+	}	
+	
+	protected String getClassOriginPath()
+	{
+		String path = this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
+		if(path.indexOf("bin/") > -1)
+    	{
+    		path = path.substring(0, path.indexOf("bin/"));    		
+    	}
+		
+		// Windows issue.
+		if(FileUtils.getDirectorySeparator() == '\\' && path.substring(0, 1).equalsIgnoreCase("/"))
+		{
+			path = path.substring(1, path.length());
+		}
+		
+		return path;
+	}
+	
+	public String getGameCounter()
+	{
+		return Clock.getFormattedHoursMinutes(gameCounter);
+	}
+	
+	public GameState getGameState()
+	{
+		return gameState;
+	}
+	
+	public InputDevice getInputDevice()
+	{
+		return inputDevice;
+	}
+		
+	protected String getResourcePath()
+	{
+		return getClassOriginPath() + "res/"; 
+	}	
+	
+	public int getScreenHeight()
+	{
+		return SCREEN_HEIGHT;
+	}
+	
+	public int getScreenWidth()
+	{
+		return SCREEN_WIDTH;
+	}		
+	
+	public String getGameTitle()
+	{
+		return gameTitle;
+	}
+	
+	public String incrementGameCounter()
+	{
+		gameCounter++;
+		return getGameCounter();
+	}
+
+	public boolean inDebugMode()
+	{
+		return debugMode;
+	}	
+	
+	protected void init()
+	{
+		// Loading screen		
+		TextureFont loadingFont = new TextureFont("Verdana", Font.BOLD, 20);			
+		LoggedList<String> loadingText = new LoggedList<String>();
+		
+		loadingText.add("Loading " + getGameTitle() + "...");
+		drawLoadingScreen(loadingText, loadingFont);
+		
+		loadingText.add("Loading textures...");
+		drawLoadingScreen(loadingText, loadingFont);		
+		Graphics.loadTextures(getClassOriginPath() + Graphics.GRAPHICS_FILE_PATH, "png", this.getClass());
+		
+		loadingText.add("Loading audio...");
+		drawLoadingScreen(loadingText, loadingFont);
+		Sound.loadAudio(getClassOriginPath() + Sound.AUDIO_PATH, this.getClass());				
+	}
+	
+	public boolean isRunning()
+	{
+		return running;
+	}
+	
+	public void newGame()
+	{
+		Sound.stopMusic();
+		
+		setGameState(GameState.INGAME);
+	}
+	
+	/**
+	 * Set the display mode to be used 
+	 * 
+	 * @param width The width of the display required
+	 * @param height The height of the display required
+	 * @param fullscreen True if we want fullscreen mode
+	 */
+	public static void setDisplayMode(int width, int height, boolean fullscreen) 
+	{
+
+	    // return if requested DisplayMode is already set
+	    if ((Display.getDisplayMode().getWidth() == width) && 
+	        (Display.getDisplayMode().getHeight() == height) && 
+		(Display.isFullscreen() == fullscreen)) {
+		    return;
+	    }
+
+	    try {
+	        DisplayMode targetDisplayMode = null;
+			
+		if (fullscreen) {
+		    DisplayMode[] modes = Display.getAvailableDisplayModes();
+		    int freq = 0;
+					
+		    for (int i=0;i<modes.length;i++) {
+		        DisplayMode current = modes[i];
+						
+			if ((current.getWidth() == width) && (current.getHeight() == height)) {
+			    if ((targetDisplayMode == null) || (current.getFrequency() >= freq)) {
+			        if ((targetDisplayMode == null) || (current.getBitsPerPixel() > targetDisplayMode.getBitsPerPixel())) {
+				    targetDisplayMode = current;
+				    freq = targetDisplayMode.getFrequency();
+	                        }
+	                    }
+
+			    // if we've found a match for bpp and frequence against the 
+			    // original display mode then it's probably best to go for this one
+			    // since it's most likely compatible with the monitor
+			    if ((current.getBitsPerPixel() == Display.getDesktopDisplayMode().getBitsPerPixel()) &&
+	                        (current.getFrequency() == Display.getDesktopDisplayMode().getFrequency())) {
+	                            targetDisplayMode = current;
+	                            break;
+	                    }
+	                }
+	            }
+	        } else {
+	            targetDisplayMode = new DisplayMode(width,height);
+	        }
+
+	        if (targetDisplayMode == null) {
+	            System.out.println("Failed to find value mode: "+width+"x"+height+" fs="+fullscreen);
+	            return;
+	        }
+
+	        Display.setDisplayMode(targetDisplayMode);
+	        Display.setFullscreen(fullscreen);
+				
+	    } catch (LWJGLException e) {
+	        System.out.println("Unable to setup mode "+width+"x"+height+" fullscreen="+fullscreen + e);
+	    }
+	}		
+	
+	/**
+	 * Sets the state of the game based on the provided GameState
+	 * @param s
+	 */
+	public void setGameState(GameState s)
+	{
+		gameState = s;
+	}
+	
+	/**
+	 * Sets the game title
+	 * @param s
+	 */
+	protected void setGameTitle(String s)
+	{
+		gameTitle = s;
+	}
+	
+	/**
+	 * Sets the game's InputDevice
+	 * @param device
+	 */
+	public void setInputDevice(InputDevice device)
+	{
+		this.inputDevice = device;
+	}
+	
+	/**
+	 * Sets the boolean indicating the game is running
+	 * @param arg0
+	 */
+	public void setRunning(boolean arg0)
+	{
+		running = arg0;
+	}
+	
+	/**
+	 * This method should be overridden in your Game class; the following merely 
+	 * provides an example of the initialization and subsequent game loop.
+	 */
+	protected void start() 
+	{		
+		System.out.println(getGameTitle() + ", (c) S&F Software, 2020");
+		Graphics.setAppIcon(getResourcePath() + "graphics/icon16.png", getResourcePath() + "graphics/icon32.png");
+		Graphics.initGL(getScreenWidth(), getScreenHeight(), getGameTitle());					
+		Graphics.setDisplayMode(getScreenWidth(), getScreenHeight(), false); //getPreferences().getBoolean("fullscreen", false));
+		
+		Mouse.setGrabbed(Graphics.isFullScreen());
+		
+		init();				
+		
+		Sound.pollSoundStore(0);		
+		updateLogo();
+		
+		setGameState(GameState.TITLE_SCREEN);					
+		while(isRunning()) 
+		{						
+			Graphics.clear();
+			
+	      	switch (getGameState()) 
+	      	{
+		    	default:
+		    		break;
+			}
+			
+	      	console.update();
+			Clock.update(this);
+						
+			Graphics.update();
+			Graphics.sync(60); 
+			
+			//pollInput();
+			Sound.pollSoundStore(0);			
+			
+			if (Graphics.isCloseRequested()) 
+			{
+				Graphics.destroy();
+				Sound.destroy();
+				System.exit(0);
+			}							
+		}
+		
+		Graphics.destroy();
+		Sound.destroy();		
+		System.exit(0);
+	}	
+	
+	/**
+	 * Displays the S&F Software logo
+	 */
+	protected void updateLogo()
+	{
+		int logoState = 0;
+		int logoWait = 0;
+		float logoAlpha = 0;
+		
+		Sound.playMusic("logo", false);
+		
+		while (logoState != 2)
+		{			
+			Graphics.clear();
+			
+			if(logoState == 0)
+			{
+				if(logoAlpha < 1)
+				{
+					logoAlpha = logoAlpha + 0.02f;
+				}
+				else
+				{			
+					if(logoWait < 50)
+					{
+						logoWait++;
+					}else
+					{
+						logoState++;
+					}
+				}
+			}
+			else if(logoState == 1)
+			{
+				if(logoAlpha > 0)
+				{
+					logoAlpha = logoAlpha - 0.005f;
+				}
+				else
+				{
+					logoState++;
+				}				
+			}
+			Graphics.drawSprite(192, 112, "sflogo", 256, 256, 0, 0, 256, 256, 1, 1, 1, logoAlpha);
+			
+			SoundStore.get().poll(0);
+			Display.update();
+			Display.sync(60);
+		}
+		
+		Sound.stopMusic();
+	}	
+	
+}
