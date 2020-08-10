@@ -154,17 +154,26 @@ public abstract class Sound
 		}
 	}
 
-	public static void playMusic()
+	public static String playMusic()
+	{
+		String[] s = {};
+		return playMusic(s);
+	}
+	
+	public static String playMusic(String[] doNotPlayList)
 	{		
 		// Play a random song not contained on the "do not play" list!
-		String[] doNotPlayList = new String[] {"shop", "ruple", "plot", "flood", "gameover","zaph","angler", "theme", "logo"};		
-		List<String> keysAsArray = new ArrayList<String>(musicLib.keySet());		
-		keysAsArray.removeAll(Arrays.asList(doNotPlayList));
-		
+		List<String> keysAsArray = new ArrayList<String>(musicLib.keySet());
+		if(doNotPlayList != null)
+		{				
+			keysAsArray.removeAll(Arrays.asList(doNotPlayList));
+		}
 		Random r = new Random();
-		String songName = keysAsArray.get(r.nextInt(keysAsArray.size()));
+		String songName = keysAsArray.get(r.nextInt(keysAsArray.size()));		
 		
-		playMusic(songName, true);		
+		playMusic(songName, true);
+		
+		return songName;
 	}
 	
 	public static void playMusic(String songName)
