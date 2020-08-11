@@ -49,7 +49,7 @@ public class TextConsole implements UserInput
 		consoleOpen = !(consoleOpen);
 		if(firstOpen)
 		{
-			cursorY = getLineCount() - 15;
+			cursorY = Math.max(0, getLineCount() - 15);
 			firstOpen = false;
 		}
 	}
@@ -117,18 +117,20 @@ public class TextConsole implements UserInput
 			yPos = yPos < 0 ? yPos + 20 : 0;			
 		}
 		
-		float alpha = Math.min((((float) yPos + 240) / 240), 0.75f);
-		
-		Graphics.drawQuad(0, yPos, game.getScreenWidth(), 240, new RGBA(r, g, b, alpha));
-				 
-		Graphics.drawQuad((game.getScreenWidth() - 8), yPos + ((float) cursorY / (getLineCount() - 15)) * 226, 4, 12, new RGBA(1.0f, 1.0f, 1.0f, alpha));		
-		
-		
-		String[] lines = getLines(cursorY, getLines().length >= 15 ? 15 : getLines().length - 1);
-		int lineHeight = TextureFont.getDefaultFont().getHeight();
-		for(int i = 0; i < lines.length; i ++)
+		if(yPos > -240)
 		{
-			TextureFont.getDefaultFont().drawString(5, yPos + (lineHeight * i), lines[i]);
-		}			
+			float alpha = Math.min((((float) yPos + 240) / 240), 0.75f);
+			
+			Graphics.drawQuad(0, yPos, game.getScreenWidth(), 240, new RGBA(r, g, b, alpha));				 
+			Graphics.drawQuad((game.getScreenWidth() - 8), yPos + ((float) cursorY / (getLineCount() - 15)) * 226, 4, 12, new RGBA(1.0f, 1.0f, 1.0f, alpha));		
+			
+			
+			String[] lines = getLines(cursorY, getLines().length >= 15 ? 15 : getLines().length - 1);
+			int lineHeight = TextureFont.getDefaultFont().getHeight();
+			for(int i = 0; i < lines.length; i ++)
+			{
+				TextureFont.getDefaultFont().drawString(5, yPos + (lineHeight * i), lines[i]);
+			}
+		}
 	}
 }
