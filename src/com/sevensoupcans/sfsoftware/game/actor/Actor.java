@@ -1,0 +1,414 @@
+package com.sevensoupcans.sfsoftware.game.actor;
+
+import java.util.Vector;
+
+import com.sevensoupcans.sfsoftware.game.Game;
+import com.sevensoupcans.sfsoftware.game.actor.attributes.Collidable;
+import com.sevensoupcans.sfsoftware.game.actor.attributes.Permanent;
+import com.sevensoupcans.sfsoftware.util.Tile;
+import com.sevensoupcans.sfsoftware.util.Updatable;
+import com.sevensoupcans.sfsoftware.util.graphics.Graphics;
+import com.sevensoupcans.sfsoftware.util.graphics.Particle;
+import com.sevensoupcans.sfsoftware.util.graphics.Sprite;
+
+public class Actor extends Sprite implements Collidable 
+{
+	protected static int playingFieldX;
+	protected static int playingFieldY;
+	
+	protected final static Vector<Actor> cast = new Vector<Actor>();
+	protected final Game associatedGame;
+	
+	protected boolean bottomLeft = true;
+	protected boolean bottomRight = true;	
+	protected boolean topLeft = true;
+	protected boolean topRight = true;		
+	protected double xDirection = 0;
+	protected double yDirection = 0;	
+	protected int speed = 4;	
+	
+	private boolean isWalkable = true;	
+	private int zOrder = 0;	
+	
+	public Actor(int destX, int destY, String texture, int destWidth, int destHeight, Game associatedGame) 
+	{
+		this(destX, destY, texture, 0, 0, destWidth, destHeight, associatedGame);
+	}
+	
+	public Actor(int destX, int destY, String texture, int srcX, int srcY, int destWidth, int destHeight, Game associatedGame) 
+	{
+		super(destX, destY, texture);
+		setSrcX(srcX);
+		setSrcY(srcY);
+		
+		this.associatedGame = associatedGame;
+		this.height = destHeight;
+		this.width = destWidth;			 		
+		
+		// Do not add the Player to our cast vector as this vector is cleared with each new room
+		if(!(this instanceof Permanent))			
+			cast.add(this);
+	}	
+	
+	@Override
+	public boolean collisionResult(Collidable object) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean collidingWith(Collidable object) {		
+		return super.collidingWith(object);	
+	}
+	
+	protected boolean collidingWithCast(double dirX, double dirY)
+	{				
+		boolean b = false;
+		// Copy the Actor vector to an array to avoid concurrent modification issues
+		Actor[] c = new Actor[cast.size()];
+		cast.toArray(c);	
+		
+		for(int i = 0; i < c.length; i++)
+		{
+			// The cast vector can only hold Actor objects so no need to use instanceof
+			Actor a  = (Actor) c[i];			
+			// Only check for collision if the current Actor isn't walkable and isn't us!
+			if(!(a.equals(this)) && !(a.isWalkable()))
+			{
+				// Destination X and Y IF the Actor moves
+				int newX = (int) (getX() + Math.round(getSpeed() * dirX));
+				int newY = (int) (getY() + Math.round(getSpeed() * dirY));				
+				// Create a temporary Actor object representing where OUR actor WILL move
+				Actor temp = new Actor(newX, newY, "", 0, 0, getWidth(), getHeight(), getGame());								
+				// Check using our collidingWith method if the two objects are colliding!
+				if(a.collidingWith(temp))
+				{
+					// Return true - this will prevent movement from happening.
+					b = true;
+					// Call the collisionResult method to trigger any expected behavior
+					a.collisionResult(this);
+				}
+				// VERY important! Remove the temp Actor or huge memory leak problems will occur!
+				temp.remove();
+			}
+		}
+		
+		return b;
+	}	
+	
+	protected int distanceToActor(Actor a)
+	{
+		int x1 = (int) (a.getX() + (a.getWidth() / 2));
+		int x2 = (int) (getX() + (getWidth() / 2));
+		int y1 = (int) (a.getY() + (a.getHeight() / 2));
+		int y2 = (int) (getY() + (getHeight() / 2));
+		
+		return (int) Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
+	}
+	
+	protected int distanceToPoint(int x, int y)
+	{
+		int myX = (int) (getX() + (getWidth() / 2));
+		int myY = (int) (getY() + (getHeight() / 2));
+		
+		return (int) Math.sqrt((x - myX) * (x - myX) + (y - myY) * (y - myY));		
+	}	
+	
+	public void draw()
+	{
+		super.draw(width, height);
+	}
+	
+	protected void generateParticles(int particleCount, float red, float green, float blue)
+	{
+		for(int i = 0; i < particleCount; i++)
+		{
+			new Particle((int)(getX() + (int) (Math.random() * getWidth())), (int)(getY() + (int) (Math.random() * getHeight())), red, green, blue, 2);
+		}
+	}
+	
+	protected void generateParticles(int particleCount, float red, float green, float blue, int size)
+	{
+		for(int i = 0; i < particleCount; i++)
+		{
+			new Particle((int)(getX() + (int) (Math.random() * getWidth())), (int)(getY() + (int) (Math.random() * getHeight())), red, green, blue, size);
+		}
+	}	
+	
+	protected double getAngleFromActor(Actor a)
+	{
+		return getAngle(a, this);
+	}
+
+	protected double getAngleToActor(Actor b)
+	{
+		return getAngle(this, b);
+	}
+	
+	protected double getAngleToPoint(int x, int y)
+	{
+		double dx = (getX() + (getWidth() / 2)) - x;
+		double dy = (getY() + (getHeight() / 2)) - y;
+		
+		double inRads = Math.atan2(dy,dx);
+		
+		if (inRads < 0)
+		{
+	        inRads = Math.abs(inRads);
+		}
+	    else
+	    {
+	        inRads = 2 * Math.PI - inRads;
+	    }			
+		
+		return inRads;
+	}
+	
+	public static double getAngle(Actor a, Actor b)
+	{
+		double dx = (a.getX() + (a.getWidth() / 2)) - (b.getX() + (b.getWidth() / 2));
+		double dy = (a.getY() + (a.getHeight() / 2)) - (b.getY() + (b.getHeight() / 2));
+		
+		double inRads = Math.atan2(dy,dx);
+		
+		if (inRads < 0)
+		{
+	        inRads = Math.abs(inRads);
+		}
+	    else
+	    {
+	        inRads = 2 * Math.PI - inRads;
+	    }			
+		
+		return inRads;
+	}	
+	
+	public int getCurrentTileX()
+	{
+		int xCenter = (int) getX() + (width / 2);
+		int xTile = (int) Math.floor((xCenter - playingFieldX) / 40);
+		return xTile;
+	}	
+	
+	public int getCurrentTileY()
+	{
+		int yCenter = (int) getY() + (height / 2);		
+		int yTile = (int) Math.floor((yCenter - playingFieldY) / 40);
+		return yTile;
+	}	
+	
+	public Tile getCurrentTile()
+	{		
+		Tile[][] tilemap = associatedGame.getTileMap();
+		
+		int xTile = Math.max(0, Math.min(tilemap.length - 1, getCurrentTileX()));
+		int yTile = Math.max(0, Math.min(tilemap[0].length - 1, getCurrentTileY()));		
+		
+		return tilemap[xTile][yTile];
+	}
+	
+	public Game getGame()
+	{
+		return associatedGame;
+	}
+	
+	public int getSpeed() 
+	{
+		return speed;
+	}		
+	
+	protected int getZOrder()
+	{
+		return zOrder;
+	}
+	
+	protected boolean hasLineOfSightToActor(Actor a)
+	{
+		boolean ableToSeeActor = true;
+		double directionAngle = getAngleToActor(a);
+	
+		for(int i=1; i < distanceToActor(a); i++)
+		{
+			double xDirection = Math.cos(directionAngle) * -1;
+			double yDirection = Math.sin(directionAngle);	
+			
+			int xPoint = (int) ((getX() + (getWidth() / 2)) + (xDirection * i));
+			int yPoint = (int) ((getY() + (getHeight() / 2)) + (yDirection * i));					
+			int xTile = (int) Math.floor((xPoint - playingFieldX) / 40);
+			int yTile = (int) Math.floor((yPoint - playingFieldY) / 40);	
+			
+			if(getGame().inDebugMode())
+			{
+				Graphics.drawQuad(xPoint, yPoint, 1, 1, 1, 0, 1, 1);
+			}
+			
+			// TODO Check if the point intersects with any non-walkable Actors.
+			/*if(Actor.collidingWithCast(xPoint, yPoint))
+			{
+				ableToSeeActor = false;
+				break;
+			}*/
+			
+			try
+			{
+				Tile[][] tileMap = getGame().getTileMap();
+				if(!(tileMap[xTile][yTile].isWalkable()))
+				{
+					ableToSeeActor = false;
+					break;
+				}
+			}
+			catch(ArrayIndexOutOfBoundsException e)
+			{
+				ableToSeeActor = false;
+				break;
+			}
+		}	
+		return ableToSeeActor;		
+	}		
+	
+	public boolean isWalkable()
+	{
+		return isWalkable;
+	}
+	
+	public static Vector<Actor> getCast()
+	{
+		return cast;
+	}
+
+	/**
+	 * Moves an Actor without checking any collision
+	 * 
+	 * @param dirX
+	 * @param dirY
+	 */
+	protected void moveWithoutCheckingCollision(double dirX, double dirY)
+	{
+		super.move((float) (this.getX() + (dirX * speed)), (float) (this.getY() + (dirY * speed)));
+	}	
+	
+	public static void remove(Actor a)
+	{
+		cast.remove(a);
+	}
+	
+	public void remove()
+	{
+		cast.remove(this);
+	}
+	
+	public static void setPlayingField(int x, int y)
+	{
+		playingFieldX = x;
+		playingFieldY = y;
+	}	
+	
+	public void setSpeed(int newSpeed)
+	{
+		speed = newSpeed;
+	}	
+	
+	public void setWalkable(boolean b)
+	{
+		isWalkable = b;
+	}
+	
+	public void setZOrder(int i)
+	{
+		zOrder = i;
+	}	
+	
+	/**
+	 * Snaps an Actor to the tile on the playing field that there center coordinates sit in.
+	 */
+	public void snap()
+	{
+		snapX();
+		snapY();
+	}
+	
+	protected void snapX()
+	{
+		setX((int) getCurrentTile().getX());
+	}
+	
+	protected void snapY()
+	{				
+		setY((int) getCurrentTile().getY());		
+	}	
+	
+	@Override
+	public String toString()
+	{
+		return "Actor \"" + tex + "\" @ " + (int) getX() + ", " + (int) getY();		
+	}
+	
+	public static void updateCast()
+	{
+		updateCast(0);
+	}
+	
+	/**
+	 * Updates all Actors - this includes drawing
+	 */
+	public static void updateCast(int z) 
+	{		
+		// Copy the Actor vector to an array to avoid concurrent modification issues
+		Actor[] c = new Actor[cast.size()];
+		cast.toArray(c);	
+		
+		for(int i = 0; i < c.length; i++)		
+		{					
+			Actor a = (Actor) c[i];
+			
+			// Only update Actors with the specified z level. There may be a better way to address this.
+			if(a.getZOrder() != z) continue;
+			
+			if(a instanceof Updatable)
+			{
+				((Updatable) a).update();
+			}
+			
+			a.draw();
+		}				
+	}	
+	
+	protected void updateCornerVariables(int x, int y, Tile[][] tileMap) 
+	{
+		int upY = (int) Math.floor(((y - playingFieldY) - (height / 2)) / 40);
+		int downY = (int) Math.floor((((y - playingFieldY) + (height / 2)) - 1) / 40);
+		int leftX = (int) Math.floor(((x - playingFieldX) - (width / 2)) / 40);
+		int rightX = (int) Math.floor((((x - playingFieldX)  + (width / 2)) - 1) / 40);
+				
+		try {
+			topLeft = tileMap[leftX][upY].isWalkable();	
+		}
+		catch(ArrayIndexOutOfBoundsException e)
+		{
+			topLeft = true;
+		}
+		try {
+			bottomLeft = tileMap[leftX][downY].isWalkable();
+		}
+		catch(ArrayIndexOutOfBoundsException e)
+		{
+			bottomLeft = true;
+		}
+		try {
+			topRight = tileMap[rightX][upY].isWalkable();
+		}
+		catch(ArrayIndexOutOfBoundsException e)
+		{
+			topRight = true;
+		}
+		try {		
+			bottomRight = tileMap[rightX][downY].isWalkable();	
+		}
+		catch(ArrayIndexOutOfBoundsException e)
+		{
+			bottomRight = true;
+		}									
+	}
+
+}

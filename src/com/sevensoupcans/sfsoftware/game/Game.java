@@ -9,6 +9,7 @@ import org.newdawn.slick.openal.SoundStore;
 
 import com.sevensoupcans.sfsoftware.util.Clock;
 import com.sevensoupcans.sfsoftware.util.Sound;
+import com.sevensoupcans.sfsoftware.util.Tile;
 import com.sevensoupcans.sfsoftware.util.graphics.Graphics;
 import com.sevensoupcans.sfsoftware.util.graphics.RGBA;
 import com.sevensoupcans.sfsoftware.util.graphics.TextureFont;
@@ -90,7 +91,7 @@ public abstract class Game
 	{
 		return inputDevice;
 	}
-		
+	
 	protected String getResourcePath()
 	{
 		return getClassOriginPath() + "res/"; 
@@ -110,6 +111,14 @@ public abstract class Game
 	{
 		return gameTitle;
 	}
+	
+	/*
+	 * The inheriting class should implement its own override of this method to handle retrieving any potential tilemap.
+	 */
+	public Tile[][] getTileMap()
+	{
+		return null;
+	}	
 	
 	public String incrementGameCounter()
 	{

@@ -42,7 +42,7 @@ public abstract class MathUtils
 	public static boolean inRange(int value, int min, int max) 
 	{
 		return (value>= min) && (value<= max);
-	}	
+	}		
 	
 	public static int randomInt(int bound) 
 	{	 		
