@@ -15,7 +15,6 @@ import com.sevensoupcans.sfsoftware.util.graphics.RGBA;
 import com.sevensoupcans.sfsoftware.util.graphics.TextureFont;
 import com.sevensoupcans.sfsoftware.util.input.InputDevice;
 import com.sevensoupcans.sfsoftware.util.input.Kboard;
-import com.sevensoupcans.sfsoftware.util.input.Mouse;
 import com.sevensoupcans.sfsoftware.util.resources.FileUtils;
 import com.sevensoupcans.sfsoftware.util.ui.LoggedList;
 import com.sevensoupcans.sfsoftware.util.ui.TextConsole;
@@ -39,6 +38,9 @@ public abstract class Game
 	private final int SCREEN_HEIGHT = 600;
 	private final int SCREEN_WIDTH = 800;
 
+	public abstract Tile[][] getTileMap();
+	protected abstract void start();	
+	
 	/**
 	 * Handles drawing of the loading screen
 	 * 
@@ -111,14 +113,6 @@ public abstract class Game
 	{
 		return gameTitle;
 	}
-	
-	/*
-	 * The inheriting class should implement its own override of this method to handle retrieving any potential tilemap.
-	 */
-	public Tile[][] getTileMap()
-	{
-		return null;
-	}	
 	
 	public String incrementGameCounter()
 	{
@@ -257,58 +251,7 @@ public abstract class Game
 	public void setRunning(boolean arg0)
 	{
 		running = arg0;
-	}
-	
-	/**
-	 * This method should be overridden in your Game class; the following merely 
-	 * provides an example of the initialization and subsequent game loop.
-	 */
-	protected void start() 
-	{		
-		System.out.println(getGameTitle() + ", (c) S&F Software, 2020");
-		Graphics.setAppIcon(getResourcePath() + "graphics/icon16.png", getResourcePath() + "graphics/icon32.png");
-		Graphics.initGL(getScreenWidth(), getScreenHeight(), getGameTitle());					
-		Graphics.setDisplayMode(getScreenWidth(), getScreenHeight(), false); //getPreferences().getBoolean("fullscreen", false));
-		
-		Mouse.setGrabbed(Graphics.isFullScreen());
-		
-		init();				
-		
-		Sound.pollSoundStore(0);		
-		updateLogo();
-		
-		setGameState(GameState.TITLE_SCREEN);					
-		while(isRunning()) 
-		{						
-			Graphics.clear();
-			
-	      	switch (getGameState()) 
-	      	{
-		    	default:
-		    		break;
-			}
-			
-	      	console.update();
-			Clock.update(this);
-						
-			Graphics.update();
-			Graphics.sync(60); 
-			
-			//pollInput();
-			Sound.pollSoundStore(0);			
-			
-			if (Graphics.isCloseRequested()) 
-			{
-				Graphics.destroy();
-				Sound.destroy();
-				System.exit(0);
-			}							
-		}
-		
-		Graphics.destroy();
-		Sound.destroy();		
-		System.exit(0);
-	}	
+	}		
 	
 	/**
 	 * Displays the S&F Software logo
