@@ -98,20 +98,20 @@ public class Actor extends Sprite implements Collidable
 	
 	protected int distanceToActor(Actor a)
 	{
-		int x1 = (int) (a.getX() + (a.getWidth() / 2));
-		int x2 = (int) (getX() + (getWidth() / 2));
-		int y1 = (int) (a.getY() + (a.getHeight() / 2));
-		int y2 = (int) (getY() + (getHeight() / 2));
+		int x1 = (int) a.getCenterX(); // (a.getX() + (a.getWidth() / 2));
+		int x2 = (int) getCenterX(); // (getX() + (getWidth() / 2));
+		int y1 = (int) a.getCenterY(); // (a.getY() + (a.getHeight() / 2));
+		int y2 = (int) getCenterY(); //(getY() + (getHeight() / 2));
 		
 		return (int) Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
 	}
 	
 	protected int distanceToPoint(int x, int y)
 	{
-		int myX = (int) (getX() + (getWidth() / 2));
-		int myY = (int) (getY() + (getHeight() / 2));
+		// int myX = (int) (getX() + (getWidth() / 2));
+		// int myY = (int) (getY() + (getHeight() / 2));
 		
-		return (int) Math.sqrt((x - myX) * (x - myX) + (y - myY) * (y - myY));		
+		return (int) Math.sqrt((x - getCenterX()) * (x - getCenterX()) + (y - getCenterY()) * (y - getCenterY()));		
 	}	
 	
 	public void draw()
@@ -147,8 +147,8 @@ public class Actor extends Sprite implements Collidable
 	
 	protected double getAngleToPoint(int x, int y)
 	{
-		double dx = (getX() + (getWidth() / 2)) - x;
-		double dy = (getY() + (getHeight() / 2)) - y;
+		double dx = getCenterX() - x; // (getX() + (getWidth() / 2)) - x;
+		double dy = getCenterY() - y; // (getY() + (getHeight() / 2)) - y;
 		
 		double inRads = Math.atan2(dy,dx);
 		
@@ -166,8 +166,8 @@ public class Actor extends Sprite implements Collidable
 	
 	public static double getAngle(Actor a, Actor b)
 	{
-		double dx = (a.getX() + (a.getWidth() / 2)) - (b.getX() + (b.getWidth() / 2));
-		double dy = (a.getY() + (a.getHeight() / 2)) - (b.getY() + (b.getHeight() / 2));
+		double dx = a.getCenterX() - b.getCenterX(); // (a.getX() + (a.getWidth() / 2)) - (b.getX() + (b.getWidth() / 2));
+		double dy = a.getCenterY() - b.getCenterY(); // (a.getY() + (a.getHeight() / 2)) - (b.getY() + (b.getHeight() / 2));
 		
 		double inRads = Math.atan2(dy,dx);
 		
@@ -185,15 +185,15 @@ public class Actor extends Sprite implements Collidable
 	
 	public int getCurrentTileX()
 	{
-		int xCenter = (int) getX() + (width / 2);
-		int xTile = (int) Math.floor((xCenter - playingFieldX) / 40);
+		//int xCenter = (int) getX() + (width / 2);
+		int xTile = (int) Math.floor((getCenterX() - playingFieldX) / 40);
 		return xTile;
 	}	
 	
 	public int getCurrentTileY()
 	{
-		int yCenter = (int) getY() + (height / 2);		
-		int yTile = (int) Math.floor((yCenter - playingFieldY) / 40);
+		//int yCenter = (int) getY() + (height / 2);		
+		int yTile = (int) Math.floor((getCenterY() - playingFieldY) / 40);
 		return yTile;
 	}	
 	
@@ -232,8 +232,8 @@ public class Actor extends Sprite implements Collidable
 			double xDirection = Math.cos(directionAngle) * -1;
 			double yDirection = Math.sin(directionAngle);	
 			
-			int xPoint = (int) ((getX() + (getWidth() / 2)) + (xDirection * i));
-			int yPoint = (int) ((getY() + (getHeight() / 2)) + (yDirection * i));					
+			int xPoint = (int) (getCenterX() + (xDirection * i));
+			int yPoint = (int) (getCenterY() + (yDirection * i));					
 			int xTile = (int) Math.floor((xPoint - playingFieldX) / 40);
 			int yTile = (int) Math.floor((yPoint - playingFieldY) / 40);	
 			

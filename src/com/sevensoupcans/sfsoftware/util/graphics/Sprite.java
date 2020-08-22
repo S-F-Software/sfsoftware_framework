@@ -76,6 +76,16 @@ public class Sprite {
 		y = destY;
 	}
 	
+	public int getCenterX()
+	{
+		return (x + (width / 2));
+	}
+	
+	public int getCenterY()
+	{
+		return (y + (height / 2));
+	}
+	
 	public String getTexture()
 	{
 		return tex;
