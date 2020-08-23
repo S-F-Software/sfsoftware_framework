@@ -1,5 +1,6 @@
 package com.sevensoupcans.sfsoftware.util.graphics;
 
+import com.sevensoupcans.sfsoftware.game.Game;
 import com.sevensoupcans.sfsoftware.game.actor.attributes.Collidable;
 
 public class Sprite {
@@ -65,6 +66,24 @@ public class Sprite {
 		draw(width, height, srcX, srcY, srcWidth, srcHeight, red, green, blue, alpha);	
 	}	
 	
+	public static boolean isSpriteOutOfGameBounds(Game game, Sprite sprite)
+	{		
+		int x = (int) sprite.getX();
+		int y = (int) sprite.getY();
+		int width = sprite.getWidth();
+		int height = sprite.getHeight();
+		
+		return (x < (0 - width) || x > ((game.getPlayingFieldWidth() * game.getTileSize()) + width) || y < (0 - height) || y > ((game.getPlayingFieldHeight() * game.getTileSize()) + height));
+	}
+	
+	public boolean isOutOfGameBounds(Game game)
+	{
+		int x = (int) getX();
+		int y = (int) getY();
+		
+		return (x < (0 - getWidth()) || x > ((game.getPlayingFieldWidth() * game.getTileSize()) + getWidth()) || y < (0 - getHeight()) || y > ((game.getPlayingFieldHeight() * game.getTileSize()) + getHeight()));		
+	}
+	
 	public void move(float destX, float destY)
 	{
 		move((int) Math.round(destX), (int) Math.round(destY));
@@ -74,6 +93,11 @@ public class Sprite {
 	{
 		x = destX;
 		y = destY;
+	}
+	
+	public int getBottom()
+	{
+		return (y + height);
 	}
 	
 	public int getCenterX()
@@ -86,9 +110,24 @@ public class Sprite {
 		return (y + (height / 2));
 	}
 	
+	public int getLeft()
+	{
+		return x;
+	}
+	
+	public int getRight()
+	{
+		return (x + width);
+	}
+	
 	public String getTexture()
 	{
 		return tex;
+	}
+	
+	public int getTop()
+	{
+		return y;
 	}
 	
 	public int getHeight()

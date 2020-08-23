@@ -38,6 +38,8 @@ public abstract class Game
 	private final int SCREEN_HEIGHT = 600;
 	private final int SCREEN_WIDTH = 800;
 
+	public abstract int getPlayingFieldHeight();
+	public abstract int getPlayingFieldWidth();
 	public abstract Tile[][] getTileMap();
 	protected abstract void start();	
 	
@@ -108,6 +110,11 @@ public abstract class Game
 	{
 		return SCREEN_WIDTH;
 	}		
+	
+	public int getTileSize()
+	{
+		return Tile.getDefaultTileSize();
+	}
 	
 	public String getGameTitle()
 	{
