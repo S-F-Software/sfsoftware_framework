@@ -113,9 +113,9 @@ public class Tile extends Sprite {
 	{
 		int tileCount = 0;
 		
-		for(int xTile = 0; xTile < tileMap[0].length; xTile++)
+		for(int xTile = 0; xTile < tileMap.length; xTile++)
 		{
-			for(int yTile = 0; yTile < tileMap.length; yTile++)
+			for(int yTile = 0; yTile < tileMap[0].length; yTile++)
 			{
 				if(tileMap[xTile][yTile].getTexture().equalsIgnoreCase(textureName)) tileCount++;
 			}
