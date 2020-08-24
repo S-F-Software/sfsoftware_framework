@@ -217,7 +217,7 @@ public class Actor extends Sprite implements Collidable
 		return speed;
 	}		
 	
-	protected int getZOrder()
+	public int getZOrder()
 	{
 		return zOrder;
 	}
