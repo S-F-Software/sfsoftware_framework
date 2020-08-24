@@ -36,6 +36,16 @@ public class Tile extends Sprite {
 		walkable = w;
 	}
 	
+	/**
+	 * Using the provided tile coordinates, texture, and map, returns an id based on surrounding tiles
+	 * to be used in calculating edge tiles.
+	 * 
+	 * @param x The x position of the tile being checked against
+	 * @param y The y position of the tile being checked against
+	 * @param currentTileTexture The name of the texture to be checked against
+	 * @param tileMap The tile map being checked against
+	 * @return An id between 0 and 15 based on the surrounding tiles matching the provided texture name
+	 */
 	public static int getBitMaskTileId(int x, int y, String currentTileTexture, Tile[][] tileMap)
 	{
 		int id = 15;
@@ -82,11 +92,47 @@ public class Tile extends Sprite {
 		return id;
 	}	
 	
+	/**
+	 * Returns the default tile size (40px)
+	 * 
+	 * @return
+	 */
 	public static int getDefaultTileSize() 
 	{
 		return DEFAULT_TILE_SIZE;
 	}
 	
+	/**
+	 * Returns the number of occurrences of a specific texture in the provided tile map.
+	 * 
+	 * @param tileMap
+	 * @param textureName
+	 * @return
+	 */
+	public static int getTileMapTextureCount(Tile[][] tileMap, String textureName)
+	{
+		int tileCount = 0;
+		
+		for(int xTile = 0; xTile < tileMap[0].length; xTile++)
+		{
+			for(int yTile = 0; yTile < tileMap.length; yTile++)
+			{
+				if(tileMap[xTile][yTile].getTexture().equalsIgnoreCase(textureName)) tileCount++;
+			}
+		}
+		
+		return tileCount;
+	}
+	
+	/**
+	 * Works outward on the provided tile map from the specified point and sets tile visibility 
+	 * of any connected, walkable tiles. Unreachable tiles from the provided point are not set
+	 * to be visible. 
+	 * 
+	 * @param tileMap
+	 * @param tileX Starting x tile point
+	 * @param tileY Starting y tile point
+	 */
 	public static void floodFillTileVisibility(Tile[][] tileMap, int tileX, int tileY)
 	{
 		try
