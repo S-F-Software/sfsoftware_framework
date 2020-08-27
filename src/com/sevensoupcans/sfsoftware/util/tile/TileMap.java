@@ -20,7 +20,7 @@ public class TileMap {
 		
 		this.width = map.length;
 		this.height = map[0].length;
-		this.tileSize = map[0][0].getWidth();
+		this.tileSize = (map[0][0].getWidth() <= 0 ? Tile.getDefaultTileSize() : map[0][0].getWidth());
 	}
 	
 	public TileMap(int width, int height)
@@ -28,7 +28,17 @@ public class TileMap {
 		this(width, height, Tile.getDefaultTileSize());
 	}
 	
+	public TileMap(int width, int height, String initialTexture)
+	{
+		this(width, height, Tile.getDefaultTileSize(), initialTexture);
+	}
+
 	public TileMap(int width, int height, int tileSize)
+	{
+		this(width, height, tileSize, "");
+	}
+	
+	public TileMap(int width, int height, int tileSize, String initialTexture)
 	{
 		this.width = width;
 		this.height = height;
@@ -41,7 +51,35 @@ public class TileMap {
 		{
 			for(int j = 0; j < height; j++)
 			{		
-				map[i][j] = new Tile(i * tileSize, j * tileSize, "", true);
+				map[i][j] = new Tile(i * tileSize, j * tileSize, initialTexture, true);
+			}
+		}		
+	}
+
+	public boolean containsTexture(String textureName)
+	{
+		return (this.getTextureCount(textureName) > 0);		
+	}
+	
+	public void draw()
+	{
+		draw(1.0f, 1.0f, 1.0f, 1.0f);
+	}
+	
+	public void draw(float alpha)
+	{
+		draw(1.0f, 1.0f, 1.0f, alpha);
+	}
+	
+	public void draw(float red, float green, float blue, float alpha)
+	{
+		for(int i = 0; i < this.width; i++)
+		{
+			for(int j = 0; j < this.height; j++)
+			{
+				Tile tile = this.map[i][j];
+				tile.draw(getTileSize(), getTileSize(), tile.getSrcX(), tile.getSrcY(), 
+						getTileSize(), getTileSize(), red, green, blue, alpha);
 			}
 		}		
 	}
@@ -198,8 +236,8 @@ public class TileMap {
 	}	
 	
 	public int getTileSize()
-	{
-		return this.tileSize;
+	{		
+		return (this.tileSize <= 0 ? Tile.getDefaultTileSize() : this.tileSize);
 	}
 	
 	public int getWidth()
