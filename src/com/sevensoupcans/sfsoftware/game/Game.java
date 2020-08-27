@@ -9,13 +9,13 @@ import org.newdawn.slick.openal.SoundStore;
 
 import com.sevensoupcans.sfsoftware.util.Clock;
 import com.sevensoupcans.sfsoftware.util.Sound;
-import com.sevensoupcans.sfsoftware.util.Tile;
 import com.sevensoupcans.sfsoftware.util.graphics.Graphics;
 import com.sevensoupcans.sfsoftware.util.graphics.RGBA;
 import com.sevensoupcans.sfsoftware.util.graphics.TextureFont;
 import com.sevensoupcans.sfsoftware.util.input.InputDevice;
 import com.sevensoupcans.sfsoftware.util.input.Kboard;
 import com.sevensoupcans.sfsoftware.util.resources.FileUtils;
+import com.sevensoupcans.sfsoftware.util.tile.Tile;
 import com.sevensoupcans.sfsoftware.util.ui.LoggedList;
 import com.sevensoupcans.sfsoftware.util.ui.TextConsole;
 

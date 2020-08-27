@@ -1,4 +1,4 @@
-package com.sevensoupcans.sfsoftware.util;
+package com.sevensoupcans.sfsoftware.util.tile;
 
 import com.sevensoupcans.sfsoftware.util.graphics.Sprite;
 
@@ -46,6 +46,7 @@ public class Tile extends Sprite {
 	 * @param tileX Starting x tile point
 	 * @param tileY Starting y tile point
 	 */
+	@Deprecated
 	public static void floodFillTileVisibility(Tile[][] tileMap, int tileX, int tileY)
 	{
 		try
@@ -113,6 +114,7 @@ public class Tile extends Sprite {
 	 * @param tileMap The tile map being checked against
 	 * @return An id between 0 and 15 based on the surrounding tiles matching the provided texture name
 	 */
+	@Deprecated
 	public static int getBitMaskTileId(int x, int y, String currentTileTexture, Tile[][] tileMap)
 	{
 		int id = 15;
@@ -176,6 +178,7 @@ public class Tile extends Sprite {
 	 * @param textureName
 	 * @return
 	 */
+	@Deprecated
 	public static int getTileMapTextureCount(Tile[][] tileMap, String textureName)
 	{
 		int tileCount = 0;
@@ -199,6 +202,7 @@ public class Tile extends Sprite {
 	 * @param replacementTextureName The name of the texture replacing the target
 	 * @return
 	 */
+	@Deprecated
 	public static boolean replaceAllTexturesInTileMap(Tile[][] tileMap, String targetTextureName, String replacementTextureName)
 	{
 		boolean replacedTiles = false;
@@ -216,6 +220,15 @@ public class Tile extends Sprite {
 		}		
 		
 		return replacedTiles;
+	}
+	
+	@Override
+	public void setTexture(String newTex)
+	{
+		super.setTexture(newTex);
+		
+		this.setSrcX(0);
+		this.setSrcY(0);
 	}
 		
 }

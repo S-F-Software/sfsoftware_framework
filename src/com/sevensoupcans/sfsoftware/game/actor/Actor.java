@@ -5,11 +5,11 @@ import java.util.Vector;
 import com.sevensoupcans.sfsoftware.game.Game;
 import com.sevensoupcans.sfsoftware.game.actor.attributes.Collidable;
 import com.sevensoupcans.sfsoftware.game.actor.attributes.Permanent;
-import com.sevensoupcans.sfsoftware.util.Tile;
 import com.sevensoupcans.sfsoftware.util.Updatable;
 import com.sevensoupcans.sfsoftware.util.graphics.Graphics;
 import com.sevensoupcans.sfsoftware.util.graphics.Particle;
 import com.sevensoupcans.sfsoftware.util.graphics.Sprite;
+import com.sevensoupcans.sfsoftware.util.tile.Tile;
 
 public class Actor extends Sprite implements Collidable 
 {
