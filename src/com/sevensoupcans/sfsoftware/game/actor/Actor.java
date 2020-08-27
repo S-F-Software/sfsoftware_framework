@@ -71,7 +71,7 @@ public class Actor extends Sprite implements Collidable
 		for(int i = 0; i < c.length; i++)
 		{
 			// The cast vector can only hold Actor objects so no need to use instanceof
-			Actor a  = (Actor) c[i];			
+			Actor a  = c[i];			
 			// Only check for collision if the current Actor isn't walkable and isn't us!
 			if(!(a.equals(this)) && !(a.isWalkable()))
 			{
@@ -98,10 +98,10 @@ public class Actor extends Sprite implements Collidable
 	
 	protected int distanceToActor(Actor a)
 	{
-		int x1 = (int) a.getCenterX(); // (a.getX() + (a.getWidth() / 2));
-		int x2 = (int) getCenterX(); // (getX() + (getWidth() / 2));
-		int y1 = (int) a.getCenterY(); // (a.getY() + (a.getHeight() / 2));
-		int y2 = (int) getCenterY(); //(getY() + (getHeight() / 2));
+		int x1 = a.getCenterX(); // (a.getX() + (a.getWidth() / 2));
+		int x2 = getCenterX(); // (getX() + (getWidth() / 2));
+		int y1 = a.getCenterY(); // (a.getY() + (a.getHeight() / 2));
+		int y2 = getCenterY(); //(getY() + (getHeight() / 2));
 		
 		return (int) Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
 	}
@@ -199,7 +199,7 @@ public class Actor extends Sprite implements Collidable
 	
 	public Tile getCurrentTile()
 	{		
-		Tile[][] tilemap = associatedGame.getTileMap();
+		Tile[][] tilemap = associatedGame.getTileMap().getMap();
 		
 		int xTile = Math.max(0, Math.min(tilemap.length - 1, getCurrentTileX()));
 		int yTile = Math.max(0, Math.min(tilemap[0].length - 1, getCurrentTileY()));		
@@ -251,7 +251,7 @@ public class Actor extends Sprite implements Collidable
 			
 			try
 			{
-				Tile[][] tileMap = getGame().getTileMap();
+				Tile[][] tileMap = getGame().getTileMap().getMap();
 				if(!(tileMap[xTile][yTile].isWalkable()))
 				{
 					ableToSeeActor = false;
@@ -360,7 +360,7 @@ public class Actor extends Sprite implements Collidable
 		
 		for(int i = 0; i < c.length; i++)		
 		{					
-			Actor a = (Actor) c[i];
+			Actor a = c[i];
 			
 			// Only update Actors with the specified z level. There may be a better way to address this.
 			if(a.getZOrder() != z) continue;

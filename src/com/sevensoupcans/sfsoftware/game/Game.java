@@ -16,6 +16,7 @@ import com.sevensoupcans.sfsoftware.util.input.InputDevice;
 import com.sevensoupcans.sfsoftware.util.input.Kboard;
 import com.sevensoupcans.sfsoftware.util.resources.FileUtils;
 import com.sevensoupcans.sfsoftware.util.tile.Tile;
+import com.sevensoupcans.sfsoftware.util.tile.TileMap;
 import com.sevensoupcans.sfsoftware.util.ui.LoggedList;
 import com.sevensoupcans.sfsoftware.util.ui.TextConsole;
 
@@ -40,7 +41,7 @@ public abstract class Game
 
 	public abstract int getPlayingFieldHeight();
 	public abstract int getPlayingFieldWidth();
-	public abstract Tile[][] getTileMap();
+	public abstract TileMap getTileMap();
 	protected abstract void start();	
 	
 	/**
