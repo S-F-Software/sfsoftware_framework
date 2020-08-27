@@ -36,6 +36,73 @@ public class Tile extends Sprite {
 		walkable = w;
 	}
 	
+	
+	/**
+	 * Works outward on the provided tile map from the specified point and sets tile visibility 
+	 * of any connected, walkable tiles. Unreachable tiles from the provided point are not set
+	 * to be visible. 
+	 * 
+	 * @param tileMap
+	 * @param tileX Starting x tile point
+	 * @param tileY Starting y tile point
+	 */
+	public static void floodFillTileVisibility(Tile[][] tileMap, int tileX, int tileY)
+	{
+		try
+		{
+			tileMap[tileX][tileY].setVisible(true);
+		}
+		catch(IndexOutOfBoundsException e)
+		{
+			e.printStackTrace();
+		}
+		
+		if(tileX < tileMap.length - 1 && !(tileMap[tileX+1][tileY].isVisible()))
+		{
+			if((tileMap[tileX+1][tileY].isWalkable()))
+			{
+				floodFillTileVisibility(tileMap, tileX + 1, tileY);
+			}
+			else
+			{
+				tileMap[tileX + 1][tileY].setVisible(true);
+			}
+		}
+		if(tileX > 0 && !(tileMap[tileX-1][tileY].isVisible()))
+		{
+			if((tileMap[tileX-1][tileY].isWalkable()))
+			{
+				floodFillTileVisibility(tileMap, tileX - 1, tileY);
+			}
+			else
+			{
+				tileMap[tileX - 1][tileY].setVisible(true);
+			}		
+		}
+		if(tileY < tileMap[0].length - 1 && !(tileMap[tileX][tileY+1].isVisible()))
+		{
+			if((tileMap[tileX][tileY + 1].isWalkable()))
+			{
+				floodFillTileVisibility(tileMap, tileX, tileY + 1);
+			}
+			else
+			{
+				tileMap[tileX][tileY + 1].setVisible(true);
+			}		
+		}
+		if(tileY > 0 && !(tileMap[tileX][tileY-1].isVisible())) 
+		{
+			if((tileMap[tileX][tileY - 1].isWalkable()))
+			{
+				floodFillTileVisibility(tileMap, tileX, tileY - 1);
+			}
+			else
+			{
+				tileMap[tileX][tileY - 1].setVisible(true);
+			}		
+		}
+	}		
+	
 	/**
 	 * Using the provided tile coordinates, texture, and map, returns an id based on surrounding tiles
 	 * to be used in calculating edge tiles.
@@ -125,69 +192,30 @@ public class Tile extends Sprite {
 	}
 	
 	/**
-	 * Works outward on the provided tile map from the specified point and sets tile visibility 
-	 * of any connected, walkable tiles. Unreachable tiles from the provided point are not set
-	 * to be visible. 
+	 * Replaces all instances of a texture in the provided tile map with a new texture
 	 * 
-	 * @param tileMap
-	 * @param tileX Starting x tile point
-	 * @param tileY Starting y tile point
+	 * @param tileMap The tile map the replacement operation is to be applied to
+	 * @param targetTextureName The name of the target texture to be replaced
+	 * @param replacementTextureName The name of the texture replacing the target
+	 * @return
 	 */
-	public static void floodFillTileVisibility(Tile[][] tileMap, int tileX, int tileY)
+	public static boolean replaceAllTexturesInTileMap(Tile[][] tileMap, String targetTextureName, String replacementTextureName)
 	{
-		try
-		{
-			tileMap[tileX][tileY].setVisible(true);
-		}
-		catch(IndexOutOfBoundsException e)
-		{
-			e.printStackTrace();
-		}
+		boolean replacedTiles = false;
 		
-		if(tileX < tileMap.length - 1 && !(tileMap[tileX+1][tileY].isVisible()))
+		for(int xTile = 0; xTile < tileMap.length; xTile++)
 		{
-			if((tileMap[tileX+1][tileY].isWalkable()))
+			for(int yTile = 0; yTile < tileMap[0].length; yTile++)
 			{
-				floodFillTileVisibility(tileMap, tileX + 1, tileY);
+				if(tileMap[xTile][yTile].getTexture().equalsIgnoreCase(targetTextureName)) 
+				{
+					tileMap[xTile][yTile].setTexture(replacementTextureName);
+					replacedTiles = true;
+				}
 			}
-			else
-			{
-				tileMap[tileX + 1][tileY].setVisible(true);
-			}
-		}
-		if(tileX > 0 && !(tileMap[tileX-1][tileY].isVisible()))
-		{
-			if((tileMap[tileX-1][tileY].isWalkable()))
-			{
-				floodFillTileVisibility(tileMap, tileX - 1, tileY);
-			}
-			else
-			{
-				tileMap[tileX - 1][tileY].setVisible(true);
-			}		
-		}
-		if(tileY < tileMap[0].length - 1 && !(tileMap[tileX][tileY+1].isVisible()))
-		{
-			if((tileMap[tileX][tileY + 1].isWalkable()))
-			{
-				floodFillTileVisibility(tileMap, tileX, tileY + 1);
-			}
-			else
-			{
-				tileMap[tileX][tileY + 1].setVisible(true);
-			}		
-		}
-		if(tileY > 0 && !(tileMap[tileX][tileY-1].isVisible())) 
-		{
-			if((tileMap[tileX][tileY - 1].isWalkable()))
-			{
-				floodFillTileVisibility(tileMap, tileX, tileY - 1);
-			}
-			else
-			{
-				tileMap[tileX][tileY - 1].setVisible(true);
-			}		
-		}
-	}	
+		}		
+		
+		return replacedTiles;
+	}
 		
 }
