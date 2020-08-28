@@ -376,38 +376,39 @@ public class Actor extends Sprite implements Collidable
 	
 	protected void updateCornerVariables(int x, int y, Tile[][] tileMap) 
 	{
-		int upY = (int) Math.floor(((y - playingFieldY) - (height / 2)) / 40);
-		int downY = (int) Math.floor((((y - playingFieldY) + (height / 2)) - 1) / 40);
-		int leftX = (int) Math.floor(((x - playingFieldX) - (width / 2)) / 40);
-		int rightX = (int) Math.floor((((x - playingFieldX)  + (width / 2)) - 1) / 40);
+		int tileSize = this.getGame().getTileSize();
+		int upY = (int) Math.floor(((y - playingFieldY) - (height / 2)) / tileSize);
+		int downY = (int) Math.floor((((y - playingFieldY) + (height / 2)) - 1) / tileSize);
+		int leftX = (int) Math.floor(((x - playingFieldX) - (width / 2)) / tileSize);
+		int rightX = (int) Math.floor((((x - playingFieldX)  + (width / 2)) - 1) / tileSize);
 				
 		try {
 			topLeft = tileMap[leftX][upY].isWalkable();	
 		}
 		catch(ArrayIndexOutOfBoundsException e)
 		{
-			topLeft = true;
+			topLeft = false;
 		}
 		try {
 			bottomLeft = tileMap[leftX][downY].isWalkable();
 		}
 		catch(ArrayIndexOutOfBoundsException e)
 		{
-			bottomLeft = true;
+			bottomLeft = false;
 		}
 		try {
 			topRight = tileMap[rightX][upY].isWalkable();
 		}
 		catch(ArrayIndexOutOfBoundsException e)
 		{
-			topRight = true;
+			topRight = false;
 		}
 		try {		
 			bottomRight = tileMap[rightX][downY].isWalkable();	
 		}
 		catch(ArrayIndexOutOfBoundsException e)
 		{
-			bottomRight = true;
+			bottomRight = false;
 		}									
 	}
 
