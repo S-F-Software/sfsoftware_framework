@@ -15,14 +15,13 @@ import org.lwjgl.opengl.ARBShaderObjects;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.GLContext;
 import org.newdawn.slick.opengl.PNGDecoder;
 import org.newdawn.slick.util.ResourceLoader;
 
 import com.sevensoupcans.sfsoftware.util.resources.ClasspathHelper;
 import com.sevensoupcans.sfsoftware.util.resources.FileUtils;
-
-import static org.lwjgl.opengl.EXTFramebufferObject.*;
 
 public abstract class Graphics 
 {
@@ -74,12 +73,23 @@ public abstract class Graphics
 	{
 		return window;
 	}
+
+	public static int getScreenHeight()
+	{
+		return Display.getDisplayMode().getHeight();
+	}
+	
+	public static int getScreenWidth()
+	{
+		return Display.getDisplayMode().getWidth();
+	}
 	
 	/**
 	 * 	Clears the screen and depth buffers
 	 */
 	public static void clear()
 	{
+		GL11.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 	}
 	
@@ -192,14 +202,19 @@ public abstract class Graphics
 	}
 
 	public static void drawDisplayBuffer(int x, int y, int width, int height)
-	{				
-		drawDisplayBuffer(x, y, width, height, 0, 0, displayBuffer.getWidth(), displayBuffer.getHeight());
+	{
+		drawDisplayBuffer(displayBuffer, x, y, width, height);
 	}
 	
-	public static void drawDisplayBuffer(int x, int y, int width, int height, int srcX, int srcY, int srcWidth, int srcHeight)
+	public static void drawDisplayBuffer(FrameBuffer fb, int x, int y, int width, int height)
+	{				
+		drawDisplayBuffer(fb, x, y, width, height, 0, 0, fb.getWidth(), fb.getHeight());
+	}
+	
+	public static void drawDisplayBuffer(FrameBuffer fb, int x, int y, int width, int height, int srcX, int srcY, int srcWidth, int srcHeight)
 	{
 		setBuffer(null);		
-		displayBuffer.draw(x, y, width, height, srcX, srcY, srcWidth, srcHeight);
+		fb.draw(x, y, width, height, srcX, srcY, srcWidth, srcHeight);
 	}
 	
 	public static void drawEllipse(float x, float y, float radiusX, float radiusY, float r, float g, float b, float a)
@@ -397,7 +412,7 @@ public abstract class Graphics
 			float fSrcWidth = (((float)srcX + (float)srcWidth) / texture.getWidth());
 			float fSrcHeight = (((float)srcY + (float)srcHeight) / texture.getHeight());			
 			
-			GL11.glPushMatrix();				
+			GL11.glPushMatrix();			
 							
 			// Rotation works! 1/4/14
 			if(angle != 0)
@@ -503,7 +518,6 @@ public abstract class Graphics
 		else 
 		{			
 			displayBuffer = new FrameBuffer(width, height);
-					
 		}
 		
 		try 
@@ -825,27 +839,37 @@ public abstract class Graphics
 	 * Sets the buffer to draw to - 0 is the main buffer.
 	 * 
 	 * @param bufferId
+	 * @param bufferWidth
+	 * @param bufferHeight
+	 * @param clearBuffer
 	 */
-	private static void setBuffer(int bufferId, boolean clearBuffer)
+	private static void setBuffer(int bufferId, int bufferWidth, int bufferHeight, boolean clearBuffer)
 	{
-		//currentBufferID = bufferId;
-		glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, bufferId);
-		GL11.glPopAttrib();
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
+		GL30.glBindFramebuffer(GL30.GL_FRAMEBUFFER, bufferId);
+		//glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, bufferId);
+		//GL11.glPopAttrib();
+
+		//GL11.glPushAttrib(GL11.GL_VIEWPORT_BIT);
+		//GL11.glViewport(0, 0, bufferWidth, bufferHeight);
+		
+		//GL11.glEnable(GL11.GL_TEXTURE_2D);		           
+ 
+        // enable alpha blending
+        //GL11.glEnable(GL11.GL_BLEND);
+        //GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+ 
+        GL11.glViewport(0, 0, bufferWidth, bufferHeight);
+		//GL11.glMatrixMode(GL11.GL_MODELVIEW);
+ 
+		//GL11.glMatrixMode(GL11.GL_PROJECTION);
+		//GL11.glLoadIdentity();
+		//GL11.glOrtho(0, bufferWidth, bufferHeight, 0, 1, -1);
+		//GL11.glMatrixMode(GL11.GL_MODELVIEW);
+		
 		if(clearBuffer)
-		{
-			Graphics.clear();
-		}
+			Graphics.clear();	
 	}	
-	
-	/**
-	 * Sets the buffer to draw to - 0 is the main buffer.
-	 * 
-	 * @param bufferId
-	 */
-	private static void setBuffer(int bufferId)
-	{
-		setBuffer(bufferId, false);
-	}
 	
 	/**
 	 * 
@@ -856,11 +880,11 @@ public abstract class Graphics
 	{
 		if(fbo != null)
 		{
-			setBuffer(fbo.getId(), clearBuffer);
+			setBuffer(fbo.getId(), fbo.getWidth(), fbo.getHeight(), clearBuffer);
 		}
 		else
 		{
-			setBuffer(0, clearBuffer);
+			setBuffer(0, Display.getDisplayMode().getWidth(), Display.getDisplayMode().getHeight(), clearBuffer);
 		}
 	}
 	
@@ -872,11 +896,11 @@ public abstract class Graphics
 	{
 		if(fbo != null)
 		{
-			setBuffer(fbo.getId(), false);
+			setBuffer(fbo.getId(), fbo.getWidth(), fbo.getHeight(), false);
 		}
 		else
 		{
-			setBuffer(0);
+			setBuffer(0, Display.getDisplayMode().getWidth(), Display.getDisplayMode().getHeight(), false);
 		}
 	}
 	

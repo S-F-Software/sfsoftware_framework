@@ -48,12 +48,26 @@ public class FrameBuffer
 		setWidth(width);
 		setHeight(height);
 
+		verify();
+		
 		if(getStatus() != GL30.GL_FRAMEBUFFER_COMPLETE)
-		{			
+		{
 			//GL30.glDeleteFramebuffers(framebufferID);			
 			System.out.println("There was an issue with FBO Id " + framebufferID + ". Status: " + getStatus());
 		}
 		
+	}
+	
+	public void clear()
+	{
+		glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, this.getId());
+		GL11.glPopAttrib();
+
+		GL11.glPushAttrib(GL11.GL_VIEWPORT_BIT);
+		GL11.glViewport(0, 0, this.getWidth(), this.getHeight());
+		
+		GL11.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 	}
 	
 	public void draw(int x, int y)
@@ -77,9 +91,9 @@ public class FrameBuffer
 		GL11.glLoadIdentity();
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
 				
-		int attributeLoc = ARBShaderObjects.glGetUniformLocationARB(currentShader, "texture");
+		/*int attributeLoc = ARBShaderObjects.glGetUniformLocationARB(currentShader, "texture");
 		ARBShaderObjects.glUseProgramObjectARB(currentShader);								
-		ARBShaderObjects.glUniform1iARB(attributeLoc, getTextureId());				
+		ARBShaderObjects.glUniform1iARB(attributeLoc, getTextureId());*/				
 		
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, getTextureId()); 
 		
@@ -114,7 +128,12 @@ public class FrameBuffer
 		GL11.glPopMatrix();	
 		GL11.glPopAttrib();
 		
-		ARBShaderObjects.glUseProgramObjectARB(0);
+		//ARBShaderObjects.glUseProgramObjectARB(0);
+	}
+	
+	public int getDepthBufferId()
+	{
+		return depthRenderBufferID;
 	}
 	
 	public int getId()
@@ -124,7 +143,7 @@ public class FrameBuffer
 	
 	public int getStatus()
 	{
-		return EXTFramebufferObject.glCheckFramebufferStatusEXT(this.getId());
+		return EXTFramebufferObject.glCheckFramebufferStatusEXT(this.getId());				
 	}
 	
 	public int getTextureId()
@@ -163,5 +182,32 @@ public class FrameBuffer
 	private void setHeight(int height) {
 		this.height = height;
 	}	
+	
+	private void verify()
+	{
+		int framebuffer = EXTFramebufferObject.glCheckFramebufferStatusEXT( this.getId() ); 
+		switch ( framebuffer ) {
+		    case EXTFramebufferObject.GL_FRAMEBUFFER_COMPLETE_EXT:
+		        break;
+		    case EXTFramebufferObject.GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT_EXT:
+		        throw new RuntimeException( "FrameBuffer: " + this.getId()
+		                + ", has caused a GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT_EXT exception" );
+		    case EXTFramebufferObject.GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT_EXT:
+		        throw new RuntimeException( "FrameBuffer: " + this.getId()
+		                + ", has caused a GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT_EXT exception" );
+		    case EXTFramebufferObject.GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS_EXT:
+		        throw new RuntimeException( "FrameBuffer: " + this.getId()
+		                + ", has caused a GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS_EXT exception" );
+		    case EXTFramebufferObject.GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER_EXT:
+		        throw new RuntimeException( "FrameBuffer: " + this.getId()
+		                + ", has caused a GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER_EXT exception" );
+		    case EXTFramebufferObject.GL_FRAMEBUFFER_INCOMPLETE_FORMATS_EXT:
+		        throw new RuntimeException( "FrameBuffer: " + this.getId()
+		                + ", has caused a GL_FRAMEBUFFER_INCOMPLETE_FORMATS_EXT exception" );
+		    case EXTFramebufferObject.GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER_EXT:
+		        throw new RuntimeException( "FrameBuffer: " + this.getId()
+		                + ", has caused a GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER_EXT exception" );		    
+		}
+	}
 	
 }
