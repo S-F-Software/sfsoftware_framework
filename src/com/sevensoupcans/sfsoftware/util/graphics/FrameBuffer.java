@@ -151,6 +151,16 @@ public class FrameBuffer
 		return colorTextureID;
 	}
 	
+	public void setAsCurrentBuffer()
+	{
+		setAsCurrentBuffer(false);
+	}
+	
+	public void setAsCurrentBuffer(boolean clearBuffer)
+	{
+		Graphics.setBuffer(this, clearBuffer);
+	}
+	
 	public void setCurrentShader(int programId)
 	{
 		/*if(programId == 0)
