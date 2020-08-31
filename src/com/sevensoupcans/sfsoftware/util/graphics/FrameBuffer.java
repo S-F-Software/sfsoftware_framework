@@ -1,6 +1,16 @@
 package com.sevensoupcans.sfsoftware.util.graphics;
 
-import static org.lwjgl.opengl.EXTFramebufferObject.*;
+import static org.lwjgl.opengl.EXTFramebufferObject.GL_COLOR_ATTACHMENT0_EXT;
+import static org.lwjgl.opengl.EXTFramebufferObject.GL_DEPTH_ATTACHMENT_EXT;
+import static org.lwjgl.opengl.EXTFramebufferObject.GL_FRAMEBUFFER_EXT;
+import static org.lwjgl.opengl.EXTFramebufferObject.GL_RENDERBUFFER_EXT;
+import static org.lwjgl.opengl.EXTFramebufferObject.glBindFramebufferEXT;
+import static org.lwjgl.opengl.EXTFramebufferObject.glBindRenderbufferEXT;
+import static org.lwjgl.opengl.EXTFramebufferObject.glFramebufferRenderbufferEXT;
+import static org.lwjgl.opengl.EXTFramebufferObject.glFramebufferTexture2DEXT;
+import static org.lwjgl.opengl.EXTFramebufferObject.glGenFramebuffersEXT;
+import static org.lwjgl.opengl.EXTFramebufferObject.glGenRenderbuffersEXT;
+import static org.lwjgl.opengl.EXTFramebufferObject.glRenderbufferStorageEXT;
 
 import org.lwjgl.opengl.ARBShaderObjects;
 import org.lwjgl.opengl.Display;
@@ -97,9 +107,9 @@ public class FrameBuffer
 		GL11.glLoadIdentity();
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
 				
-		/*int attributeLoc = ARBShaderObjects.glGetUniformLocationARB(currentShader, "texture");
+		int attributeLoc = ARBShaderObjects.glGetUniformLocationARB(currentShader, "texture");
 		ARBShaderObjects.glUseProgramObjectARB(currentShader);								
-		ARBShaderObjects.glUniform1iARB(attributeLoc, getTextureId());*/				
+		ARBShaderObjects.glUniform1iARB(attributeLoc, getTextureId());				
 		
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, getTextureId()); 
 		
@@ -134,7 +144,7 @@ public class FrameBuffer
 		GL11.glPopMatrix();	
 		GL11.glPopAttrib();
 		
-		//ARBShaderObjects.glUseProgramObjectARB(0);
+		ARBShaderObjects.glUseProgramObjectARB(0);
 	}
 	
 	public int getDepthBufferId()
