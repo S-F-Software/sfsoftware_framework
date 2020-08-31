@@ -211,10 +211,17 @@ public abstract class Graphics
 		drawDisplayBuffer(fb, x, y, width, height, 0, 0, fb.getWidth(), fb.getHeight());
 	}
 	
-	public static void drawDisplayBuffer(FrameBuffer fb, int x, int y, int width, int height, int srcX, int srcY, int srcWidth, int srcHeight)
+	public static void drawDisplayBuffer(FrameBuffer fb, int x, int y, int width, int height, int srcX, int srcY, 
+			int srcWidth, int srcHeight)
 	{
-		setBuffer(null);		
-		fb.draw(x, y, width, height, srcX, srcY, srcWidth, srcHeight);
+		drawDisplayBuffer(fb, x, y, width, height, srcX, srcY, srcWidth, srcHeight, 1.0f, 1.0f, 1.0f, 1.0f);
+	}
+	
+	public static void drawDisplayBuffer(FrameBuffer fb, int x, int y, int width, int height, int srcX, int srcY, 
+			int srcWidth, int srcHeight, float red, float green, float blue, float alpha)
+	{
+		setBuffer(null);
+		fb.draw(x, y, width, height, srcX, srcY, srcWidth, srcHeight, red, green, blue, alpha);
 	}
 	
 	public static void drawEllipse(float x, float y, float radiusX, float radiusY, float r, float g, float b, float a)

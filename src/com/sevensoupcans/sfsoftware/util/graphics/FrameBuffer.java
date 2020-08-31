@@ -79,8 +79,14 @@ public class FrameBuffer
 	{
 		draw(x, y, width, height, 0, 0, width, height);
 	}
-	
+
 	public void draw(int x, int y, int width, int height, int srcX, int srcY, int srcWidth, int srcHeight)
+	{
+		draw(x, y, width, height, srcX, srcY, srcWidth, srcHeight, 1.0f, 1.0f, 1.0f, 1.0f);
+	}
+	
+	public void draw(int x, int y, int width, int height, int srcX, int srcY, int srcWidth, 
+			int srcHeight, float red, float green, float blue, float alpha)
 	{
 		GL11.glPushMatrix();
 		GL11.glMatrixMode(GL11.GL_PROJECTION);
@@ -105,7 +111,7 @@ public class FrameBuffer
 		GL11.glPushMatrix();		
 		
 		// Need to reset the color or else things get weird...
-		GL11.glColor4f(1, 1, 1, 1);
+		GL11.glColor4f(red, green, blue, alpha);
 		GL11.glBegin(GL11.GL_QUADS);					
 			// Top Left
 			//GL11.glTexCoord2f(0.0f, 1.0f); 
