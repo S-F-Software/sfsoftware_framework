@@ -43,6 +43,7 @@ public abstract class Game
 	
 	private final Preferences PREFERENCES = Preferences.userNodeForPackage(this.getClass());
 
+	public abstract boolean executeTextConsoleCommand(String command);
 	public abstract int getPlayingFieldHeight();
 	public abstract int getPlayingFieldWidth();
 	public abstract String getDefaultFontName();

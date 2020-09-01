@@ -7,6 +7,7 @@ import java.util.Arrays;
 import org.lwjgl.input.Keyboard;
 
 import com.sevensoupcans.sfsoftware.game.Game;
+import com.sevensoupcans.sfsoftware.util.Clock;
 import com.sevensoupcans.sfsoftware.util.graphics.Graphics;
 import com.sevensoupcans.sfsoftware.util.graphics.RGBA;
 import com.sevensoupcans.sfsoftware.util.graphics.TextureFont;
@@ -20,11 +21,14 @@ public class TextConsole implements UserInput
 	private boolean firstOpen = true;
 	private ByteArrayOutputStream baos = new ByteArrayOutputStream();
 	private PrintStream ps = new PrintStream(baos, true);
+	private StringBuffer userInputField = new StringBuffer();
 	private int yPos = -240;
 	private float r;
 	private float g;
 	private float b;
 	private int cursorY;
+	private boolean blinkCursor = false;
+	private Clock blinkCursorClock = new Clock(250);
 	
 	private Game game;
 	
@@ -76,6 +80,7 @@ public class TextConsole implements UserInput
 		return contents.split(System.lineSeparator());	
 	}
 	
+	@Override
 	public boolean pollInput()
 	{
 		InputDevice inputDevice = game.getInputDevice();
@@ -98,7 +103,43 @@ public class TextConsole implements UserInput
 		}
 		else if(Kboard.keyPressed(Keyboard.KEY_END)) 
 		{
-			cursorY = getLineCount() - 15;
+			cursorY = Math.max(0, getLineCount() - 15);
+		}
+		else if(Kboard.keyPressed(Keyboard.KEY_RETURN))
+		{
+			// Execute a command based on the provided user input
+			System.out.println("> " + userInputField.toString());
+			game.executeTextConsoleCommand(userInputField.toString());
+			cursorY = Math.max(0, getLineCount() - 15);
+			// Discard the existing user input
+			userInputField = new StringBuffer();
+		}
+		else if(Kboard.keyPressed(Keyboard.KEY_BACK) && userInputField.length() > 0)
+		{
+			userInputField.deleteCharAt(userInputField.length() - 1);
+		}
+		else
+		{
+			for(int i : Kboard.alphabetKeys)
+			{
+				if(Kboard.keyPressed(i))
+				{
+					String text = Kboard.getKeyName(i);					
+					userInputField.append(text);					
+				}
+			}
+			for(int i : Kboard.numberKeys)
+			{
+				if(Kboard.keyPressed(i))
+				{
+					String text = Kboard.getKeyName(i).substring(Kboard.getKeyName(i).length() - 1);					
+					userInputField.append(text);					
+				}
+			}
+			if(Kboard.keyPressed(Keyboard.KEY_SPACE))
+			{
+				userInputField.append(' ');					
+			}
 		}
 		
 		inputDevice.storeState();
@@ -131,6 +172,11 @@ public class TextConsole implements UserInput
 			{
 				TextureFont.getDefaultFont().drawString(5, yPos + (lineHeight * i), lines[i]);
 			}
+			
+			if(blinkCursorClock.updateClock()) blinkCursor = !(blinkCursor);
+			
+			String userInputDisplayString = blinkCursor ? "> " + userInputField.toString() + "_" : "> " + userInputField.toString();
+			TextureFont.getDefaultFont().drawString(5, (yPos + 235) - TextureFont.getDefaultFont().getHeight(), userInputDisplayString);			
 		}
 	}
 }

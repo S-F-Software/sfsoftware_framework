@@ -11,6 +11,20 @@ public class Kboard implements InputDevice {
 	public static int[] downKeys = 	{Keyboard.KEY_S, Keyboard.KEY_DOWN};	
 	public static int[] pauseKeys = {Keyboard.KEY_TAB, Keyboard.KEY_RSHIFT};
 	
+	public static int[] alphabetKeys = { Keyboard.KEY_Q, Keyboard.KEY_W, Keyboard.KEY_E, Keyboard.KEY_R,
+			Keyboard.KEY_T,Keyboard.KEY_Y,Keyboard.KEY_U,Keyboard.KEY_I,Keyboard.KEY_O,Keyboard.KEY_P,
+			Keyboard.KEY_A,Keyboard.KEY_S,Keyboard.KEY_D,Keyboard.KEY_F,Keyboard.KEY_G,Keyboard.KEY_H,
+			Keyboard.KEY_J,Keyboard.KEY_K,Keyboard.KEY_L,Keyboard.KEY_Z,Keyboard.KEY_X,Keyboard.KEY_C,
+			Keyboard.KEY_V,Keyboard.KEY_B,Keyboard.KEY_N,Keyboard.KEY_M };
+	
+	public static int[] numberKeys = { Keyboard.KEY_0, Keyboard.KEY_1, Keyboard.KEY_2, Keyboard.KEY_3, 
+			Keyboard.KEY_4, Keyboard.KEY_5, Keyboard.KEY_6, Keyboard.KEY_7, Keyboard.KEY_8, Keyboard.KEY_9, 
+			Keyboard.KEY_NUMPAD0, Keyboard.KEY_NUMPAD1, Keyboard.KEY_NUMPAD2, Keyboard.KEY_NUMPAD3,
+			Keyboard.KEY_NUMPAD4, Keyboard.KEY_NUMPAD5, Keyboard.KEY_NUMPAD6, Keyboard.KEY_NUMPAD7,
+			Keyboard.KEY_NUMPAD8, Keyboard.KEY_NUMPAD9 };
+	
+	// TODO Create an array of integers representing the collection of symbol keys.
+	
 	public static final int KEY_A = Keyboard.KEY_A;
 	public static final int KEY_D = Keyboard.KEY_D;
 	public static final int KEY_F = Keyboard.KEY_F;
