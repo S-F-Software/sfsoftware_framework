@@ -45,6 +45,8 @@ public abstract class Game
 
 	public abstract int getPlayingFieldHeight();
 	public abstract int getPlayingFieldWidth();
+	public abstract String getDefaultFontName();
+	public abstract TextureFont getGameFont();
 	public abstract TileMap getTileMap();
 	protected abstract void start();	
 	
@@ -54,7 +56,7 @@ public abstract class Game
 	 * @param loadingDetails An ArrayList containing loading detail text
 	 * @param font The TextureFont used to handle drawing the detail text
 	 */
-	protected void drawLoadingScreen(java.util.ArrayList<String> loadingDetails, TextureFont font)
+	public void drawLoadingScreen(java.util.ArrayList<String> loadingDetails, TextureFont font)
 	{
 		Graphics.clear();
 		
