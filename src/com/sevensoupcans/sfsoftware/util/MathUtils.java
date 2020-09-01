@@ -1,6 +1,6 @@
 package com.sevensoupcans.sfsoftware.util;
 
-import java.util.*;
+import java.util.Random;
 
 public abstract class MathUtils
 {
@@ -43,6 +43,11 @@ public abstract class MathUtils
 	{
 		return (value>= min) && (value<= max);
 	}		
+	
+	public static float randomFloat()
+	{
+		return random.nextFloat();
+	}
 	
 	public static int randomInt(int bound) 
 	{	 		

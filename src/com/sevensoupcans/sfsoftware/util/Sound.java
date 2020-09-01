@@ -145,13 +145,18 @@ public abstract class Sound
 		return soundLib;
 	}
 	
-	public static void playSound(String soundName)
-	{		
+	public static void playSound(String soundName, float pitch)
+	{
 		Audio temp = soundLib.get(soundName);
 		if(temp != null)
 		{
-			temp.playAsSoundEffect(1.0f, soundEffectVolume, false);
-		}
+			temp.playAsSoundEffect(pitch, soundEffectVolume, false);
+		}		
+	}
+	
+	public static void playSound(String soundName)
+	{		
+		playSound(soundName, 1.0f);
 	}
 
 	public static String playMusic()

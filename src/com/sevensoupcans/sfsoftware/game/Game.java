@@ -1,6 +1,7 @@
 package com.sevensoupcans.sfsoftware.game;
 
 import java.awt.Font;
+import java.util.prefs.Preferences;
 
 import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.Display;
@@ -14,6 +15,7 @@ import com.sevensoupcans.sfsoftware.util.graphics.RGBA;
 import com.sevensoupcans.sfsoftware.util.graphics.TextureFont;
 import com.sevensoupcans.sfsoftware.util.input.InputDevice;
 import com.sevensoupcans.sfsoftware.util.input.Kboard;
+import com.sevensoupcans.sfsoftware.util.input.Mouse;
 import com.sevensoupcans.sfsoftware.util.resources.FileUtils;
 import com.sevensoupcans.sfsoftware.util.tile.Tile;
 import com.sevensoupcans.sfsoftware.util.tile.TileMap;
@@ -22,9 +24,11 @@ import com.sevensoupcans.sfsoftware.util.ui.TextConsole;
 
 public abstract class Game 
 {
-	protected final TextConsole console = new TextConsole(this);	
+	protected final TextConsole console = new TextConsole(this);		
 	
 	private GameState gameState = GameState.TITLE_SCREEN;
+	private int screenHeight = 600;
+	private int screenWidth = 800;	
 	private long gameCounter = 0;
 	private boolean running = true;
 	private String gameTitle;
@@ -35,9 +39,9 @@ public abstract class Game
 	protected InputDevice inputDevice = new Kboard();
 	
 	public boolean isPaused = false;			
-
-	private final int SCREEN_HEIGHT = 600;
-	private final int SCREEN_WIDTH = 800;
+	public boolean vsync = false;
+	
+	private final Preferences PREFERENCES = Preferences.userNodeForPackage(this.getClass());
 
 	public abstract int getPlayingFieldHeight();
 	public abstract int getPlayingFieldWidth();
@@ -64,6 +68,15 @@ public abstract class Game
 		Graphics.drawQuad(0, (getScreenHeight() / 2), getScreenWidth(), (getScreenHeight() / 2), new RGBA(0,0,0,1), new RGBA(0,0,0,1), new RGBA(0,0,0,0), new RGBA(0,0,0,0));
 		Graphics.update();
 	}	
+	
+	protected void end()
+	{
+		Graphics.destroy();
+		Sound.destroy();
+		
+		System.out.println("Bye, bye!");
+		System.exit(0);
+	}
 	
 	protected String getClassOriginPath()
 	{
@@ -97,6 +110,11 @@ public abstract class Game
 		return inputDevice;
 	}
 	
+	public Preferences getPreferences()
+	{	
+		return PREFERENCES;
+	}	
+	
 	protected String getResourcePath()
 	{
 		return getClassOriginPath() + "res/"; 
@@ -104,12 +122,12 @@ public abstract class Game
 	
 	public int getScreenHeight()
 	{
-		return SCREEN_HEIGHT;
+		return screenHeight;
 	}
 	
 	public int getScreenWidth()
 	{
-		return SCREEN_WIDTH;
+		return screenWidth;
 	}		
 	
 	public int getTileSize()
@@ -135,20 +153,46 @@ public abstract class Game
 	
 	protected void init()
 	{
-		// Loading screen		
-		TextureFont loadingFont = new TextureFont("Verdana", Font.BOLD, 20);			
-		LoggedList<String> loadingText = new LoggedList<String>();
+		init(false);
+	}
+	
+	protected void init(int screenWidth, int screenHeight, boolean loadResources)
+	{
+		this.screenHeight = screenHeight;
+		this.screenWidth = screenWidth;
 		
-		loadingText.add("Loading " + getGameTitle() + "...");
-		drawLoadingScreen(loadingText, loadingFont);
+		init(loadResources);
 		
-		loadingText.add("Loading textures...");
-		drawLoadingScreen(loadingText, loadingFont);		
-		Graphics.loadTextures(getClassOriginPath() + Graphics.GRAPHICS_FILE_PATH, "png", this.getClass());
+	}
+	
+	protected void init(boolean loadResources)
+	{
+		System.out.println(getGameTitle() + ", (c) S&F Software, 2020");
+		Graphics.setAppIcon(getResourcePath() + "graphics/icon16.png", getResourcePath() + "graphics/icon32.png");
+		Graphics.initGL(getScreenWidth(), getScreenHeight(), getGameTitle());					
+		Graphics.setDisplayMode(getScreenWidth(), getScreenHeight(), getPreferences().getBoolean("fullscreen", false));
+		vsync = getPreferences().getBoolean("vsync", false);
 		
-		loadingText.add("Loading audio...");
-		drawLoadingScreen(loadingText, loadingFont);
-		Sound.loadAudio(getClassOriginPath() + Sound.AUDIO_PATH, this.getClass());				
+		Mouse.setGrabbed(Graphics.isFullScreen());
+		
+		setGameState(GameState.TITLE_SCREEN);
+		
+		if(loadResources)
+		{
+			TextureFont loadingFont = new TextureFont("Verdana", Font.BOLD, 20);	
+			LoggedList<String> loadingText = new LoggedList<String>();
+			
+			loadingText.add("Loading " + getGameTitle() + "...");
+			drawLoadingScreen(loadingText, loadingFont);
+			
+			loadingText.add("Loading textures...");
+			drawLoadingScreen(loadingText, loadingFont);		
+			Graphics.loadTextures(getClassOriginPath() + Graphics.GRAPHICS_FILE_PATH, "png", this.getClass());
+			
+			loadingText.add("Loading audio...");
+			drawLoadingScreen(loadingText, loadingFont);
+			Sound.loadAudio(getClassOriginPath() + Sound.AUDIO_PATH, this.getClass());
+		}
 	}
 	
 	public boolean isRunning()
