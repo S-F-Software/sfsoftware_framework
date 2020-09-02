@@ -141,7 +141,26 @@ public class Actor extends Sprite implements Collidable
 		return getAngle(this, b);
 	}
 	
-	protected double getAngleToPoint(int x, int y)
+	protected double getAngleFromPoint(double x, double y)
+	{
+		double dx = x - getCenterX(); // (getX() + (getWidth() / 2)) - x;
+		double dy = y - getCenterY(); // (getY() + (getHeight() / 2)) - y;
+		
+		double inRads = Math.atan2(dy,dx);
+		
+		if (inRads < 0)
+		{
+	        inRads = Math.abs(inRads);
+		}
+	    else
+	    {
+	        inRads = 2 * Math.PI - inRads;
+	    }			
+		
+		return inRads;
+	}	
+	
+	protected double getAngleToPoint(double x, double y)
 	{
 		double dx = getCenterX() - x; // (getX() + (getWidth() / 2)) - x;
 		double dy = getCenterY() - y; // (getY() + (getHeight() / 2)) - y;
