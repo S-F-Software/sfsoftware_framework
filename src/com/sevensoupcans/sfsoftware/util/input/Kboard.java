@@ -5,25 +5,37 @@ import java.util.Vector;
 import org.lwjgl.input.Keyboard;
 
 public class Kboard implements InputDevice {		
-	public static int[] leftKeys = 	{Keyboard.KEY_A, Keyboard.KEY_LEFT};
-	public static int[] rightKeys = {Keyboard.KEY_D, Keyboard.KEY_RIGHT};
-	public static int[] upKeys = 	{Keyboard.KEY_W, Keyboard.KEY_UP};
-	public static int[] downKeys = 	{Keyboard.KEY_S, Keyboard.KEY_DOWN};	
-	public static int[] pauseKeys = {Keyboard.KEY_TAB, Keyboard.KEY_RSHIFT};
+	public static final int[] leftKeys = 	{Keyboard.KEY_A, Keyboard.KEY_LEFT};
+	public static final int[] rightKeys = {Keyboard.KEY_D, Keyboard.KEY_RIGHT};
+	public static final int[] upKeys = 	{Keyboard.KEY_W, Keyboard.KEY_UP};
+	public static final int[] downKeys = 	{Keyboard.KEY_S, Keyboard.KEY_DOWN};
 	
-	public static int[] alphabetKeys = { Keyboard.KEY_Q, Keyboard.KEY_W, Keyboard.KEY_E, Keyboard.KEY_R,
+	// TODO As tab and right shift aren't universal "pause keys," it may be worth moving this elsewhere
+	public static final int[] pauseKeys = {Keyboard.KEY_TAB, Keyboard.KEY_RSHIFT};
+	
+	public static final int[] alphabetKeys = { Keyboard.KEY_Q, Keyboard.KEY_W, Keyboard.KEY_E, Keyboard.KEY_R,
 			Keyboard.KEY_T,Keyboard.KEY_Y,Keyboard.KEY_U,Keyboard.KEY_I,Keyboard.KEY_O,Keyboard.KEY_P,
 			Keyboard.KEY_A,Keyboard.KEY_S,Keyboard.KEY_D,Keyboard.KEY_F,Keyboard.KEY_G,Keyboard.KEY_H,
 			Keyboard.KEY_J,Keyboard.KEY_K,Keyboard.KEY_L,Keyboard.KEY_Z,Keyboard.KEY_X,Keyboard.KEY_C,
 			Keyboard.KEY_V,Keyboard.KEY_B,Keyboard.KEY_N,Keyboard.KEY_M };
 	
-	public static int[] numberKeys = { Keyboard.KEY_0, Keyboard.KEY_1, Keyboard.KEY_2, Keyboard.KEY_3, 
+	public static final int[] numberKeys = { Keyboard.KEY_0, Keyboard.KEY_1, Keyboard.KEY_2, Keyboard.KEY_3, 
 			Keyboard.KEY_4, Keyboard.KEY_5, Keyboard.KEY_6, Keyboard.KEY_7, Keyboard.KEY_8, Keyboard.KEY_9, 
 			Keyboard.KEY_NUMPAD0, Keyboard.KEY_NUMPAD1, Keyboard.KEY_NUMPAD2, Keyboard.KEY_NUMPAD3,
 			Keyboard.KEY_NUMPAD4, Keyboard.KEY_NUMPAD5, Keyboard.KEY_NUMPAD6, Keyboard.KEY_NUMPAD7,
 			Keyboard.KEY_NUMPAD8, Keyboard.KEY_NUMPAD9 };
 	
-	// TODO Create an array of integers representing the collection of symbol keys.
+	public static final int[] numPadKeys = { Keyboard.KEY_MULTIPLY, Keyboard.KEY_DIVIDE,
+			Keyboard.KEY_DECIMAL, Keyboard.KEY_ADD, Keyboard.KEY_SUBTRACT, Keyboard.KEY_NUMPAD0, 
+			Keyboard.KEY_NUMPAD1, Keyboard.KEY_NUMPAD2, Keyboard.KEY_NUMPAD3, Keyboard.KEY_NUMPAD4, 
+			Keyboard.KEY_NUMPAD5, Keyboard.KEY_NUMPAD6, Keyboard.KEY_NUMPAD7, Keyboard.KEY_NUMPAD8, 
+			Keyboard.KEY_NUMPAD9 };
+	
+	public static final int[] shiftKeys = { Keyboard.KEY_LSHIFT, Keyboard.KEY_RSHIFT };
+	
+	public static final int[] symbolKeys = { Keyboard.KEY_COMMA, Keyboard.KEY_PERIOD, Keyboard.KEY_SLASH, 
+			Keyboard.KEY_BACKSLASH, Keyboard.KEY_APOSTROPHE, Keyboard.KEY_SEMICOLON, Keyboard.KEY_LBRACKET,
+			Keyboard.KEY_RBRACKET, Keyboard.KEY_GRAVE, Keyboard.KEY_EQUALS, Keyboard.KEY_UNDERLINE, };	
 	
 	public static final int KEY_A = Keyboard.KEY_A;
 	public static final int KEY_D = Keyboard.KEY_D;
@@ -32,7 +44,7 @@ public class Kboard implements InputDevice {
 	public static final int KEY_W = Keyboard.KEY_W;		
 	public static final int KEY_GRAVE = Keyboard.KEY_GRAVE;
 	
-	private static Vector<Integer> lastKeyState = new Vector<Integer>();
+	private static final Vector<Integer> lastKeyState = new Vector<Integer>();
 	
 	/**
 	 * Accepts a key and, if pressed, returns true

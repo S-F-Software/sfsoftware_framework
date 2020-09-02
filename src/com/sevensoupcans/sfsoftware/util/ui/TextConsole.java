@@ -124,7 +124,9 @@ public class TextConsole implements UserInput
 			{
 				if(Kboard.keyPressed(i))
 				{
-					String text = Kboard.getKeyName(i);					
+					String text = Kboard.getKeyName(i);
+					if(!(Kboard.isKeyDown(Kboard.shiftKeys))) text = text.toLowerCase();
+					
 					userInputField.append(text);					
 				}
 			}
