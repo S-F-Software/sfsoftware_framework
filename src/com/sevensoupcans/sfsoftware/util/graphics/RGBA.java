@@ -1,5 +1,7 @@
 package com.sevensoupcans.sfsoftware.util.graphics;
 
+import java.awt.Color;
+
 import org.lwjgl.opengl.GL11;
 
 public class RGBA {
@@ -38,35 +40,61 @@ public class RGBA {
 		alpha = a;
 	}
 	
+	public void bind()
+	{
+		GL11.glColor4f(red, green, blue, alpha);
+	}
+	
 	@Override
 	public boolean equals(Object obj)
 	{
 		if(obj instanceof RGBA)
 		{
-			RGBA rgba = (RGBA) obj;
-			if(this.getRed() == rgba.getRed() && this.getGreen() == rgba.getGreen() && this.getBlue() == rgba.getBlue() && this.getAlpha() == rgba.getAlpha())
-			{
-				return true;
-			}
-			else
-			{
-				return false;
-			}
+			if(this.getHexValue().equalsIgnoreCase(((RGBA) obj).getHexValue())) return true;			
 		}
-		/*else if(obj instanceof Color)
+		else if(obj instanceof Color)
 		{
 			Color c = (Color) obj;
-			if(this.getRed() == c.r && this.getGreen() == c.g && this.getBlue() == c.b && this.getAlpha() == c.a)
-			{
-				return true;
-			}
-			else
-			{
-				return false;
-			}			
-		}*/
+			return (this.getRedInt() == c.getRed() && this.getGreenInt() == c.getGreen() &&
+					this.getBlueInt() == c.getBlue() &&	this.getAlphaInt() == c.getAlpha());
+		}
+		else if(obj instanceof String)
+		{
+			if(this.getHexValue().equalsIgnoreCase((String) obj)) return true;
+		}
 		
 		return false;
+	}
+	
+	public String getHexValue()
+	{
+		Color color = new Color(this.getRedInt(),this.getGreenInt(), this.getBlueInt());
+		StringBuffer hex = new StringBuffer(Integer.toHexString(color.getRGB() & 0xffffff));
+		while (hex.length() < 6)
+			hex.insert(0, "0");
+		
+		hex.insert(0, "#");	    
+	    return hex.toString();
+	}
+	
+	public byte getRedByte()
+	{
+		return (byte)(red * 127);
+	}
+	
+	public byte getGreenByte()
+	{
+		return (byte)(green * 127);
+	}
+	
+	public byte getBlueByte()
+	{
+		return (byte)(blue * 127);
+	}
+	
+	public byte getAlphaByte()
+	{
+		return (byte)(alpha * 127);
 	}
 	
 	public int getRedInt()
@@ -108,10 +136,22 @@ public class RGBA {
 	{
 		return alpha;
 	}	
-
-	public void bind()
-	{
-		GL11.glColor4f(red, green, blue, alpha);		
-	}
 	
+	@Override
+	public int hashCode() 
+	{
+		StringBuffer sb = new StringBuffer();
+		sb.append(this.getRedInt());
+		sb.append(this.getGreenInt());
+		sb.append(this.getBlueInt());
+		// Omit alpha channel as this would overflow the primitive int type
+		
+		return Integer.valueOf(sb.toString());
+	}	
+	
+	@Override
+	public String toString()
+	{
+		return this.getHexValue();
+	}
 }

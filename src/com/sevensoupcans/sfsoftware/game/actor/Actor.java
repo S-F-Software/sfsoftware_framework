@@ -38,8 +38,8 @@ public class Actor extends Sprite implements Collidable
 		setSrcY(srcY);
 		
 		this.associatedGame = associatedGame;
-		this.height = destHeight;
-		this.width = destWidth;			 		
+		this.setHeight(destHeight);
+		this.setWidth(destWidth);			 		
 		
 		// Do not add the Player to our cast vector as this vector is cleared with each new room
 		if(!(this instanceof Permanent))			
@@ -104,15 +104,12 @@ public class Actor extends Sprite implements Collidable
 	
 	protected int distanceToPoint(int x, int y)
 	{
-		// int myX = (int) (getX() + (getWidth() / 2));
-		// int myY = (int) (getY() + (getHeight() / 2));
-		
 		return (int) Math.sqrt((x - getCenterX()) * (x - getCenterX()) + (y - getCenterY()) * (y - getCenterY()));		
 	}	
 	
 	public void draw()
 	{
-		super.draw(width, height);
+		super.draw(getWidth(), getHeight());
 	}
 	
 	protected void generateParticles(int particleCount, float red, float green, float blue)
@@ -356,7 +353,7 @@ public class Actor extends Sprite implements Collidable
 	@Override
 	public String toString()
 	{
-		return "Actor \"" + tex + "\" @ " + (int) getX() + ", " + (int) getY();		
+		return "Actor \"" + this.getTexture() + "\" @ " + (int) getX() + ", " + (int) getY();		
 	}
 	
 	public static void updateCast()

@@ -1,11 +1,23 @@
 package com.sevensoupcans.sfsoftware.util.graphics;
 
-import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL11.GL_LINEAR;
+import static org.lwjgl.opengl.GL11.GL_NEAREST;
+import static org.lwjgl.opengl.GL11.GL_RGBA;
+import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
+import static org.lwjgl.opengl.GL11.GL_TEXTURE_MAG_FILTER;
+import static org.lwjgl.opengl.GL11.GL_TEXTURE_MIN_FILTER;
+import static org.lwjgl.opengl.GL11.GL_UNSIGNED_BYTE;
+import static org.lwjgl.opengl.GL11.glBindTexture;
+import static org.lwjgl.opengl.GL11.glGenTextures;
+import static org.lwjgl.opengl.GL11.glTexImage2D;
+import static org.lwjgl.opengl.GL11.glTexParameteri;
 
 import java.awt.image.BufferedImage;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.HashSet;
 
 import javax.imageio.ImageIO;
 
@@ -15,14 +27,38 @@ import com.sevensoupcans.sfsoftware.util.BufferUtils;
 
 public class Texture 
 {
-	private final int WIDTH;
+	private static final RGBA DEFAULT_TRANSPARENT_COLOR = new RGBA(1.0f, 0.0f, 1.0f);
+	private static HashMap <String, Texture> loadedTextures = new HashMap<String, Texture>();
+	
 	private final int HEIGHT;
+	private final String TEXTURE_NAME;
 	private final int TEXTURE_ID;
+	private final int WIDTH;
 	
 	private final RGBA TRANSPARENT_COLOR;
 	private final RGBA MASK_COLOR;
 	
-	public static final RGBA DEFAULT_TRANSPARENT_COLOR = new RGBA(1.0f, 0.0f, 1.0f);
+	private final HashSet<RGBA> colorPalette = new HashSet<RGBA>();
+	
+	public static RGBA getDefaultTransparentColor()
+	{
+		return DEFAULT_TRANSPARENT_COLOR;
+	}
+	
+    public static boolean isTextureLoaded(String textureName)
+    {
+    	return loadedTextures.containsKey(textureName);
+    }
+	
+	public static HashMap<String, Texture> getLoadedTextures()
+	{
+		return loadedTextures;
+	}
+	
+	public static Texture getTexture(String textureName)
+	{
+		return loadedTextures.get(textureName);
+	}
 	
 	public Texture(String path) throws FileNotFoundException, IOException
 	{
@@ -36,16 +72,23 @@ public class Texture
 	
 	public Texture(String path, RGBA transparentColor, RGBA maskColor) throws FileNotFoundException, IOException
 	{	
-		this(ImageIO.read(new FileInputStream(path)), transparentColor, maskColor);
+		this(ImageIO.read(new FileInputStream(path)), transparentColor,	maskColor, path);
 	}
 	
 	public Texture(BufferedImage image)
 	{
-		this(image, null, null);
+		this(image, null, null, null);
 	}
 	
-	public Texture(BufferedImage image, RGBA transparentColor, RGBA maskColor)
+	public Texture(BufferedImage image, String path)
 	{
+		this(image, null, null, path);
+	}	
+	
+	public Texture(BufferedImage image, RGBA transparentColor, RGBA maskColor, String path)
+	{
+		TEXTURE_NAME = generateTextureName(path, (maskColor != null));
+		
 		TRANSPARENT_COLOR = transparentColor;
 		MASK_COLOR = maskColor;
 		
@@ -77,6 +120,9 @@ public class Texture
 			}			
 			
 			data[i] = a << 24 | b << 16 | g << 8 | r;
+			
+			// Add the current R, G, B value to the texture's color palette HashSet
+			colorPalette.add(new RGBA(r, g, b));			
 		}
 		
 		TEXTURE_ID = glGenTextures();
@@ -85,6 +131,8 @@ public class Texture
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);		
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, WIDTH, HEIGHT, 0, GL_RGBA, GL_UNSIGNED_BYTE, BufferUtils.createIntBuffer(data));
 		glBindTexture(GL_TEXTURE_2D, 0);
+		
+		loadedTextures.put(TEXTURE_NAME, this);
 	}
 
 	public void bind()
@@ -92,9 +140,65 @@ public class Texture
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, getID());
 	}
 	
+	public boolean containsColor(RGBA rgba)
+	{
+		// Alpha is not stored in the color palette - a color value where alpha is 1.0f should be provided.
+		if(rgba.getAlpha() < 1.0f) return false;		
+		return (colorPalette.contains(rgba));
+	}
+	
+	public Texture destroy()
+	{
+		return loadedTextures.remove(this.getName());
+	}	
+	
+	private String generateTextureName(String path, boolean prependUnderscore)
+	{
+		if(path == null)
+			return "";
+		
+		String fileName = path.substring(path.lastIndexOf('/') + 1);
+		String textureName = fileName.substring(0, fileName.lastIndexOf(".")).trim();
+		
+		if(prependUnderscore)
+			textureName = "_" + textureName;
+				
+		if(isTextureLoaded(textureName))
+		{
+			int i = 1;
+			String s = textureName;
+			
+			/* If a texture with the specified name is already loaded, append a number until 
+			   we find one that isn't. */	
+			while(isTextureLoaded(s))
+			{
+				s = textureName + i;
+				i++;
+			}
+			textureName = s;
+		}			
+		
+		return textureName;			
+	}
+	
+	public int getColorCount()
+	{
+		return colorPalette.size();
+	}
+	
+	public RGBA[] getColorPalette()
+	{
+		return colorPalette.toArray(new RGBA[colorPalette.size()]);
+	}
+	
 	public int getHeight() 
 	{
 		return HEIGHT;
+	}
+	
+	public String getName()
+	{
+		return TEXTURE_NAME;
 	}
 	
 	public int getWidth() 
@@ -105,5 +209,5 @@ public class Texture
 	public int getID() 
 	{
 		return TEXTURE_ID;
-	}
+	}	
 }

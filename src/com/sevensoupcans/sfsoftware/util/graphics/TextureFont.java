@@ -269,7 +269,7 @@ public class TextureFont
 			if (currentChar < 256) {
 				intObject = charArray[currentChar];
 			} else {
-				intObject = (IntObject)customChars.get( new Character( (char) currentChar ) );
+				intObject = customChars.get( new Character( (char) currentChar ) );
 			}
 			
 			if( intObject != null )
@@ -339,7 +339,7 @@ public class TextureFont
 			if (charCurrent < 256) {
 				intObject = charArray[charCurrent];
 			} else {
-				intObject = (IntObject)customChars.get( new Character( (char) charCurrent ) );
+				intObject = customChars.get( new Character( (char) charCurrent ) );
 			} 
 			
 			if( intObject != null ) {

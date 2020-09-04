@@ -41,7 +41,7 @@ public abstract class Graphics
 	private static int displayWidth = 0;
 	//private static int currentShader;
 	public static int shaderProgram;
-	private static HashMap <String, Texture> texture = new HashMap<String, Texture>();
+	//private static HashMap <String, Texture> texture = new HashMap<String, Texture>();
 	private static String[] maskTextures;	
 	@SuppressWarnings("unused")
 	private static HashMap <String, Integer> shaders = new HashMap<String, Integer>();
@@ -125,9 +125,10 @@ public abstract class Graphics
     	}
     }	
 	
+    @Deprecated
     public static boolean isTextureLoaded(String textureName)
     {
-    	return texture.containsKey(textureName);
+    	return Texture.isTextureLoaded(textureName);
     }
     
     public static void destroy()
@@ -464,16 +465,10 @@ public abstract class Graphics
 		return 0;
 	}	
 	
-	@SuppressWarnings("unused")
-	private static int getTextureId(Texture texture)
-	{
-		int id = texture.getID();
-		return id;
-	}
-	
+	@Deprecated
 	public static Texture getTexture(String textureName)
 	{
-		return texture.get(textureName);
+		return Texture.getTexture(textureName);
 	}
 	
 	/**
@@ -665,33 +660,29 @@ public abstract class Graphics
 			   {				   	
 					files = listOfFiles[i];
 					if (files.endsWith("." + filetype.toLowerCase()) || files.endsWith("." + filetype.toUpperCase()))
-					{	
-						Texture temp = null;
+					{							
 						String textureName = files.substring(0, files.lastIndexOf(".")).trim();
 						
 						if(transparentColor != null)
 						{
-							temp = new Texture(texturePath + "/" + files, transparentColor);
+							new Texture(texturePath + "/" + files, transparentColor);
 						}
 						else
 						{
-							temp = new Texture(texturePath + "/" + files);
+							new Texture(texturePath + "/" + files);
 						}
 												
 						if(maskTextures.length > 0 && (Arrays.asList(maskTextures)).contains(textureName))
-						{
-							Texture maskTemp = null;
-							String maskTextureName = "_" + textureName;
-							maskTemp = new Texture(texturePath + "/" + files, transparentColor, Graphics.WHITE);
-							texture.put(maskTextureName, maskTemp);
+						{							
+							String maskTextureName = "_" + textureName;							
+							new Texture(texturePath + "/" + files, transparentColor, Graphics.WHITE);							
 							
 							if(verbose)
 							{
 								System.out.println("Loaded texture '" + maskTextureName + "'");
 							}							
 						}
-						
-						texture.put(textureName, temp);				           
+										           
 						if(verbose)
 						{
 							System.out.println("Loaded texture '" + textureName + "'");
@@ -704,7 +695,7 @@ public abstract class Graphics
 			e.printStackTrace();
 		}	
 		
-		return texture;
+		return Texture.getLoadedTextures();
 	}
 	
 	/*	Thanks for this one goes out to
