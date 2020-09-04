@@ -345,7 +345,9 @@ public class TextureFont
 			if( intObject != null ) {
 				if ((i >= startIndex) || (i <= endIndex)) 
 				{
-					Graphics.drawTexture((x + totalwidth), y, fontTexture, intObject.width, intObject.height, intObject.storedX, intObject.storedY, intObject.width, intObject.height, color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha(), 0);
+					Texture.drawTexture((x + totalwidth), y, fontTexture, intObject.width, intObject.height, 
+							intObject.storedX, intObject.storedY, intObject.width, intObject.height, 
+							color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha(), 0);
 				}
 				totalwidth += intObject.width;
 			}

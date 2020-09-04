@@ -25,15 +25,7 @@ import com.sevensoupcans.sfsoftware.util.resources.FileUtils;
 
 public abstract class Graphics 
 {
-	public static final RGBA RED = new RGBA(1.0f, 0.0f, 0.0f, 1.0f);
-	public static final RGBA GREEN = new RGBA(0.0f, 1.0f, 0.0f, 1.0f);
-	public static final RGBA BLUE = new RGBA(0.0f, 0.0f, 1.0f, 1.0f);
-	public static final RGBA CYAN = new RGBA(0.0f, 1.0f, 1.0f, 1.0f);
-	public static final RGBA YELLOW = new RGBA(1.0f, 1.0f, 0.0f, 1.0f);
-	public static final RGBA WHITE = new RGBA(1.0f, 1.0f, 1.0f, 1.0f);
-	public static final RGBA BLACK = new RGBA(0.0f, 0.0f, 0.0f, 1.0f);	
-	public static final RGBA DEFAULT_TRANSPARENT_COLOR = new RGBA(1.0f, 0.0f, 1.0f, 1.0f);
-	public static final String GRAPHICS_FILE_PATH = "res/graphics";
+	public static final String DEFAULT_GRAPHICS_FILE_PATH = "res/graphics";
 	
 	private static boolean verbose = false;
 	//private static boolean useShader = false;
@@ -41,33 +33,12 @@ public abstract class Graphics
 	private static int displayWidth = 0;
 	//private static int currentShader;
 	public static int shaderProgram;
-	//private static HashMap <String, Texture> texture = new HashMap<String, Texture>();
 	private static String[] maskTextures;	
-	@SuppressWarnings("unused")
 	private static HashMap <String, Integer> shaders = new HashMap<String, Integer>();
 	
-	private static long window;
-	
-	// FrameBuffer Object Related	
-	private static FrameBuffer displayBuffer;
+	private static long window;	
+	private static FrameBuffer primaryDisplayBuffer;
 	//private static int currentBufferID = 0;
-	
-	/**
-	* Get the closest greater power of 2 to the fold number
-	* 
-	* @param fold The target number
-	* @return The power of 2
-	*/
-	@SuppressWarnings("unused")
-	private static int get2Fold(int fold) 
-	{
-		int ret = 2;
-		while (ret < fold) 
-		{
-			ret *= 2;
-		}
-		return ret;
-	}
 	
 	public static long getWindow()
 	{
@@ -99,8 +70,7 @@ public abstract class Graphics
      * 	With the exception of syntax, setting up vertex and fragment shaders
      * 	is the same.
      * 	@param the name and path to the vertex shader
-    */
-    @SuppressWarnings("unused")
+    */    
 	private static int createShader(String filename, int shaderType) throws Exception 
     {
     	int shader = 0;
@@ -123,12 +93,6 @@ public abstract class Graphics
     		ARBShaderObjects.glDeleteObjectARB(shader);
     		throw exc;
     	}
-    }	
-	
-    @Deprecated
-    public static boolean isTextureLoaded(String textureName)
-    {
-    	return Texture.isTextureLoaded(textureName);
     }
     
     public static void destroy()
@@ -204,7 +168,7 @@ public abstract class Graphics
 
 	public static void drawDisplayBuffer(int x, int y, int width, int height)
 	{
-		drawDisplayBuffer(displayBuffer, x, y, width, height);
+		drawDisplayBuffer(primaryDisplayBuffer, x, y, width, height);
 	}
 	
 	public static void drawDisplayBuffer(FrameBuffer fb, int x, int y, int width, int height)
@@ -307,7 +271,8 @@ public abstract class Graphics
 		drawQuad(x + thickness, y + (height - thickness), width - thickness, thickness, r, g, b, a);				
 	}
 	
-	public static void drawSprite(float x, float y, String textureName, int width, int height, int srcX, int srcY, int srcWidth, int srcHeight)
+	public static void drawSprite(float x, float y, String textureName, int width, int height, int srcX, int srcY, 
+			int srcWidth, int srcHeight)
 	{
 		drawSprite(x,y,textureName,width,height,srcX,srcY,srcWidth,srcHeight, 1, 1, 1, 1);
 	}
@@ -315,12 +280,14 @@ public abstract class Graphics
 	/**
 	 * draw a quad with the image on it
 	 */
-	public static void drawSprite(float x, float y, String textureName, int width, int height, int srcX, int srcY, int srcWidth, int srcHeight, float red, float green, float blue, float alpha) 
+	public static void drawSprite(float x, float y, String textureName, int width, int height, int srcX, int srcY, 
+			int srcWidth, int srcHeight, float red, float green, float blue, float alpha) 
 	{
 		drawSprite(x, y, textureName, width, height, srcX, srcY, srcWidth, srcHeight, red, green, blue, alpha, 0);
 	}
 	
-	public static void drawSprite(float x, float y, Texture texture, int width, int height, int srcX, int srcY, int srcWidth, int srcHeight, float red, float green, float blue, float alpha, float angle)
+	public static void drawSprite(float x, float y, Texture texture, int width, int height, int srcX, int srcY, 
+			int srcWidth, int srcHeight, float red, float green, float blue, float alpha, float angle)
 	{
 		// Bind the current texture to the current shader if one is in use.
 		/*if(useShader)
@@ -367,12 +334,13 @@ public abstract class Graphics
 	/**
 	 * draw a quad with the image on it - accept float for rotation!
 	 */
-	public static void drawSprite(float x, float y, String textureName, int width, int height, int srcX, int srcY, int srcWidth, int srcHeight, float red, float green, float blue, float alpha, float angle) 
+	public static void drawSprite(float x, float y, String textureName, int width, int height, int srcX, int srcY, 
+			int srcWidth, int srcHeight, float red, float green, float blue, float alpha, float angle) 
 	{		
 		// If the provided texture string is null or empty, don't try to draw it. :)
 		if(textureName != null && !(textureName.equals("")))
 		{			
-			Texture temp = getTexture(textureName);
+			Texture temp = Texture.getTexture(textureName);
 			if(temp == null)
 			{
 				if(verbose)
@@ -394,81 +362,14 @@ public abstract class Graphics
 			}
 			else
 			{
-				drawTexture(x, y, temp, width, height, srcX, srcY, srcWidth, srcHeight, red, green, blue, alpha, angle);
+				Texture.drawTexture(x, y, temp, width, height, srcX, srcY, srcWidth, srcHeight, red, green, blue, alpha, angle);
 			}			
 		}
-	}
-
-	/**
-	 * draw a quad with the image on it - accept float for rotation!
-	 */
-	public static void drawTexture(float x, float y, Texture texture, int width, int height, int srcX, int srcY, int srcWidth, int srcHeight, float red, float green, float blue, float alpha, float angle) 
-	{		
-		// If the provided texture string is null or empty, don't try to draw it. :)
-		if(texture != null)
-		{										
-			// Bind the current texture to the current shader if one is in use.
-			/*if(useShader)
-			{
-				setShaderUniform(currentShader, "texture", getTextureId(texture));
-			}*/
-			
-			texture.bind();
-			
-			float fSrcX = ((float)srcX / texture.getWidth());
-			float fSrcY = ((float)srcY / texture.getHeight());
-			float fSrcWidth = (((float)srcX + (float)srcWidth) / texture.getWidth());
-			float fSrcHeight = (((float)srcY + (float)srcHeight) / texture.getHeight());			
-			
-			GL11.glPushMatrix();			
-							
-			// Rotation works! 1/4/14
-			if(angle != 0)
-			{
-				GL11.glTranslatef(x + (width / 2), y + (height / 2), 0); // move to the proper position
-				GL11.glRotatef(angle, 0, 0, 1); // now rotate
-				GL11.glTranslatef(-1 *(x+ (width / 2)), -1 * (y+(height  / 2)), 0);				
-			}
-			
-			GL11.glColor4f(red, green, blue, alpha);
-			GL11.glBegin(GL11.GL_QUADS);
-				// Top Left
-				GL11.glTexCoord2f(fSrcX, fSrcY);
-				GL11.glVertex2f(x,y);
-				// Top Right
-				GL11.glTexCoord2f(fSrcWidth, fSrcY);
-				GL11.glVertex2f(x + width, y);
-				// Bottom Right
-				GL11.glTexCoord2f(fSrcWidth,fSrcHeight);
-				GL11.glVertex2f(x + width,y + height);
-				// Bottom Left
-				GL11.glTexCoord2f(fSrcX,fSrcHeight);
-				GL11.glVertex2f(x,y + height);
-			GL11.glEnd();
-			
-			GL11.glPopMatrix();
-		}			
 	}	
 	
 	public static boolean isCloseRequested()
 	{
 		return Display.isCloseRequested();
-	}
-	
-	public static int getWindowHeight()
-	{
-		return 0;
-	}
-	
-	public static int getWindowWidth()
-	{
-		return 0;
-	}	
-	
-	@Deprecated
-	public static Texture getTexture(String textureName)
-	{
-		return Texture.getTexture(textureName);
 	}
 	
 	/**
@@ -519,7 +420,7 @@ public abstract class Graphics
 		}
 		else 
 		{			
-			displayBuffer = new FrameBuffer(width, height);
+			primaryDisplayBuffer = new FrameBuffer(width, height);
 		}
 		
 		try 
@@ -592,28 +493,7 @@ public abstract class Graphics
 	    } catch (LWJGLException e) {
 	        System.out.println("Unable to setup mode "+width+"x"+height+" fullscreen="+fullscreen + e);
 	    }
-	}			
-	
-	/*	Thanks for this one goes out to
-	/	http://www.thehelper.net/threads/java-lwjgl-opengl-display-seticon-question.156958/
-	*/
-	//TODO Rewrite
-	/*private static ByteBuffer loadIcon(String path) throws IOException 
-	{
-        InputStream inputStream = ResourceLoader.getResourceAsStream(path); //new FileInputStream(path);
-        try 
-        {
-            PNGDecoder decoder = new PNGDecoder(inputStream);
-            ByteBuffer bytebuf = ByteBuffer.allocateDirect(decoder.getWidth()*decoder.getHeight()*4);
-            decoder.decode(bytebuf, decoder.getWidth()*4, PNGDecoder.Format.RGBA);
-            bytebuf.flip();
-            return bytebuf;
-        } 
-        finally 
-        {
-            inputStream.close();
-        }
-    }*/	
+	}	
 	
 	public static void loadShaders() throws Exception
 	{
@@ -636,7 +516,7 @@ public abstract class Graphics
 	
 	public static HashMap<String, Texture> loadTextures(Class<?> invokingClass)
 	{
-		return loadTextures(GRAPHICS_FILE_PATH, invokingClass);
+		return loadTextures(DEFAULT_GRAPHICS_FILE_PATH, invokingClass);
 	}
 
 	public static HashMap<String, Texture> loadTextures(String texturePath, Class<?> invokingClass)
@@ -675,7 +555,7 @@ public abstract class Graphics
 						if(maskTextures.length > 0 && (Arrays.asList(maskTextures)).contains(textureName))
 						{							
 							String maskTextureName = "_" + textureName;							
-							new Texture(texturePath + "/" + files, transparentColor, Graphics.WHITE);							
+							new Texture(texturePath + "/" + files, transparentColor, RGBA.WHITE);							
 							
 							if(verbose)
 							{
@@ -749,89 +629,7 @@ public abstract class Graphics
 		
 		currentShader = programId;
 		ARBShaderObjects.glUseProgramObjectARB(programId);		
-	}*/
-	
-	/**
-	 * Set the display mode to be used 
-	 * 
-	 * @param width The width of the display required
-	 * @param height The height of the display required
-	 * @param fullscreen True if we want fullscreen mode
-	 */
-	/*public static void setDisplayMode(int width, int height, boolean fullscreen) 
-	{
-
-	    // return if requested DisplayMode is already set
-	    if ((Display.getDisplayMode().getWidth() == width) && 
-	        (Display.getDisplayMode().getHeight() == height) && 
-		(Display.isFullscreen() == fullscreen)) {
-		    return;
-	    }
-
-	    try {
-	        DisplayMode targetDisplayMode = null;
-			
-		if (fullscreen) {
-		    DisplayMode[] modes = Display.getAvailableDisplayModes();
-		    int freq = 0;
-					
-		    for (int i=0;i<modes.length;i++) {
-		        DisplayMode current = modes[i];
-						
-			if ((current.getWidth() == width) && (current.getHeight() == height)) {
-			    if ((targetDisplayMode == null) || (current.getFrequency() >= freq)) {
-			        if ((targetDisplayMode == null) || (current.getBitsPerPixel() > targetDisplayMode.getBitsPerPixel())) {
-				    targetDisplayMode = current;
-				    freq = targetDisplayMode.getFrequency();
-	                        }
-	                    }
-
-			    // if we've found a match for bpp and frequence against the 
-			    // original display mode then it's probably best to go for this one
-			    // since it's most likely compatible with the monitor
-			    if ((current.getBitsPerPixel() == Display.getDesktopDisplayMode().getBitsPerPixel()) &&
-	                        (current.getFrequency() == Display.getDesktopDisplayMode().getFrequency())) {
-	                            targetDisplayMode = current;
-	                            break;
-	                    }
-	                }
-	            }
-	        } else {
-	            targetDisplayMode = new DisplayMode(width,height);
-	        }
-
-	        if (targetDisplayMode == null) {
-	            System.out.println("Failed to find value mode: "+width+"x"+height+" fs="+fullscreen);
-	            return;
-	        }
-
-	        Display.setDisplayMode(targetDisplayMode);
-	        Display.setFullscreen(fullscreen);
-				
-	    } catch (LWJGLException e) {
-	        System.out.println("Unable to setup mode "+width+"x"+height+" fullscreen="+fullscreen + e);
-	    }
 	}*/	
-	
-	/**
-	 * Sets the display icons from two file paths provided.
-	 * 
-	 * @param icon16	16x16 version of the app icon
-	 * @param icon32	32x32 verison of the app icon
-	 */
-	// TODO Rewrite
-	/*public static void setAppIcon(String icon16, String icon32)
-	{ 
-		try 
-		{
-			Display.setIcon(new ByteBuffer[] {loadIcon(icon16), loadIcon(icon32)});
-		} 
-		catch (IOException e) 
-		{		
-			e.printStackTrace();
-		}		
-		
-	}*
 
 	/**
 	 * Sets the buffer to draw to - 0 is the main buffer.
@@ -845,25 +643,7 @@ public abstract class Graphics
 	{
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
 		GL30.glBindFramebuffer(GL30.GL_FRAMEBUFFER, bufferId);
-		//glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, bufferId);
-		//GL11.glPopAttrib();
-
-		//GL11.glPushAttrib(GL11.GL_VIEWPORT_BIT);
-		//GL11.glViewport(0, 0, bufferWidth, bufferHeight);
-		
-		//GL11.glEnable(GL11.GL_TEXTURE_2D);		           
- 
-        // enable alpha blending
-        //GL11.glEnable(GL11.GL_BLEND);
-        //GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
- 
         GL11.glViewport(0, 0, bufferWidth, bufferHeight);
-		//GL11.glMatrixMode(GL11.GL_MODELVIEW);
- 
-		//GL11.glMatrixMode(GL11.GL_PROJECTION);
-		//GL11.glLoadIdentity();
-		//GL11.glOrtho(0, bufferWidth, bufferHeight, 0, 1, -1);
-		//GL11.glMatrixMode(GL11.GL_MODELVIEW);
 		
 		if(clearBuffer)
 			Graphics.clear();	
@@ -922,18 +702,6 @@ public abstract class Graphics
 	{		
 		int attributeLoc = ARBShaderObjects.glGetUniformLocationARB(programId, attribute);
 		ARBShaderObjects.glUniform1iARB(attributeLoc, value);			
-	}*/
-	
-	/**
-	 * Returns a String containing information about the supplied DisplayMode object
-	 * 
-	 * @param d
-	 * @return
-	 */
-	/*public static String getDisplayModeInfo(DisplayMode d)
-	{
-		String s = d.getWidth() + "x" + d.getHeight() + " [" + d.getFrequency() + "] " + d.getBitsPerPixel();
-		return s;
 	}*/
 	
     private static String getLogInfo(int obj) 
@@ -997,9 +765,9 @@ public abstract class Graphics
         return source.toString();
     }
 
-    public static FrameBuffer getDisplayBuffer()
+    public static FrameBuffer getPrimaryDisplayBuffer()
     {
-    	return displayBuffer; //.getFrameBufferId()
+    	return primaryDisplayBuffer; //.getFrameBufferId()
     }
     
     public static boolean isFullScreen()

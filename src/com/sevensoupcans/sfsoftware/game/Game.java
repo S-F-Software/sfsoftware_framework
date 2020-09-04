@@ -190,7 +190,7 @@ public abstract class Game
 			
 			loadingText.add("Loading textures...");
 			drawLoadingScreen(loadingText, loadingFont);		
-			Graphics.loadTextures(getClassOriginPath() + Graphics.GRAPHICS_FILE_PATH, "png", this.getClass());
+			Graphics.loadTextures(getClassOriginPath() + Graphics.DEFAULT_GRAPHICS_FILE_PATH, "png", this.getClass());
 			
 			loadingText.add("Loading audio...");
 			drawLoadingScreen(loadingText, loadingFont);

@@ -40,6 +40,57 @@ public class Texture
 	
 	private final HashSet<RGBA> colorPalette = new HashSet<RGBA>();
 	
+	/**
+	 * Draw a quad with the image on it - accept float for rotation!
+	 */
+	public static void drawTexture(float x, float y, Texture texture, int width, int height, int srcX, int srcY, int srcWidth, int srcHeight, float red, float green, float blue, float alpha, float angle) 
+	{		
+		// If the provided texture string is null or empty, don't try to draw it. :)
+		if(texture != null)
+		{										
+			// Bind the current texture to the current shader if one is in use.
+			/*if(useShader)
+			{
+				setShaderUniform(currentShader, "texture", getTextureId(texture));
+			}*/
+			
+			texture.bind();
+			
+			float fSrcX = ((float)srcX / texture.getWidth());
+			float fSrcY = ((float)srcY / texture.getHeight());
+			float fSrcWidth = (((float)srcX + (float)srcWidth) / texture.getWidth());
+			float fSrcHeight = (((float)srcY + (float)srcHeight) / texture.getHeight());			
+			
+			GL11.glPushMatrix();			
+							
+			// Rotation works! 1/4/14
+			if(angle != 0)
+			{
+				GL11.glTranslatef(x + (width / 2), y + (height / 2), 0); // move to the proper position
+				GL11.glRotatef(angle, 0, 0, 1); // now rotate
+				GL11.glTranslatef(-1 *(x+ (width / 2)), -1 * (y+(height  / 2)), 0);				
+			}
+			
+			GL11.glColor4f(red, green, blue, alpha);
+			GL11.glBegin(GL11.GL_QUADS);
+				// Top Left
+				GL11.glTexCoord2f(fSrcX, fSrcY);
+				GL11.glVertex2f(x,y);
+				// Top Right
+				GL11.glTexCoord2f(fSrcWidth, fSrcY);
+				GL11.glVertex2f(x + width, y);
+				// Bottom Right
+				GL11.glTexCoord2f(fSrcWidth,fSrcHeight);
+				GL11.glVertex2f(x + width,y + height);
+				// Bottom Left
+				GL11.glTexCoord2f(fSrcX,fSrcHeight);
+				GL11.glVertex2f(x,y + height);
+			GL11.glEnd();
+			
+			GL11.glPopMatrix();
+		}			
+	}	
+	
 	public static RGBA getDefaultTransparentColor()
 	{
 		return DEFAULT_TRANSPARENT_COLOR;
@@ -150,7 +201,14 @@ public class Texture
 	public Texture destroy()
 	{
 		return loadedTextures.remove(this.getName());
-	}	
+	}
+	
+	public void draw(float x, float y, int width, int height, int srcX, int srcY, 
+			int srcWidth, int srcHeight, float red, float green, float blue, float alpha, float angle)
+	{
+		drawTexture(x, y, this, width, height, srcX, srcY, srcWidth, srcHeight, 
+				red, green, blue, alpha, angle);
+	}
 	
 	private String generateTextureName(String path, boolean prependUnderscore)
 	{

@@ -5,6 +5,15 @@ import java.awt.Color;
 import org.lwjgl.opengl.GL11;
 
 public class RGBA {
+	
+	public static final RGBA RED = new RGBA(1.0f, 0.0f, 0.0f, 1.0f);
+	public static final RGBA GREEN = new RGBA(0.0f, 1.0f, 0.0f, 1.0f);
+	public static final RGBA BLUE = new RGBA(0.0f, 0.0f, 1.0f, 1.0f);
+	public static final RGBA CYAN = new RGBA(0.0f, 1.0f, 1.0f, 1.0f);
+	public static final RGBA YELLOW = new RGBA(1.0f, 1.0f, 0.0f, 1.0f);
+	public static final RGBA WHITE = new RGBA(1.0f, 1.0f, 1.0f, 1.0f);
+	public static final RGBA BLACK = new RGBA(0.0f, 0.0f, 0.0f, 1.0f);	
+	
 	private float red = 1;
 	private float green = 1;
 	private float blue = 1;
