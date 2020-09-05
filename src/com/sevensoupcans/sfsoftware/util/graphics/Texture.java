@@ -29,8 +29,11 @@ public class Texture
 {
 	private static final RGBA DEFAULT_TRANSPARENT_COLOR = new RGBA(1.0f, 0.0f, 1.0f);
 	private static HashMap <String, Texture> loadedTextures = new HashMap<String, Texture>();
-	
+		
 	private final int HEIGHT;
+	private final int[] PIXEL_DATA;
+	private final int[] INT_BUFFER_SRC;
+	private final String ORIGIN_PATH;
 	private final String TEXTURE_NAME;
 	private final int TEXTURE_ID;
 	private final int WIDTH;
@@ -138,24 +141,24 @@ public class Texture
 	
 	public Texture(BufferedImage image, RGBA transparentColor, RGBA maskColor, String path)
 	{
-		TEXTURE_NAME = generateTextureName(path, (maskColor != null));
-		
+		ORIGIN_PATH = path;
+		TEXTURE_NAME = generateTextureName(path, (maskColor != null));		
 		TRANSPARENT_COLOR = transparentColor;
 		MASK_COLOR = maskColor;
 		
 		WIDTH = image.getWidth();
 		HEIGHT = image.getHeight();
 		
-		int[] pixels = new int[WIDTH * HEIGHT];
-		image.getRGB(0, 0, WIDTH, HEIGHT, pixels, 0, WIDTH);
+		PIXEL_DATA = new int[WIDTH * HEIGHT];
+		image.getRGB(0, 0, WIDTH, HEIGHT, PIXEL_DATA, 0, WIDTH);
 		
-		int[] data = new int[WIDTH * HEIGHT];
+		INT_BUFFER_SRC = new int[WIDTH * HEIGHT];
 		for (int i = 0; i < (WIDTH * HEIGHT) ; i++ )
 		{
-			int a = (pixels[i] & 0xff000000) >> 24;
-			int r = (pixels[i] & 0xff0000) >> 16;
-			int g = (pixels[i] & 0xff00) >> 8;
-			int b = (pixels[i] & 0xff);
+			int a = (PIXEL_DATA[i] & 0xff000000) >> 24;
+			int r = (PIXEL_DATA[i] & 0xff0000) >> 16;
+			int g = (PIXEL_DATA[i] & 0xff00) >> 8;
+			int b = (PIXEL_DATA[i] & 0xff);
 			
 			// If a "transparent color" is being used, we check the current pixel to determine if it matches and set alpha to 0.
 			if(TRANSPARENT_COLOR != null && r == TRANSPARENT_COLOR.getRedInt() && g == TRANSPARENT_COLOR.getGreenInt() && b == TRANSPARENT_COLOR.getBlueInt())
@@ -167,10 +170,9 @@ public class Texture
 				r = MASK_COLOR.getRedInt();
 				g = MASK_COLOR.getGreenInt();
 				b = MASK_COLOR.getBlueInt();
-				//a = 255;
 			}			
 			
-			data[i] = a << 24 | b << 16 | g << 8 | r;
+			INT_BUFFER_SRC[i] = a << 24 | b << 16 | g << 8 | r;
 			
 			// Add the current R, G, B value to the texture's color palette HashSet
 			colorPalette.add(new RGBA(r, g, b));			
@@ -180,7 +182,7 @@ public class Texture
 		glBindTexture(GL_TEXTURE_2D, TEXTURE_ID);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);//GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);		
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, WIDTH, HEIGHT, 0, GL_RGBA, GL_UNSIGNED_BYTE, BufferUtils.createIntBuffer(data));
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, WIDTH, HEIGHT, 0, GL_RGBA, GL_UNSIGNED_BYTE, BufferUtils.createIntBuffer(INT_BUFFER_SRC));
 		glBindTexture(GL_TEXTURE_2D, 0);
 		
 		loadedTextures.put(TEXTURE_NAME, this);
@@ -259,6 +261,16 @@ public class Texture
 		return TEXTURE_NAME;
 	}
 	
+	public String getOriginalFilename()
+	{
+		return ORIGIN_PATH.substring(ORIGIN_PATH.lastIndexOf('/') + 1);
+	}
+	
+	public String getOriginalFilePath()
+	{
+		return ORIGIN_PATH.substring(0, ORIGIN_PATH.lastIndexOf('/') + 1);
+	}
+	
 	public int getWidth() 
 	{
 		return WIDTH;
@@ -267,5 +279,65 @@ public class Texture
 	public int getID() 
 	{
 		return TEXTURE_ID;
-	}	
+	}
+	
+	public void swapColors(RGBA[] colorsToReplace, RGBA[] replacementColors)
+	{
+		if(colorsToReplace.length != replacementColors.length) return;
+		
+		// Clear the color palette completely - easiest solution is just to re-add as we scan through
+		colorPalette.clear();
+		
+		for (int i = 0; i < (WIDTH * HEIGHT) ; i++ )
+		{
+			int a = (PIXEL_DATA[i] & 0xff000000) >> 24;
+			int r = (PIXEL_DATA[i] & 0xff0000) >> 16;
+			int g = (PIXEL_DATA[i] & 0xff00) >> 8;
+			int b = (PIXEL_DATA[i] & 0xff);
+
+			// If a "transparent color" is being used, we check the current pixel to determine if it matches and set alpha to 0.
+			if(TRANSPARENT_COLOR != null && r == TRANSPARENT_COLOR.getRedInt() && g == TRANSPARENT_COLOR.getGreenInt() && b == TRANSPARENT_COLOR.getBlueInt())
+			{
+				a = 0;				
+			}
+			else if(MASK_COLOR != null)
+			{
+				r = MASK_COLOR.getRedInt();
+				g = MASK_COLOR.getGreenInt();
+				b = MASK_COLOR.getBlueInt();
+			}
+			
+			for(int j = 0; j < colorsToReplace.length; j++)
+			{				
+				if(r == colorsToReplace[j].getRedInt() && 
+						g == colorsToReplace[j].getGreenInt() && 
+						b == colorsToReplace[j].getBlueInt())
+				{
+					r = replacementColors[j].getRedInt();
+					g = replacementColors[j].getGreenInt();
+					b = replacementColors[j].getBlueInt();
+					a = replacementColors[j].getAlphaInt();
+				}
+			}
+			
+			INT_BUFFER_SRC[i] = a << 24 | b << 16 | g << 8 | r;
+			
+			// Add the current R, G, B value to the texture's color palette HashSet
+			colorPalette.add(new RGBA(r, g, b));			
+		}
+				
+		glBindTexture(GL_TEXTURE_2D, TEXTURE_ID);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);		
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, WIDTH, HEIGHT, 0, GL_RGBA, GL_UNSIGNED_BYTE, BufferUtils.createIntBuffer(INT_BUFFER_SRC));
+		glBindTexture(GL_TEXTURE_2D, 0);		
+	}
+	
+	public void swapColor(RGBA colorToReplace, RGBA replacementColor)
+	{
+		RGBA[] colorsToReplace = { colorToReplace };
+		RGBA[] replacementColors = { replacementColor };
+		
+		swapColors(colorsToReplace, replacementColors);
+	}
 }
