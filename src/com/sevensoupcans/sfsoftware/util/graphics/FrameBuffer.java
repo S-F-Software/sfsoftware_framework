@@ -98,20 +98,22 @@ public class FrameBuffer
 	public void draw(int x, int y, int width, int height, int srcX, int srcY, int srcWidth, 
 			int srcHeight, float red, float green, float blue, float alpha)
 	{
-		GL11.glPushMatrix();
+		GL11.glPushMatrix();		
+		
 		GL11.glMatrixMode(GL11.GL_PROJECTION);
 		GL11.glLoadIdentity();
 		GL11.glOrtho(0, Display.getWidth(), Display.getHeight(), 0, 1, -1);
 		GL11.glViewport(0, 0, Display.getWidth(), Display.getHeight());
 		GL11.glMatrixMode(GL11.GL_MODELVIEW);
-		GL11.glLoadIdentity();
+		GL11.glLoadIdentity();					
+		
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
 				
 		int attributeLoc = ARBShaderObjects.glGetUniformLocationARB(currentShader, "texture");
 		ARBShaderObjects.glUseProgramObjectARB(currentShader);								
-		ARBShaderObjects.glUniform1iARB(attributeLoc, getTextureId());				
+		ARBShaderObjects.glUniform1iARB(attributeLoc, getTextureId());						
 		
-		GL11.glBindTexture(GL11.GL_TEXTURE_2D, getTextureId()); 
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, getTextureId());
 		
 		float fSrcX = ((float)srcX / getWidth());
 		float fSrcY = ((float)srcY / getHeight());
@@ -144,7 +146,7 @@ public class FrameBuffer
 		GL11.glPopMatrix();	
 		GL11.glPopAttrib();
 		
-		ARBShaderObjects.glUseProgramObjectARB(0);
+		ARBShaderObjects.glUseProgramObjectARB(0);		
 	}
 	
 	public int getDepthBufferId()

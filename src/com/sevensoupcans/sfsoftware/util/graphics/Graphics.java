@@ -11,7 +11,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 
 import org.lwjgl.LWJGLException;
-import org.lwjgl.opengl.ARBShaderObjects;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
@@ -38,7 +37,13 @@ public abstract class Graphics
 	
 	private static long window;	
 	private static FrameBuffer primaryDisplayBuffer;
+	private static FrameBuffer currentDisplayBuffer;
 	//private static int currentBufferID = 0;
+	
+	public static FrameBuffer getCurrentDisplayBuffer()
+	{
+		return currentDisplayBuffer;
+	}
 	
 	public static long getWindow()
 	{
@@ -63,37 +68,6 @@ public abstract class Graphics
 		GL11.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 	}
-	
-    /*
-     * 	http://lwjgl.org/wiki/index.php?title=GLSL_Shaders_with_LWJGL example!
-     * 
-     * 	With the exception of syntax, setting up vertex and fragment shaders
-     * 	is the same.
-     * 	@param the name and path to the vertex shader
-    */    
-	private static int createShader(String filename, int shaderType) throws Exception 
-    {
-    	int shader = 0;
-    	try 
-    	{
-	        shader = ARBShaderObjects.glCreateShaderObjectARB(shaderType);
-	        
-	        if(shader == 0)
-	        	return 0;
-	        
-	        ARBShaderObjects.glShaderSourceARB(shader, readFileAsString(filename));
-	        ARBShaderObjects.glCompileShaderARB(shader);
-	        
-	        if (ARBShaderObjects.glGetObjectParameteriARB(shader, ARBShaderObjects.GL_OBJECT_COMPILE_STATUS_ARB) == GL11.GL_FALSE)
-	            throw new RuntimeException("Error creating shader: " + getLogInfo(shader));
-	        
-	        return shader;
-    	}
-    	catch(Exception exc) {
-    		ARBShaderObjects.glDeleteObjectARB(shader);
-    		throw exc;
-    	}
-    }
     
     public static void destroy()
     {
@@ -655,7 +629,7 @@ public abstract class Graphics
 	 * @param clearBuffer
 	 */
 	public static void setBuffer(FrameBuffer fbo, boolean clearBuffer)
-	{
+	{		
 		if(fbo != null)
 		{
 			setBuffer(fbo.getId(), fbo.getWidth(), fbo.getHeight(), clearBuffer);
@@ -664,6 +638,8 @@ public abstract class Graphics
 		{
 			setBuffer(0, Display.getDisplayMode().getWidth(), Display.getDisplayMode().getHeight(), clearBuffer);
 		}
+		
+		currentDisplayBuffer = fbo;
 	}
 	
 	/**
@@ -672,14 +648,7 @@ public abstract class Graphics
 	 */
 	public static void setBuffer(FrameBuffer fbo)
 	{
-		if(fbo != null)
-		{
-			setBuffer(fbo.getId(), fbo.getWidth(), fbo.getHeight(), false);
-		}
-		else
-		{
-			setBuffer(0, Display.getDisplayMode().getWidth(), Display.getDisplayMode().getHeight(), false);
-		}
+		setBuffer(fbo, false);
 	}
 	
 	public static void setMaskTextureList(String[] textureList)
@@ -697,17 +666,6 @@ public abstract class Graphics
 	{
 		GL11.glOrtho(0, getDisplayWidth() / xScaler, getDisplayHeight() / yScaler, 0, 1, -1);
 	}
-	
-	/*private static void setShaderUniform(int programId, String attribute, int value)
-	{		
-		int attributeLoc = ARBShaderObjects.glGetUniformLocationARB(programId, attribute);
-		ARBShaderObjects.glUniform1iARB(attributeLoc, value);			
-	}*/
-	
-    private static String getLogInfo(int obj) 
-    {
-        return ARBShaderObjects.glGetInfoLogARB(obj, ARBShaderObjects.glGetObjectParameteriARB(obj, ARBShaderObjects.GL_OBJECT_INFO_LOG_LENGTH_ARB));
-    }
     
     private static String readFileAsString(String filename) throws Exception 
     {
@@ -761,13 +719,12 @@ public abstract class Graphics
         	if(exception != null)
         		throw exception;
         }
-        //System.out.println("Shader loaded: \n\n" + source.toString());
         return source.toString();
     }
 
     public static FrameBuffer getPrimaryDisplayBuffer()
     {
-    	return primaryDisplayBuffer; //.getFrameBufferId()
+    	return primaryDisplayBuffer;
     }
     
     public static boolean isFullScreen()
