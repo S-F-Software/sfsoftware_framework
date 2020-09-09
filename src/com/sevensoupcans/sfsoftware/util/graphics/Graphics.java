@@ -269,6 +269,10 @@ public abstract class Graphics
 			setShaderUniform(currentShader, "texture", getTextureId(temp));
 		}*/
 		
+        // enable alpha blending
+        GL11.glEnable(GL11.GL_BLEND);
+        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+		
 		texture.bind();								
 		
 		float fSrcX = ((float)srcX / texture.getWidth());
@@ -321,6 +325,10 @@ public abstract class Graphics
 				{
 					//System.out.println("Request for the texture '" + textureName + "' returned null. Please verify file exists and is not corrupt.");
 				}								
+				
+		        // enable alpha blending
+		        GL11.glEnable(GL11.GL_BLEND);
+		        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 				
 				GL11.glColor4f(red, green, blue, alpha);
 				GL11.glBegin(GL11.GL_QUADS);

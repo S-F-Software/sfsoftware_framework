@@ -67,22 +67,24 @@ public class LightMap {
 
 	public void draw(int x, int y, int width, int height, int srcX, int srcY, int srcWidth, int srcHeight)
 	{
-		draw(x, y, width, height, srcX, srcY, srcWidth, srcHeight, 1.0f, 1.0f, 1.0f, 1.0f);
+		draw(x, y, width, height, srcX, srcY, srcWidth, srcHeight, 1.0f);
 	}
 	
 	public void draw(int x, int y, int width, int height, int srcX, int srcY, int srcWidth, 
-				int srcHeight, float red, float green, float blue, float alpha)
+				int srcHeight, float alpha)
 	{
 		// Capture the current display buffer so we can revert back to it after rendering the lightmap.
 		FrameBuffer fbo = Graphics.getCurrentDisplayBuffer();
 		
+		RGBA quadColor = new RGBA(baselineColor.getRed(), baselineColor.getGreen(), baselineColor.getBlue(), alpha);
+		
 		Graphics.setBuffer(lightMapFrameBuffer);		
-		Graphics.drawQuad(0, 0, lightMapFrameBuffer.getWidth(), lightMapFrameBuffer.getHeight(), baselineColor);
+		Graphics.drawQuad(0, 0, lightMapFrameBuffer.getWidth(), lightMapFrameBuffer.getHeight(), quadColor);
 		
 		// Draw the light sources associated with this map
 		LightSource.updateIntensity();
 		for(LightSource ls : lights)		
-			ls.draw();
+			ls.draw(alpha);
 		
 		// Switch to the primary buffer / display
 		Graphics.setBuffer(null);
@@ -96,9 +98,7 @@ public class LightMap {
 		GL11.glLoadIdentity();				
 		
 		GL11.glPushAttrib(GL11.GL_DEPTH_BUFFER_BIT | GL11.GL_ENABLE_BIT | GL11.GL_COLOR_BUFFER_BIT);
-		//GL14.glBlendEquation(GL14.GL_FUNC_ADD);
-		GL14.glBlendFuncSeparate(GL11.GL_SRC_COLOR, GL11.GL_DST_COLOR, GL11.GL_ONE, GL11.GL_DST_COLOR);			
-		//GL14.glBlendFuncSeparate(GL11.GL_SRC_COLOR, GL11.GL_DST_COLOR, GL11.GL_ONE, GL11.GL_DST_COLOR);
+		GL14.glBlendFuncSeparate(GL11.GL_SRC_COLOR, GL11.GL_DST_COLOR, GL11.GL_ONE, GL11.GL_DST_COLOR);
 		
 		GL11.glEnable(GL11.GL_TEXTURE_2D);		
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, lightMapFrameBuffer.getTextureId());
@@ -111,7 +111,7 @@ public class LightMap {
 		GL11.glPushMatrix();		
 		
 		// Need to reset the color or else things get weird...
-		GL11.glColor4f(red, green, blue, alpha);
+		GL11.glColor4f(1.0f, 1.0f, 1.0f, alpha);
 		GL11.glBegin(GL11.GL_QUADS);					
 			// Top Left
 			//GL11.glTexCoord2f(0.0f, 1.0f); 

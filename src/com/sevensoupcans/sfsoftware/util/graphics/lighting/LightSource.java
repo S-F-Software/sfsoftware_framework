@@ -61,7 +61,7 @@ public class LightSource {
 		this.associatedActor = associatedActor;
 	}
 	
-	public void draw()
+	public void draw(float alpha)
 	{
 		// If the light source is associated with an Actor, the position is updated based on the Actor's
 		if(associatedActor != null)
@@ -69,9 +69,10 @@ public class LightSource {
 			x = associatedActor.getCenterX();
 			y = associatedActor.getCenterY();
 		}
-		
+				
 		Graphics.drawCircle(x, y, (float) (radius + (Math.sin(intensity) * maximumIntensity)), 
-				coreColor, outerColor, segmentsToDraw);		
+				new RGBA(coreColor.getRed(), coreColor.getGreen(), coreColor.getBlue(), coreColor.getAlpha() > alpha ? alpha : coreColor.getAlpha()),
+				outerColor, segmentsToDraw);		
 	}
 	
 	public Actor getAssociatedActor()
