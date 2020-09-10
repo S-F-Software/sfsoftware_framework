@@ -1,5 +1,7 @@
 package com.sevensoupcans.sfsoftware.util.tile;
 
+import java.util.Set;
+
 /**
  * A class representing a 2D array of Tiles
  * 
@@ -7,6 +9,13 @@ package com.sevensoupcans.sfsoftware.util.tile;
  *
  */
 public class TileMap {
+	
+	private static Set<String> bitMaskedTextureList;
+	
+	public static Set<String> setBitMaskedTextureList(Set<String> textures)
+	{
+		return (bitMaskedTextureList = textures);
+	}
 	
 	private final int width;
 	private final int height;
@@ -20,7 +29,8 @@ public class TileMap {
 		
 		this.width = map.length;
 		this.height = map[0].length;
-		this.tileSize = (map[0][0].getWidth() <= 0 ? Tile.getDefaultTileSize() : map[0][0].getWidth());
+		this.tileSize = (map[0][0].getWidth() <= 0 ? Tile.getDefaultTileSize() : map[0][0].getWidth());		
+		this.setAllTilesSrcFromBitMaskId(4); 
 	}
 	
 	public TileMap(int width, int height)
@@ -53,7 +63,9 @@ public class TileMap {
 			{		
 				map[i][j] = new Tile(i * tileSize, j * tileSize, initialTexture, true);
 			}
-		}		
+		}
+		
+		this.setAllTilesSrcFromBitMaskId(4);
 	}
 
 	public boolean containsTexture(String textureName)
@@ -269,6 +281,43 @@ public class TileMap {
 		}		
 		
 		return replacedTiles;
+	}
+	
+	private Tile[][] setAllTilesSrcFromBitMaskId(int spriteSheetWidth)
+	{
+		if(bitMaskedTextureList == null) return null;
+		
+		for(int xTile = 0; xTile < map.length; xTile++)
+		{
+			for(int yTile = 0; yTile < map[0].length; yTile++)
+			{			
+				if(bitMaskedTextureList.contains(map[xTile][yTile].getTexture().trim()))
+					setTileSrcFromBitMaskId(xTile, yTile, spriteSheetWidth);
+			}
+		}
+		
+		return map;
+	}	
+	
+	/**
+	 * Sets the draw source coordinates for all tiles on the map if a tile's texture 
+	 * is in the provided set.
+	 * 
+	 * @param bitMaskedTextureList List of texture names to be affected by bit masking
+	 * @param spriteSheetWidth The number of frames wide the tile's texture is
+	 */
+	public Tile[][] setAllTilesSrcFromBitMaskId(Set<String> bitMaskedTextureList, int spriteSheetWidth)
+	{
+		for(int xTile = 0; xTile < map.length; xTile++)
+		{
+			for(int yTile = 0; yTile < map[0].length; yTile++)
+			{			
+				if(bitMaskedTextureList.contains(map[xTile][yTile].getTexture().trim()))
+					setTileSrcFromBitMaskId(xTile, yTile, spriteSheetWidth);
+			}
+		}
+		
+		return map;
 	}
 	
 	/**
