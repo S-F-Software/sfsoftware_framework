@@ -173,9 +173,9 @@ public class TileMap {
 	{
 		int id = 15;
 		String binStr = "";
-		String currentTileTexture = map[x][y].getTexture();
+		String currentTileTexture = map[x][y].getTextureName();
 		
-		if(y == 0 || map[x][y - 1].getTexture().equals(currentTileTexture))
+		if(y == 0 || map[x][y - 1].getTextureName().equals(currentTileTexture))
 		{
 			binStr = "1";
 		}
@@ -184,7 +184,7 @@ public class TileMap {
 			binStr = "0";
 		}
 		
-		if(x == (map.length - 1) || map[x + 1][y].getTexture().equals(currentTileTexture))
+		if(x == (map.length - 1) || map[x + 1][y].getTextureName().equals(currentTileTexture))
 		{
 			binStr = "1" + binStr;
 		}
@@ -193,7 +193,7 @@ public class TileMap {
 			binStr = "0" + binStr;
 		}
 
-		if(y == (map[0].length - 1) || map[x][y + 1].getTexture().equals(currentTileTexture))
+		if(y == (map[0].length - 1) || map[x][y + 1].getTextureName().equals(currentTileTexture))
 		{
 			binStr = "1" + binStr;
 		}
@@ -202,7 +202,7 @@ public class TileMap {
 			binStr = "0" + binStr;
 		}
 		
-		if(x == 0 || map[x - 1][y].getTexture().equals(currentTileTexture))
+		if(x == 0 || map[x - 1][y].getTextureName().equals(currentTileTexture))
 		{
 			binStr = "1" + binStr;
 		}
@@ -240,7 +240,7 @@ public class TileMap {
 		{
 			for(int yTile = 0; yTile < map[0].length; yTile++)
 			{
-				if(map[xTile][yTile].getTexture().equalsIgnoreCase(textureName)) tileCount++;
+				if(map[xTile][yTile].getTextureName().equalsIgnoreCase(textureName)) tileCount++;
 			}
 		}
 		
@@ -272,7 +272,7 @@ public class TileMap {
 		{
 			for(int yTile = 0; yTile < map[0].length; yTile++)
 			{
-				if(map[xTile][yTile].getTexture().equalsIgnoreCase(targetTextureName)) 
+				if(map[xTile][yTile].getTextureName().equalsIgnoreCase(targetTextureName)) 
 				{
 					map[xTile][yTile].setTexture(replacementTextureName);
 					replacedTiles = true;
@@ -291,7 +291,7 @@ public class TileMap {
 		{
 			for(int yTile = 0; yTile < map[0].length; yTile++)
 			{			
-				if(bitMaskedTextureList.contains(map[xTile][yTile].getTexture().trim()))
+				if(bitMaskedTextureList.contains(map[xTile][yTile].getTextureName().trim()))
 					setTileSrcFromBitMaskId(xTile, yTile, spriteSheetWidth);
 			}
 		}
@@ -312,7 +312,7 @@ public class TileMap {
 		{
 			for(int yTile = 0; yTile < map[0].length; yTile++)
 			{			
-				if(bitMaskedTextureList.contains(map[xTile][yTile].getTexture().trim()))
+				if(bitMaskedTextureList.contains(map[xTile][yTile].getTextureName().trim()))
 					setTileSrcFromBitMaskId(xTile, yTile, spriteSheetWidth);
 			}
 		}

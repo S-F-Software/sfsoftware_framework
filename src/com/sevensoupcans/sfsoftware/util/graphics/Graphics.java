@@ -245,108 +245,40 @@ public abstract class Graphics
 		drawQuad(x + thickness, y + (height - thickness), width - thickness, thickness, r, g, b, a);				
 	}
 	
+	@Deprecated
 	public static void drawSprite(float x, float y, String textureName, int width, int height, int srcX, int srcY, 
 			int srcWidth, int srcHeight)
 	{
-		drawSprite(x,y,textureName,width,height,srcX,srcY,srcWidth,srcHeight, 1, 1, 1, 1);
+		Sprite.draw(x,y,textureName,width,height,srcX,srcY,srcWidth,srcHeight, 1, 1, 1, 1);
 	}
 	
 	/**
 	 * draw a quad with the image on it
 	 */
+	@Deprecated
 	public static void drawSprite(float x, float y, String textureName, int width, int height, int srcX, int srcY, 
 			int srcWidth, int srcHeight, float red, float green, float blue, float alpha) 
 	{
-		drawSprite(x, y, textureName, width, height, srcX, srcY, srcWidth, srcHeight, red, green, blue, alpha, 0);
+		Sprite.draw(x, y, textureName, width, height, srcX, srcY, srcWidth, srcHeight, red, green, blue, alpha, 0);
 	}
 	
+	@Deprecated
 	public static void drawSprite(float x, float y, Texture texture, int width, int height, int srcX, int srcY, 
 			int srcWidth, int srcHeight, float red, float green, float blue, float alpha, float angle)
 	{
-		// Bind the current texture to the current shader if one is in use.
-		/*if(useShader)
-		{
-			setShaderUniform(currentShader, "texture", getTextureId(temp));
-		}*/
-		
-        // enable alpha blending
-        GL11.glEnable(GL11.GL_BLEND);
-        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-		
-		texture.bind();								
-		
-		float fSrcX = ((float)srcX / texture.getWidth());
-		float fSrcY = ((float)srcY / texture.getHeight());
-		float fSrcWidth = (((float)srcX + (float)srcWidth) / texture.getWidth());
-		float fSrcHeight = (((float)srcY + (float)srcHeight) / texture.getHeight());			
-		
-		GL11.glPushMatrix();				
-						
-		// Rotation works! 1/4/14
-		if(angle != 0)
-		{
-			GL11.glTranslatef(x + (width / 2), y + (height / 2), 0); // move to the proper position
-			GL11.glRotatef(angle, 0, 0, 1); // now rotate
-			GL11.glTranslatef(-1 *(x+ (width / 2)), -1 * (y+(height  / 2)), 0);				
-		}
-		
-		GL11.glColor4f(red, green, blue, alpha);
-		GL11.glBegin(GL11.GL_QUADS);
-			// Top Left
-			GL11.glTexCoord2f(fSrcX, fSrcY);
-			GL11.glVertex2f(x,y);
-			// Top Right
-			GL11.glTexCoord2f(fSrcWidth, fSrcY);
-			GL11.glVertex2f(x + width, y);
-			// Bottom Right
-			GL11.glTexCoord2f(fSrcWidth,fSrcHeight);
-			GL11.glVertex2f(x + width,y + height);
-			// Bottom Left
-			GL11.glTexCoord2f(fSrcX,fSrcHeight);
-			GL11.glVertex2f(x,y + height);
-		GL11.glEnd();
-		
-		GL11.glPopMatrix();
+		Sprite.draw(x, y, texture, width, height, srcX, srcY, srcWidth, srcHeight, 
+				red, green, blue, alpha, angle);
 	}
 	
 	/**
 	 * draw a quad with the image on it - accept float for rotation!
 	 */
+	@Deprecated
 	public static void drawSprite(float x, float y, String textureName, int width, int height, int srcX, int srcY, 
 			int srcWidth, int srcHeight, float red, float green, float blue, float alpha, float angle) 
 	{		
-		// If the provided texture string is null or empty, don't try to draw it. :)
-		if(textureName != null && !(textureName.equals("")))
-		{			
-			Texture temp = Texture.getTexture(textureName);
-			if(temp == null)
-			{
-				if(verbose)
-				{
-					//System.out.println("Request for the texture '" + textureName + "' returned null. Please verify file exists and is not corrupt.");
-				}								
-				
-		        // enable alpha blending
-		        GL11.glEnable(GL11.GL_BLEND);
-		        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-				
-				GL11.glColor4f(red, green, blue, alpha);
-				GL11.glBegin(GL11.GL_QUADS);
-					// Top Left
-					GL11.glVertex2f(x,y);
-					// Top Right					
-					GL11.glVertex2f(x + width, y);
-					// Bottom Right
-					GL11.glVertex2f(x + width,y + height);
-					// Bottom Left
-					GL11.glVertex2f(x,y + height);
-				GL11.glEnd();
-			}
-			else
-			{
-				Texture.drawTexture(x, y, temp, width, height, srcX, srcY, srcWidth, srcHeight, red, green, blue, alpha, angle);
-			}			
-		}
+		Sprite.draw(x, y, textureName, width, height, srcX, srcY, srcWidth, srcHeight, 
+				red, green, blue, alpha, angle);
 	}	
 	
 	public static boolean isCloseRequested()

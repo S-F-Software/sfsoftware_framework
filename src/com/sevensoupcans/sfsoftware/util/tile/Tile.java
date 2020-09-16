@@ -120,7 +120,7 @@ public class Tile extends Sprite {
 		int id = 15;
 		String binStr = "";
 		
-		if(y == 0 || tileMap[x][y - 1].getTexture().equals(currentTileTexture))
+		if(y == 0 || tileMap[x][y - 1].getTextureName().equals(currentTileTexture))
 		{
 			binStr = "1";
 		}
@@ -129,7 +129,7 @@ public class Tile extends Sprite {
 			binStr = "0";
 		}
 		
-		if(x == (tileMap.length - 1) || tileMap[x + 1][y].getTexture().equals(currentTileTexture))
+		if(x == (tileMap.length - 1) || tileMap[x + 1][y].getTextureName().equals(currentTileTexture))
 		{
 			binStr = "1" + binStr;
 		}
@@ -138,7 +138,7 @@ public class Tile extends Sprite {
 			binStr = "0" + binStr;
 		}
 
-		if(y == (tileMap[0].length - 1) || tileMap[x][y + 1].getTexture().equals(currentTileTexture))
+		if(y == (tileMap[0].length - 1) || tileMap[x][y + 1].getTextureName().equals(currentTileTexture))
 		{
 			binStr = "1" + binStr;
 		}
@@ -147,7 +147,7 @@ public class Tile extends Sprite {
 			binStr = "0" + binStr;
 		}
 		
-		if(x == 0 || tileMap[x - 1][y].getTexture().equals(currentTileTexture))
+		if(x == 0 || tileMap[x - 1][y].getTextureName().equals(currentTileTexture))
 		{
 			binStr = "1" + binStr;
 		}
@@ -187,7 +187,7 @@ public class Tile extends Sprite {
 		{
 			for(int yTile = 0; yTile < tileMap[0].length; yTile++)
 			{
-				if(tileMap[xTile][yTile].getTexture().equalsIgnoreCase(textureName)) tileCount++;
+				if(tileMap[xTile][yTile].getTextureName().equalsIgnoreCase(textureName)) tileCount++;
 			}
 		}
 		
@@ -211,7 +211,7 @@ public class Tile extends Sprite {
 		{
 			for(int yTile = 0; yTile < tileMap[0].length; yTile++)
 			{
-				if(tileMap[xTile][yTile].getTexture().equalsIgnoreCase(targetTextureName)) 
+				if(tileMap[xTile][yTile].getTextureName().equalsIgnoreCase(targetTextureName)) 
 				{
 					tileMap[xTile][yTile].setTexture(replacementTextureName);
 					replacedTiles = true;

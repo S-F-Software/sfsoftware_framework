@@ -1,9 +1,108 @@
 package com.sevensoupcans.sfsoftware.util.graphics;
 
+import org.lwjgl.opengl.GL11;
+
 import com.sevensoupcans.sfsoftware.game.Game;
 import com.sevensoupcans.sfsoftware.game.actor.attributes.Collidable;
 
 public class Sprite {
+	
+	public static void draw(float x, float y, String textureName, int width, int height, int srcX, int srcY, 
+			int srcWidth, int srcHeight)
+	{
+		draw(x,y,textureName,width,height,srcX,srcY,srcWidth,srcHeight, 1, 1, 1, 1);
+	}
+	
+	public static void draw(float x, float y, String textureName, int width, int height, int srcX, int srcY, 
+			int srcWidth, int srcHeight, float red, float green, float blue, float alpha) 
+	{
+		draw(x, y, textureName, width, height, srcX, srcY, srcWidth, srcHeight, 
+				red, green, blue, alpha, 0);
+	}
+	
+	/**
+	 * draw a quad with the image on it - accept float for rotation!
+	 */
+	public static void draw(float x, float y, String textureName, int width, int height, int srcX, int srcY, 
+			int srcWidth, int srcHeight, float red, float green, float blue, float alpha, float angle) 
+	{		
+		// If the provided texture string is null or empty, don't try to draw it. :)
+		if(textureName != null && !(textureName.equals("")))
+		{			
+			Texture temp = Texture.getTexture(textureName);
+			if(temp == null)
+			{				
+		        // enable alpha blending
+		        GL11.glEnable(GL11.GL_BLEND);
+		        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+				
+				GL11.glColor4f(red, green, blue, alpha);
+				GL11.glBegin(GL11.GL_QUADS);
+					// Top Left
+					GL11.glVertex2f(x,y);
+					// Top Right					
+					GL11.glVertex2f(x + width, y);
+					// Bottom Right
+					GL11.glVertex2f(x + width,y + height);
+					// Bottom Left
+					GL11.glVertex2f(x,y + height);
+				GL11.glEnd();
+			}
+			else
+			{
+				Texture.drawTexture(x, y, temp, width, height, srcX, srcY, srcWidth, srcHeight, red, green, blue, alpha, angle);
+			}			
+		}
+	}
+	
+	public static void draw(float x, float y, Texture texture, int width, int height, int srcX, int srcY, 
+			int srcWidth, int srcHeight, float red, float green, float blue, float alpha, float angle)
+	{
+		// Bind the current texture to the current shader if one is in use.
+		/*if(useShader)
+		{
+			setShaderUniform(currentShader, "texture", getTextureId(temp));
+		}*/
+		
+        // enable alpha blending
+        GL11.glEnable(GL11.GL_BLEND);
+        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+		
+		texture.bind();								
+		
+		float fSrcX = ((float)srcX / texture.getWidth());
+		float fSrcY = ((float)srcY / texture.getHeight());
+		float fSrcWidth = (((float)srcX + (float)srcWidth) / texture.getWidth());
+		float fSrcHeight = (((float)srcY + (float)srcHeight) / texture.getHeight());			
+		
+		GL11.glPushMatrix();				
+						
+		// Rotation works! 1/4/14
+		if(angle != 0)
+		{
+			GL11.glTranslatef(x + (width / 2), y + (height / 2), 0); // move to the proper position
+			GL11.glRotatef(angle, 0, 0, 1); // now rotate
+			GL11.glTranslatef(-1 *(x+ (width / 2)), -1 * (y+(height  / 2)), 0);				
+		}
+		
+		GL11.glColor4f(red, green, blue, alpha);
+		GL11.glBegin(GL11.GL_QUADS);
+			// Top Left
+			GL11.glTexCoord2f(fSrcX, fSrcY);
+			GL11.glVertex2f(x,y);
+			// Top Right
+			GL11.glTexCoord2f(fSrcWidth, fSrcY);
+			GL11.glVertex2f(x + width, y);
+			// Bottom Right
+			GL11.glTexCoord2f(fSrcWidth,fSrcHeight);
+			GL11.glVertex2f(x + width,y + height);
+			// Bottom Left
+			GL11.glTexCoord2f(fSrcX,fSrcHeight);
+			GL11.glVertex2f(x,y + height);
+		GL11.glEnd();
+		
+		GL11.glPopMatrix();
+	}	
 	
 	public static boolean isSpriteOutOfGameBounds(Game game, Sprite sprite)
 	{		
@@ -12,8 +111,14 @@ public class Sprite {
 		int width = sprite.getWidth();
 		int height = sprite.getHeight();
 		
-		return (x < (0 - width) || x > ((game.getPlayingFieldWidth() * game.getTileSize()) + width) || y < (0 - height) || y > ((game.getPlayingFieldHeight() * game.getTileSize()) + height));
+		return (x < (0 - width) || x > ((game.getPlayingFieldWidth() * game.getTileSize()) + width) 
+				|| y < (0 - height) || y > ((game.getPlayingFieldHeight() * game.getTileSize()) + height));
 	}
+	
+	private float red = 1.0f;
+	private float green = 1.0f;
+	private float blue = 1.0f;
+	private float alpha = 1.0f;
 	
 	private int x;	
 	private int y;
@@ -30,11 +135,6 @@ public class Sprite {
 		this(destX, destY, textureName, 0, 0);
 	}
 	
-	public Sprite(int destX, int destY, Texture texture)
-	{
-		this(destX, destY, texture.getName());
-	}
-	
 	public Sprite(int destX, int destY, String textureName, int destSrcX, int destSrcY)
 	{
 		x = destX;
@@ -45,6 +145,11 @@ public class Sprite {
 		associatedTexture = Texture.getTexture(textureName);
 		srcX = destSrcX;
 		srcY = destSrcY;
+	}
+	
+	public Sprite(int destX, int destY, Texture texture)
+	{
+		this(destX, destY, texture.getName());
 	}
 	
 	public boolean collidingWith(Collidable object) 
@@ -79,21 +184,22 @@ public class Sprite {
 	}
 	
 	public void draw(int width, int height, int srcX, int srcY, int srcWidth, int srcHeight)
-	{
-		Graphics.drawSprite(this.getX(), this.getY(), associatedTexture.getName(), width, height, srcX, srcY, srcWidth, srcHeight);	
+	{	
+		draw(width, height, srcX, srcY, srcWidth, srcHeight, this.red, this.green, this.blue, this.alpha);
 	}	
 	
-	public void draw(int width, int height, int srcX, int srcY, int srcWidth, int srcHeight, float red, float green, float blue, float alpha)
+	public void draw(int width, int height, int srcX, int srcY, int srcWidth, int srcHeight, 
+			float red, float green, float blue, float alpha)
 	{
-		Graphics.drawSprite(this.getX(), this.getY(), associatedTexture.getName(), width, height, srcX, srcY, srcWidth, srcHeight, red, green, blue, alpha);	
+		draw((int) this.getX(), (int) this.getY(), width, height, srcX, srcY, 
+				srcWidth, srcHeight, red, green, blue, alpha);								
 	}
 	
-	public void draw(int x, int y, int width, int height, int srcX, int srcY, int srcWidth, int srcHeight, float red, float green, float blue, float alpha)
-	{
-		setX(x);
-		setY(y);
-		
-		draw(width, height, srcX, srcY, srcWidth, srcHeight, red, green, blue, alpha);	
+	public void draw(int x, int y, int width, int height, int srcX, int srcY, int srcWidth, int srcHeight, 
+			float red, float green, float blue, float alpha)
+	{	
+		Sprite.draw(x, y, associatedTexture.getName(), width, height, srcX, srcY, 
+				srcWidth, srcHeight, red, green, blue, alpha);
 	}
 	
 	public int getBottom()
@@ -136,9 +242,14 @@ public class Sprite {
 		return srcY;
 	}
 	
-	public String getTexture()
+	public String getTextureName()
 	{
 		return associatedTexture.getName();
+	}
+	
+	public Texture getTexture()
+	{
+		return associatedTexture;
 	}
 	
 	public int getTop()
@@ -164,7 +275,8 @@ public class Sprite {
 		int x = (int) getX();
 		int y = (int) getY();
 		
-		return (x < (0 - getWidth()) || x > ((game.getPlayingFieldWidth() * game.getTileSize()) + getWidth()) || y < (0 - getHeight()) || y > ((game.getPlayingFieldHeight() * game.getTileSize()) + getHeight()));		
+		return (x < (0 - getWidth()) || x > ((game.getPlayingFieldWidth() * game.getTileSize()) + getWidth()) 
+				|| y < (0 - getHeight()) || y > ((game.getPlayingFieldHeight() * game.getTileSize()) + getHeight()));		
 	}
 	public void move(float destX, float destY)
 	{
@@ -175,19 +287,39 @@ public class Sprite {
 		x = destX;
 		y = destY;
 	}
+	public float setAlpha(float alpha)
+	{
+		return (this.alpha = alpha);
+	}
+	public float setBlue(float blue)
+	{
+		return (this.blue = blue);
+	}	
+	public float setGreen(float green)
+	{
+		return (this.green = green);
+	}
 	public void setHeight(int newHeight)
 	{
 		height = newHeight;
 	}
+
+	public float setRed(float red)
+	{
+		return (this.red = red);
+	}	
+	
 	public void setSrc(int sourceX, int sourceY)
 	{
 		srcX = sourceX;
 		srcY = sourceY;
-	}	
+	}
+	
 	public void setSrcX(int sourceX)
 	{
 		srcX = sourceX;
 	}
+	
 	public void setSrcY(int sourceY)
 	{
 		srcY = sourceY;

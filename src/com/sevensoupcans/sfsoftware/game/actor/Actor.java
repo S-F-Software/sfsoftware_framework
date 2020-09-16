@@ -7,8 +7,8 @@ import com.sevensoupcans.sfsoftware.game.actor.attributes.Collidable;
 import com.sevensoupcans.sfsoftware.game.actor.attributes.Permanent;
 import com.sevensoupcans.sfsoftware.util.Updatable;
 import com.sevensoupcans.sfsoftware.util.graphics.Graphics;
-import com.sevensoupcans.sfsoftware.util.graphics.Particle;
 import com.sevensoupcans.sfsoftware.util.graphics.Sprite;
+import com.sevensoupcans.sfsoftware.util.graphics.particles.Particle;
 import com.sevensoupcans.sfsoftware.util.tile.Tile;
 
 public class Actor extends Sprite implements Collidable 
@@ -17,41 +17,105 @@ public class Actor extends Sprite implements Collidable
 	protected static int playingFieldY;
 	
 	protected final static Vector<Actor> cast = new Vector<Actor>();
-	protected final Game associatedGame;
+	
+	public static double getAngle(Actor a, Actor b)
+	{
+		double dx = a.getCenterX() - b.getCenterX(); // (a.getX() + (a.getWidth() / 2)) - (b.getX() + (b.getWidth() / 2));
+		double dy = a.getCenterY() - b.getCenterY(); // (a.getY() + (a.getHeight() / 2)) - (b.getY() + (b.getHeight() / 2));
+		
+		double inRads = Math.atan2(dy,dx);
+		
+		if (inRads < 0)
+		{
+	        inRads = Math.abs(inRads);
+		}
+	    else
+	    {
+	        inRads = 2 * Math.PI - inRads;
+	    }			
+		
+		return inRads;
+	}
+	public static Vector<Actor> getCast()
+	{
+		return cast;
+	}
 			
-	protected double xDirection = 0;
-	protected double yDirection = 0;	
-	protected int speed = 4;	
+	public static void remove(Actor a)
+	{
+		cast.remove(a);
+	}
+	public static void setPlayingField(int x, int y)
+	{
+		playingFieldX = x;
+		playingFieldY = y;
+	}	
+	public static void updateCast()
+	{
+		updateCast(0);
+	}	
+	
+	/**
+	 * Updates all Actors - this includes drawing
+	 */
+	public static void updateCast(int z) 
+	{		
+		// Copy the Actor vector to an array to avoid concurrent modification issues
+		Actor[] c = new Actor[cast.size()];
+		cast.toArray(c);	
+		
+		for(int i = 0; i < c.length; i++)		
+		{					
+			Actor a = c[i];
+			
+			// Only update Actors with the specified z level. There may be a better way to address this.
+			if(a.getZOrder() != z) continue;
+			
+			if(a instanceof Updatable)
+			{
+				((Updatable) a).update();
+			}
+			
+			a.draw();
+		}				
+	}	
+	private final Game ASSOCIATED_GAME;	
+	
+	private final int TILE_SIZE;
+	
+	protected double xDirection = 0;	
+	
+	protected double yDirection = 0;
+
+	protected int speed = 4;
 	
 	private boolean isWalkable = true;	
-	private int zOrder = 0;	
+	
+	private int zOrder = 0;
 	
 	public Actor(int destX, int destY, String texture, int destWidth, int destHeight, Game associatedGame) 
 	{
 		this(destX, destY, texture, 0, 0, destWidth, destHeight, associatedGame);
-	}
+	}	
 	
 	public Actor(int destX, int destY, String texture, int srcX, int srcY, int destWidth, int destHeight, Game associatedGame) 
 	{
 		super(destX, destY, texture);
+		
 		setSrcX(srcX);
 		setSrcY(srcY);
 		
-		this.associatedGame = associatedGame;
+		this.ASSOCIATED_GAME = associatedGame;
+		this.TILE_SIZE = associatedGame.getTileMap().getTileSize();
+		
 		this.setHeight(destHeight);
 		this.setWidth(destWidth);			 		
 		
 		// Do not add the Player to our cast vector as this vector is cleared with each new room
 		if(!(this instanceof Permanent))			
 			cast.add(this);
-	}	
-	
-	@Override
-	public boolean collisionResult(Collidable object) {
-		// TODO Auto-generated method stub
-		return false;
 	}
-
+	
 	@Override
 	public boolean collidingWith(Collidable object) {		
 		return super.collidingWith(object);	
@@ -92,6 +156,12 @@ public class Actor extends Sprite implements Collidable
 		return b;
 	}	
 	
+	@Override
+	public boolean collisionResult(Collidable object) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 	protected int distanceToActor(Actor a)
 	{
 		int x1 = a.getCenterX(); // (a.getX() + (a.getWidth() / 2));
@@ -118,7 +188,7 @@ public class Actor extends Sprite implements Collidable
 		{
 			new Particle((int)(getX() + (int) (Math.random() * getWidth())), (int)(getY() + (int) (Math.random() * getHeight())), red, green, blue, 2);
 		}
-	}
+	}	
 	
 	protected void generateParticles(int particleCount, float red, float green, float blue, int size)
 	{
@@ -131,12 +201,7 @@ public class Actor extends Sprite implements Collidable
 	protected double getAngleFromActor(Actor a)
 	{
 		return getAngle(a, this);
-	}
-
-	protected double getAngleToActor(Actor b)
-	{
-		return getAngle(this, b);
-	}
+	}	
 	
 	protected double getAngleFromPoint(double x, double y)
 	{
@@ -155,12 +220,17 @@ public class Actor extends Sprite implements Collidable
 	    }			
 		
 		return inRads;
-	}	
+	}
+	
+	protected double getAngleToActor(Actor b)
+	{
+		return getAngle(this, b);
+	}
 	
 	protected double getAngleToPoint(double x, double y)
 	{
-		double dx = getCenterX() - x; // (getX() + (getWidth() / 2)) - x;
-		double dy = getCenterY() - y; // (getY() + (getHeight() / 2)) - y;
+		double dx = getCenterX() - x;
+		double dy = getCenterY() - y;
 		
 		double inRads = Math.atan2(dy,dx);
 		
@@ -174,44 +244,11 @@ public class Actor extends Sprite implements Collidable
 	    }			
 		
 		return inRads;
-	}
-	
-	public static double getAngle(Actor a, Actor b)
-	{
-		double dx = a.getCenterX() - b.getCenterX(); // (a.getX() + (a.getWidth() / 2)) - (b.getX() + (b.getWidth() / 2));
-		double dy = a.getCenterY() - b.getCenterY(); // (a.getY() + (a.getHeight() / 2)) - (b.getY() + (b.getHeight() / 2));
-		
-		double inRads = Math.atan2(dy,dx);
-		
-		if (inRads < 0)
-		{
-	        inRads = Math.abs(inRads);
-		}
-	    else
-	    {
-	        inRads = 2 * Math.PI - inRads;
-	    }			
-		
-		return inRads;
-	}	
-	
-	public int getCurrentTileX()
-	{
-		//int xCenter = (int) getX() + (width / 2);
-		int xTile = (int) Math.floor((getCenterX() - playingFieldX) / 40);
-		return xTile;
-	}	
-	
-	public int getCurrentTileY()
-	{
-		//int yCenter = (int) getY() + (height / 2);		
-		int yTile = (int) Math.floor((getCenterY() - playingFieldY) / 40);
-		return yTile;
-	}	
+	}		
 	
 	public Tile getCurrentTile()
 	{		
-		Tile[][] tilemap = associatedGame.getTileMap().getMap();
+		Tile[][] tilemap = getGame().getTileMap().getMap();
 		
 		int xTile = Math.max(0, Math.min(tilemap.length - 1, getCurrentTileX()));
 		int yTile = Math.max(0, Math.min(tilemap[0].length - 1, getCurrentTileY()));		
@@ -219,15 +256,27 @@ public class Actor extends Sprite implements Collidable
 		return tilemap[xTile][yTile];
 	}
 	
-	public Game getGame()
+	public int getCurrentTileX()
 	{
-		return associatedGame;
+		int xTile = (int) Math.floor((getCenterX() - playingFieldX) / TILE_SIZE);
+		return xTile;
+	}		
+	
+	public int getCurrentTileY()
+	{		
+		int yTile = (int) Math.floor((getCenterY() - playingFieldY) / TILE_SIZE);
+		return yTile;
 	}
 	
+	public Game getGame()
+	{
+		return ASSOCIATED_GAME;
+	}
+
 	public int getSpeed() 
 	{
 		return speed;
-	}		
+	}	
 	
 	public int getZOrder()
 	{
@@ -246,8 +295,8 @@ public class Actor extends Sprite implements Collidable
 			
 			int xPoint = (int) (getCenterX() + (xDirection * i));
 			int yPoint = (int) (getCenterY() + (yDirection * i));					
-			int xTile = (int) Math.floor((xPoint - playingFieldX) / 40);
-			int yTile = (int) Math.floor((yPoint - playingFieldY) / 40);	
+			int xTile = (int) Math.floor((xPoint - playingFieldX) / TILE_SIZE);
+			int yTile = (int) Math.floor((yPoint - playingFieldY) / TILE_SIZE);	
 			
 			if(getGame().inDebugMode())
 			{
@@ -277,18 +326,13 @@ public class Actor extends Sprite implements Collidable
 			}
 		}	
 		return ableToSeeActor;		
-	}		
+	}
 	
 	public boolean isWalkable()
 	{
 		return isWalkable;
-	}
+	}	
 	
-	public static Vector<Actor> getCast()
-	{
-		return cast;
-	}
-
 	/**
 	 * Moves an Actor without checking any collision
 	 * 
@@ -300,21 +344,10 @@ public class Actor extends Sprite implements Collidable
 		super.move((float) (this.getX() + (dirX * speed)), (float) (this.getY() + (dirY * speed)));
 	}	
 	
-	public static void remove(Actor a)
-	{
-		cast.remove(a);
-	}
-	
 	public void remove()
 	{
 		cast.remove(this);
 	}
-	
-	public static void setPlayingField(int x, int y)
-	{
-		playingFieldX = x;
-		playingFieldY = y;
-	}	
 	
 	public void setSpeed(int newSpeed)
 	{
@@ -329,7 +362,7 @@ public class Actor extends Sprite implements Collidable
 	public void setZOrder(int i)
 	{
 		zOrder = i;
-	}	
+	}
 	
 	/**
 	 * Snaps an Actor to the tile on the playing field that there center coordinates sit in.
@@ -338,52 +371,22 @@ public class Actor extends Sprite implements Collidable
 	{
 		snapX();
 		snapY();
-	}
+	}	
 	
 	protected void snapX()
 	{
-		setX((int) getCurrentTile().getX());
+		setX(getCurrentTile().getCenterX() - (this.getWidth() / 2));
 	}
 	
 	protected void snapY()
 	{				
-		setY((int) getCurrentTile().getY());		
-	}	
+		setY(getCurrentTile().getCenterY() - (this.getHeight() / 2));		
+	}
 	
 	@Override
 	public String toString()
 	{
-		return "Actor \"" + this.getTexture() + "\" @ " + (int) getX() + ", " + (int) getY();		
-	}
-	
-	public static void updateCast()
-	{
-		updateCast(0);
-	}
-	
-	/**
-	 * Updates all Actors - this includes drawing
-	 */
-	public static void updateCast(int z) 
-	{		
-		// Copy the Actor vector to an array to avoid concurrent modification issues
-		Actor[] c = new Actor[cast.size()];
-		cast.toArray(c);	
-		
-		for(int i = 0; i < c.length; i++)		
-		{					
-			Actor a = c[i];
-			
-			// Only update Actors with the specified z level. There may be a better way to address this.
-			if(a.getZOrder() != z) continue;
-			
-			if(a instanceof Updatable)
-			{
-				((Updatable) a).update();
-			}
-			
-			a.draw();
-		}				
+		return "Actor \"" + this.getTextureName() + "\" @ " + (int) getX() + ", " + (int) getY();		
 	}	
 
 }

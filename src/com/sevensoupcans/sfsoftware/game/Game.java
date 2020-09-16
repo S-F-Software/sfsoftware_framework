@@ -12,6 +12,7 @@ import com.sevensoupcans.sfsoftware.util.Clock;
 import com.sevensoupcans.sfsoftware.util.Sound;
 import com.sevensoupcans.sfsoftware.util.graphics.Graphics;
 import com.sevensoupcans.sfsoftware.util.graphics.RGBA;
+import com.sevensoupcans.sfsoftware.util.graphics.Sprite;
 import com.sevensoupcans.sfsoftware.util.graphics.TextureFont;
 import com.sevensoupcans.sfsoftware.util.input.InputDevice;
 import com.sevensoupcans.sfsoftware.util.input.Kboard;
@@ -356,7 +357,7 @@ public abstract class Game
 					logoState++;
 				}				
 			}
-			Graphics.drawSprite(192, 112, "sflogo", 256, 256, 0, 0, 256, 256, 1, 1, 1, logoAlpha);
+			Sprite.draw(192, 112, "sflogo", 256, 256, 0, 0, 256, 256, 1, 1, 1, logoAlpha);
 			
 			SoundStore.get().poll(0);
 			Display.update();
