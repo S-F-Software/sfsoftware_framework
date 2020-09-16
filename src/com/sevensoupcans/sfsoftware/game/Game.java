@@ -138,6 +138,11 @@ public abstract class Game
 		return Tile.getDefaultTileSize();
 	}
 	
+	public int getGameHashCode()
+	{
+		return gameTitle.hashCode();
+	}
+	
 	public String getGameTitle()
 	{
 		return gameTitle;
