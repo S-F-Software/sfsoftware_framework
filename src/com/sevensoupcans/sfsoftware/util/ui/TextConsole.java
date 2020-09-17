@@ -81,9 +81,8 @@ public class TextConsole implements UserInput
 	}
 	
 	@Override
-	public boolean pollInput()
+	public boolean pollInput(InputDevice inputDevice)
 	{
-		InputDevice inputDevice = game.getInputDevice();
 		boolean pressed = false;
 		
 		if(inputDevice.wasBackPressed())
