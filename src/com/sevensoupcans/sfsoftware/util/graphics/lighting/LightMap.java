@@ -145,7 +145,7 @@ public class LightMap {
 		ArrayList<LightSource> associatedLightSources = new ArrayList<LightSource>();
 		
 		for(LightSource ls : lights)		
-			if(ls.getAssociatedActor().equals(actor))
+			if(ls.getAssociatedActor() != null && ls.getAssociatedActor().equals(actor))
 				associatedLightSources.add(ls);		
 		
 		return associatedLightSources;
