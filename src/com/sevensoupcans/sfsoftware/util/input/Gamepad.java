@@ -70,12 +70,14 @@ public class Gamepad implements InputDevice
 	private float yDeadZone;
 	private Vector<Integer> lastGamepadState = new Vector<Integer>();
 	// These button mappings are specifically for the 360 type controller
-	public final int BUTTON_A = 0;
-	public final int BUTTON_B = 1;
-	public final int BUTTON_X = 2;	
-	public final int BUTTON_Y = 3;
-	public final int BUTTON_BACK = 6;	
-	public final int BUTTON_START = 7;
+	public final int BUTTON_A;
+	public final int BUTTON_B;
+	public final int BUTTON_X;	
+	public final int BUTTON_Y;
+	public final int BUTTON_BACK;	
+	public final int BUTTON_START;
+	public final int BUTTON_SHOULDER_LEFT;
+	public final int BUTTON_SHOULDER_RIGHT;
 	
 	private int xAxisIndex;
 	private int yAxisIndex;
@@ -110,12 +112,57 @@ public class Gamepad implements InputDevice
 		}
 		rumblers = al.toArray(new String[al.size()]);
 		
+		int buttonA = 0;
+		int buttonB = 1;
+		int buttonX = 2;
+		int buttonY = 3;
+		int buttonBack = 6;
+		int buttonStart = 7;
+		int buttonShoulderLeft = 8;
+		int buttonShoulderRight = 9;
+		
 		al = new ArrayList<String>();
 		for(int i = 0; i < controller.getButtonCount(); i++)
 		{
-			al.add(controller.getButtonName(i));
+			String buttonName = controller.getButtonName(i);
+			al.add(buttonName);
+			
+			if(buttonName.equalsIgnoreCase("a"))
+			{
+				buttonA = i;
+			}
+			else if(buttonName.equalsIgnoreCase("b"))
+			{
+				buttonB = i;
+			}
+			else if(buttonName.equalsIgnoreCase("x"))
+			{
+				buttonX = i;
+			}
+			else if(buttonName.equalsIgnoreCase("Y"))
+			{
+				buttonY = i;
+			}
+			else if(buttonName.toLowerCase().contains("start"))
+			{
+				buttonStart = i;
+			}
+			else if(buttonName.toLowerCase().contains("select") || buttonName.toLowerCase().contains("back"))
+			{
+				buttonBack = i;
+			}			
 		}
-		buttons = al.toArray(new String[al.size()]);				
+		
+		buttons = al.toArray(new String[al.size()]);
+		
+		BUTTON_A = buttonA;
+		BUTTON_B = buttonB;
+		BUTTON_X = buttonX;
+		BUTTON_Y = buttonY;
+		BUTTON_BACK = buttonBack;
+		BUTTON_START = buttonStart;
+		BUTTON_SHOULDER_LEFT = buttonShoulderLeft;
+		BUTTON_SHOULDER_RIGHT = buttonShoulderRight;
 	}
 	
 	public boolean buttonPressed(int button)
@@ -178,25 +225,37 @@ public class Gamepad implements InputDevice
 	}		
 	
 	@Override
-	public boolean isButtonXDown() {
-		return isButtonDown(this.BUTTON_X);
+	public boolean isButtonShoulderLeftDown() 
+	{
+		return isButtonDown(this.BUTTON_SHOULDER_LEFT);
 	}	
 	
 	@Override
-	public boolean isButtonYDown() {
-		return isButtonDown(this.BUTTON_Y);
+	public boolean isButtonShoulderRightDown() 
+	{
+		return isButtonDown(this.BUTTON_SHOULDER_RIGHT);
 	}
 
+	@Override
+	public boolean isButtonXDown() {
+		return isButtonDown(this.BUTTON_X);
+	}	
+
+	@Override
+	public boolean isButtonYDown() {
+		return isButtonDown(this.BUTTON_Y);
+	}	
+		
+	
 	@Override
 	public boolean isDownDown() {
 		return this.yAxisDown();
 	}	
-
+	
 	public boolean isInitialized() 
 	{
 		return isInitialized;
-	}	
-		
+	}
 	
 	@Override
 	public boolean isLeftDown() {
@@ -207,21 +266,21 @@ public class Gamepad implements InputDevice
 	public boolean isRightDown() {
 		return this.xAxisRight();
 	}
-	
+
 	@Override
 	public boolean isUpDown() {
 		return this.yAxisUp();
-	}	
-	
+	}
+
 	@Override
 	public void poll()
 	{
 		if(controller != null)
 		{
-			controller.poll();
+			controller.poll();											
 		}
-	}
-
+	}	
+	
 	public boolean povXLeftPressed()
 	{
 		boolean b = false;
@@ -233,8 +292,8 @@ public class Gamepad implements InputDevice
 			}		
 		}
 		return b;
-	}
-
+	}	
+	
 	public boolean povXRightPressed()
 	{
 		boolean b = false;
@@ -246,8 +305,8 @@ public class Gamepad implements InputDevice
 			}		
 		}
 		return b;
-	}	
-	
+	}
+
 	public boolean povYDownPressed()
 	{
 		boolean b = false;
@@ -259,8 +318,8 @@ public class Gamepad implements InputDevice
 			}		
 		}
 		return b;
-	}	
-	
+	}
+
 	public boolean povYUpPressed()
 	{
 		boolean b = false;
@@ -342,7 +401,6 @@ public class Gamepad implements InputDevice
 			{
 				lastPOVY = controller.getPovY();
 			}
-			
 		}
 	}
 
@@ -364,6 +422,18 @@ public class Gamepad implements InputDevice
 	@Override
 	public boolean wasButtonBPressed() {
 		return buttonPressed(this.BUTTON_B);
+	}
+
+	@Override
+	public boolean wasButtonShoulderLeftPressed() 
+	{
+		return buttonPressed(this.BUTTON_SHOULDER_LEFT);
+	}
+
+	@Override
+	public boolean wasButtonShoulderRightPressed() 
+	{
+		return buttonPressed(this.BUTTON_SHOULDER_RIGHT);
 	}
 
 	@Override

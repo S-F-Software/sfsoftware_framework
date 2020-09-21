@@ -46,6 +46,21 @@ public class Kboard implements InputDevice {
 	
 	private static final Vector<Integer> lastKeyState = new Vector<Integer>();
 	
+	public static String getKeyName(int key)
+	{
+		String result =	Keyboard.getKeyName(key);
+		if(key == Keyboard.KEY_LCONTROL)
+		{
+			result = "L Ctrl";
+		}
+		else if(key == Keyboard.KEY_RCONTROL)
+		{
+			result = "R Ctrl";
+		}		
+		result = result.toUpperCase();
+		return result;
+	}
+	
 	/**
 	 * Accepts a key and, if pressed, returns true
 	 * 
@@ -100,21 +115,6 @@ public class Kboard implements InputDevice {
 		return false;
 	}
 	
-	public static String getKeyName(int key)
-	{
-		String result =	Keyboard.getKeyName(key);
-		if(key == Keyboard.KEY_LCONTROL)
-		{
-			result = "L Ctrl";
-		}
-		else if(key == Keyboard.KEY_RCONTROL)
-		{
-			result = "R Ctrl";
-		}		
-		result = result.toUpperCase();
-		return result;
-	}
-	
 	/**
 	 * Stores the currently pressed keys
 	 */
@@ -131,8 +131,37 @@ public class Kboard implements InputDevice {
 	}
 
 	@Override
-	public boolean isUpDown() {
-		return Kboard.isKeyDown(upKeys);
+	public boolean isButtonADown() {
+		return Kboard.isKeyDown(Keyboard.KEY_SPACE);
+	}
+
+	@Override
+	public boolean isButtonBDown() {
+		return Kboard.isKeyDown(Keyboard.KEY_LCONTROL);
+	}
+
+	@Override
+	public boolean isButtonShoulderLeftDown() 
+	{
+		return Kboard.isKeyDown(Keyboard.KEY_LBRACKET);
+	}
+
+	@Override
+	public boolean isButtonShoulderRightDown() 
+	{
+		return Kboard.isKeyDown(Keyboard.KEY_RBRACKET);
+	}
+	
+
+	@Override
+	public boolean isButtonXDown() {
+		return Kboard.isKeyDown(Keyboard.KEY_LSHIFT);
+	}
+
+	@Override
+	public boolean isButtonYDown() {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 	@Override
@@ -149,47 +178,24 @@ public class Kboard implements InputDevice {
 	public boolean isRightDown() { 
 		return Kboard.isKeyDown(rightKeys);
 	}// TODO Auto-generated method stub
-	
 
 	@Override
-	public boolean wasUpPressed() {
-		return Kboard.keyPressed(upKeys);		
+	public boolean isUpDown() {
+		return Kboard.isKeyDown(upKeys);
 	}
 
 	@Override
-	public boolean wasDownPressed() {
-		return Kboard.keyPressed(downKeys);
+	public void poll() {		
 	}
 
 	@Override
-	public boolean wasLeftPressed() {
-		return Kboard.keyPressed(leftKeys);
+	public void storeState() {
+		Kboard.storeKBState();		
 	}
 
 	@Override
-	public boolean wasRightPressed() {
-		return keyPressed(rightKeys);
-	}
-
-	@Override
-	public boolean isButtonADown() {
-		return Kboard.isKeyDown(Keyboard.KEY_SPACE);
-	}
-
-	@Override
-	public boolean isButtonBDown() {
-		return Kboard.isKeyDown(Keyboard.KEY_LCONTROL);
-	}
-
-	@Override
-	public boolean isButtonXDown() {
-		return Kboard.isKeyDown(Keyboard.KEY_LSHIFT);
-	}
-
-	@Override
-	public boolean isButtonYDown() {
-		// TODO Auto-generated method stub
-		return false;
+	public boolean wasBackPressed() {
+		return Kboard.keyPressed(Keyboard.KEY_ESCAPE);
 	}
 
 	@Override
@@ -200,6 +206,18 @@ public class Kboard implements InputDevice {
 	@Override
 	public boolean wasButtonBPressed() {
 		return Kboard.keyPressed(Keyboard.KEY_LCONTROL);
+	}
+
+	@Override
+	public boolean wasButtonShoulderLeftPressed() 
+	{
+		return Kboard.keyPressed(Keyboard.KEY_LBRACKET);
+	}
+
+	@Override
+	public boolean wasButtonShoulderRightPressed() 
+	{
+		return Kboard.keyPressed(Keyboard.KEY_RBRACKET);
 	}
 
 	@Override
@@ -214,12 +232,23 @@ public class Kboard implements InputDevice {
 	}
 
 	@Override
-	public void poll() {		
+	public boolean wasDownPressed() {
+		return Kboard.keyPressed(downKeys);
 	}
 
 	@Override
-	public boolean wasBackPressed() {
-		return Kboard.keyPressed(Keyboard.KEY_ESCAPE);
+	public boolean wasLeftPressed() {
+		return Kboard.keyPressed(leftKeys);
+	}
+
+	@Override
+	public boolean wasPausedPressed() {
+		return Kboard.keyPressed(Kboard.pauseKeys);
+	}
+
+	@Override
+	public boolean wasRightPressed() {
+		return keyPressed(rightKeys);
 	}
 
 	@Override
@@ -228,13 +257,8 @@ public class Kboard implements InputDevice {
 	}
 
 	@Override
-	public void storeState() {
-		Kboard.storeKBState();		
-	}
-
-	@Override
-	public boolean wasPausedPressed() {
-		return Kboard.keyPressed(Kboard.pauseKeys);
+	public boolean wasUpPressed() {
+		return Kboard.keyPressed(upKeys);		
 	}
 	
 }

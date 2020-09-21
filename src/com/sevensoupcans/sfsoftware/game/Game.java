@@ -4,6 +4,7 @@ import java.awt.Font;
 import java.util.prefs.Preferences;
 
 import org.lwjgl.LWJGLException;
+import org.lwjgl.input.Controllers;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.newdawn.slick.openal.SoundStore;
@@ -77,6 +78,7 @@ public abstract class Game
 	{
 		Graphics.destroy();
 		Sound.destroy();
+		Controllers.destroy();
 		
 		System.out.println("Bye, bye!");
 		System.exit(0);
