@@ -10,7 +10,7 @@ import org.lwjgl.opengl.DisplayMode;
 import org.newdawn.slick.openal.SoundStore;
 
 import com.sevensoupcans.sfsoftware.util.Clock;
-import com.sevensoupcans.sfsoftware.util.Sound;
+import com.sevensoupcans.sfsoftware.util.audio.Sound;
 import com.sevensoupcans.sfsoftware.util.graphics.Graphics;
 import com.sevensoupcans.sfsoftware.util.graphics.RGBA;
 import com.sevensoupcans.sfsoftware.util.graphics.Sprite;
