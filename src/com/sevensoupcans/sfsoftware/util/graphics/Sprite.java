@@ -115,6 +115,8 @@ public class Sprite {
 				|| y < (0 - height) || y > ((game.getPlayingFieldHeight() * game.getTileSize()) + height));
 	}
 	
+	private boolean visible = true;
+	
 	private float red = 1.0f;
 	private float green = 1.0f;
 	private float blue = 1.0f;
@@ -198,6 +200,8 @@ public class Sprite {
 	public void draw(int x, int y, int width, int height, int srcX, int srcY, int srcWidth, int srcHeight, 
 			float red, float green, float blue, float alpha)
 	{	
+		if(!(this.visible)) return;
+		
 		Sprite.draw(x, y, associatedTexture.getName(), width, height, srcX, srcY, 
 				srcWidth, srcHeight, red, green, blue, alpha);
 	}
@@ -242,14 +246,14 @@ public class Sprite {
 		return srcY;
 	}
 	
-	public String getTextureName()
-	{
-		return associatedTexture.getName();
-	}
-	
 	public Texture getTexture()
 	{
 		return associatedTexture;
+	}
+	
+	public String getTextureName()
+	{
+		return associatedTexture.getName();
 	}
 	
 	public int getTop()
@@ -330,6 +334,11 @@ public class Sprite {
 		associatedTexture = Texture.getTexture(newTextureName);
 	}
 	
+	public boolean setVisible(boolean visible)
+	{
+		return (this.visible = visible);
+	}
+	
 	public void setWidth(int newWidth)
 	{
 		width = newWidth;
@@ -344,4 +353,10 @@ public class Sprite {
 	{
 		y = destY;
 	}
+	
+	public boolean toggleVisibility()
+	{
+		return (this.visible = !(this.visible));
+	}
+	
 }
