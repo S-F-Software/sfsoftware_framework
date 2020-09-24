@@ -282,27 +282,38 @@ public class Sprite {
 		return (x < (0 - getWidth()) || x > ((game.getPlayingFieldWidth() * game.getTileSize()) + getWidth()) 
 				|| y < (0 - getHeight()) || y > ((game.getPlayingFieldHeight() * game.getTileSize()) + getHeight()));		
 	}
+	
+	public boolean isVisible()
+	{
+		return this.visible;
+	}
+	
 	public void move(float destX, float destY)
 	{
 		move(Math.round(destX), Math.round(destY));
 	}	
+	
 	public void move(int destX, int destY)
 	{
 		x = destX;
 		y = destY;
 	}
+	
 	public float setAlpha(float alpha)
 	{
 		return (this.alpha = alpha);
 	}
+	
 	public float setBlue(float blue)
 	{
 		return (this.blue = blue);
-	}	
+	}
+	
 	public float setGreen(float green)
 	{
 		return (this.green = green);
 	}
+	
 	public void setHeight(int newHeight)
 	{
 		height = newHeight;
