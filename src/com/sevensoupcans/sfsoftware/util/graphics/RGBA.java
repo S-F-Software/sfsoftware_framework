@@ -4,7 +4,7 @@ import java.awt.Color;
 
 import org.lwjgl.opengl.GL11;
 
-public class RGBA {
+public final class RGBA {
 	
 	public static final RGBA RED = new RGBA(1.0f, 0.0f, 0.0f, 1.0f);
 	public static final RGBA GREEN = new RGBA(0.0f, 1.0f, 0.0f, 1.0f);

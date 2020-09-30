@@ -59,27 +59,27 @@ public class FillBar {
 			font.drawString(x + (width / 2) - (font.getWidth(statusText) / 2), y + 2, statusText);
 	}
 	
-	public int getMaxValue()
+	public final int getMaxValue()
 	{
 		return this.maxValue;
 	}
 	
-	public int getValue()
+	public final int getValue()
 	{
 		return this.value;
 	}
 	
-	public void setBordered(boolean hasBorder)
+	public final void setBordered(boolean hasBorder)
 	{
 		this.hasBorder = hasBorder;
 	}
 	
-	public void setMaxValue(int maxValue)
+	public final void setMaxValue(int maxValue)
 	{
 		this.maxValue = maxValue;
 	}
 	
-	public void setValue(int value)
+	public final void setValue(int value)
 	{
 		this.value = value;
 	}

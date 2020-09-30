@@ -18,7 +18,7 @@ public class Actor extends Sprite implements Collidable
 	
 	protected final static Vector<Actor> cast = new Vector<Actor>();
 	
-	public static double getAngle(Actor a, Actor b)
+	public final static double getAngle(Actor a, Actor b)
 	{
 		double dx = a.getCenterX() - b.getCenterX(); // (a.getX() + (a.getWidth() / 2)) - (b.getX() + (b.getWidth() / 2));
 		double dy = a.getCenterY() - b.getCenterY(); // (a.getY() + (a.getHeight() / 2)) - (b.getY() + (b.getHeight() / 2));
@@ -36,12 +36,12 @@ public class Actor extends Sprite implements Collidable
 		
 		return inRads;
 	}
-	public static Vector<Actor> getCast()
+	public final static Vector<Actor> getCast()
 	{
 		return cast;
 	}
 			
-	public static void remove(Actor a)
+	public final static void remove(Actor a)
 	{
 		cast.remove(a);
 	}
@@ -172,7 +172,7 @@ public class Actor extends Sprite implements Collidable
 		return (int) Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
 	}
 	
-	protected int distanceToPoint(int x, int y)
+	protected final int distanceToPoint(int x, int y)
 	{
 		return (int) Math.sqrt((x - getCenterX()) * (x - getCenterX()) + (y - getCenterY()) * (y - getCenterY()));		
 	}	
@@ -198,12 +198,12 @@ public class Actor extends Sprite implements Collidable
 		}
 	}	
 	
-	protected double getAngleFromActor(Actor a)
+	protected final double getAngleFromActor(Actor a)
 	{
 		return getAngle(a, this);
 	}	
 	
-	protected double getAngleFromPoint(double x, double y)
+	protected final double getAngleFromPoint(double x, double y)
 	{
 		double dx = x - getCenterX(); // (getX() + (getWidth() / 2)) - x;
 		double dy = y - getCenterY(); // (getY() + (getHeight() / 2)) - y;
@@ -222,12 +222,12 @@ public class Actor extends Sprite implements Collidable
 		return inRads;
 	}
 	
-	protected double getAngleToActor(Actor b)
+	protected final double getAngleToActor(Actor b)
 	{
 		return getAngle(this, b);
 	}
 	
-	protected double getAngleToPoint(double x, double y)
+	protected final double getAngleToPoint(double x, double y)
 	{
 		double dx = getCenterX() - x;
 		double dy = getCenterY() - y;
@@ -246,7 +246,7 @@ public class Actor extends Sprite implements Collidable
 		return inRads;
 	}		
 	
-	public Tile getCurrentTile()
+	public final Tile getCurrentTile()
 	{		
 		Tile[][] tilemap = getGame().getTileMap().getMap();
 		
@@ -256,13 +256,13 @@ public class Actor extends Sprite implements Collidable
 		return tilemap[xTile][yTile];
 	}
 	
-	public int getCurrentTileX()
+	public final int getCurrentTileX()
 	{
 		int xTile = (int) Math.floor((getCenterX() - playingFieldX) / TILE_SIZE);
 		return xTile;
 	}		
 	
-	public int getCurrentTileY()
+	public final int getCurrentTileY()
 	{		
 		int yTile = (int) Math.floor((getCenterY() - playingFieldY) / TILE_SIZE);
 		return yTile;
@@ -283,7 +283,7 @@ public class Actor extends Sprite implements Collidable
 		return zOrder;
 	}
 	
-	protected boolean hasLineOfSightToActor(Actor a)
+	protected final boolean hasLineOfSightToActor(Actor a)
 	{
 		boolean ableToSeeActor = true;
 		double directionAngle = getAngleToActor(a);
@@ -328,7 +328,7 @@ public class Actor extends Sprite implements Collidable
 		return ableToSeeActor;		
 	}
 	
-	public boolean isWalkable()
+	public final boolean isWalkable()
 	{
 		return isWalkable;
 	}	
@@ -354,7 +354,7 @@ public class Actor extends Sprite implements Collidable
 		speed = newSpeed;
 	}	
 	
-	public void setWalkable(boolean b)
+	public final void setWalkable(boolean b)
 	{
 		isWalkable = b;
 	}
@@ -367,18 +367,18 @@ public class Actor extends Sprite implements Collidable
 	/**
 	 * Snaps an Actor to the tile on the playing field that there center coordinates sit in.
 	 */
-	public void snap()
+	public final void snap()
 	{
 		snapX();
 		snapY();
 	}	
 	
-	protected void snapX()
+	protected final void snapX()
 	{
 		setX(getCurrentTile().getCenterX() - (this.getWidth() / 2));
 	}
 	
-	protected void snapY()
+	protected final void snapY()
 	{				
 		setY(getCurrentTile().getCenterY() - (this.getHeight() / 2));		
 	}

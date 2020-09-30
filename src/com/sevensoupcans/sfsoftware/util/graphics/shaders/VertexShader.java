@@ -1,6 +1,6 @@
 package com.sevensoupcans.sfsoftware.util.graphics.shaders;
 
-public class VertexShader extends Shader {
+public final class VertexShader extends Shader {
 	
 	public VertexShader(String fileContents)
 	{

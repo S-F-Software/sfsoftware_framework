@@ -58,12 +58,12 @@ public class TextConsole implements UserInput
 		}
 	}
 	
-	public boolean isOpen()
+	public final boolean isOpen()
 	{
 		return consoleOpen;
 	}
 	
-	public int getLineCount()
+	public final int getLineCount()
 	{
 		return getLines().length;
 	}

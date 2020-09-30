@@ -4,7 +4,7 @@ import java.util.Vector;
 
 import org.lwjgl.input.Keyboard;
 
-public class Kboard implements InputDevice {		
+public final class Kboard implements InputDevice {		
 	public static final int[] leftKeys = 	{Keyboard.KEY_A, Keyboard.KEY_LEFT};
 	public static final int[] rightKeys = {Keyboard.KEY_D, Keyboard.KEY_RIGHT};
 	public static final int[] upKeys = 	{Keyboard.KEY_W, Keyboard.KEY_UP};

@@ -1,6 +1,6 @@
 package com.sevensoupcans.sfsoftware.util.graphics.shaders;
 
-public class FragmentShader extends Shader {
+public final class FragmentShader extends Shader {
 
 	public FragmentShader(String fileContents)
 	{

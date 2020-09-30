@@ -6,7 +6,7 @@ import java.util.Vector;
 import com.sevensoupcans.sfsoftware.util.Clock;
 import com.sevensoupcans.sfsoftware.util.Updatable;
 
-public class FloatingText implements Updatable {
+public final class FloatingText implements Updatable {
 	private static Vector<FloatingText> floaters = new Vector<FloatingText>();
 	private static final TextureFont FLOATING_TEXT_FONT;
 	private Clock fadeClock = new Clock(10);
@@ -74,7 +74,7 @@ public class FloatingText implements Updatable {
 		
 		for(int i = 0; i < c.length; i++)		
 		{
-			FloatingText p = ((FloatingText) c[i]);
+			FloatingText p = (c[i]);
 			p.update();		
 		}
 	}	

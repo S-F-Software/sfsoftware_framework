@@ -7,7 +7,7 @@ import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Controller;
 import org.lwjgl.input.Controllers;
 
-public class Gamepad implements InputDevice
+public final class Gamepad implements InputDevice
 {
 	private static final Controller[] AVAILABLE_DEVICES;
 	

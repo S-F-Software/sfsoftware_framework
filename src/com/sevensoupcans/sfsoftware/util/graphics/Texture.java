@@ -25,7 +25,7 @@ import org.lwjgl.opengl.GL11;
 
 import com.sevensoupcans.sfsoftware.util.BufferUtils;
 
-public class Texture 
+public final class Texture 
 {
 	private static final RGBA DEFAULT_TRANSPARENT_COLOR = new RGBA(1.0f, 0.0f, 1.0f);
 	private static HashMap <String, Texture> loadedTextures = new HashMap<String, Texture>();

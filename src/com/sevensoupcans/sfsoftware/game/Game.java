@@ -59,7 +59,7 @@ public abstract class Game
 	 * @param loadingDetails An ArrayList containing loading detail text
 	 * @param font The TextureFont used to handle drawing the detail text
 	 */
-	public void drawLoadingScreen(java.util.ArrayList<String> loadingDetails, TextureFont font)
+	public final void drawLoadingScreen(java.util.ArrayList<String> loadingDetails, TextureFont font)
 	{
 		Graphics.clear();
 		
@@ -74,7 +74,7 @@ public abstract class Game
 		Graphics.update();
 	}	
 	
-	protected void end()
+	protected final void end()
 	{
 		Graphics.destroy();
 		Sound.destroy();
@@ -84,7 +84,7 @@ public abstract class Game
 		System.exit(0);
 	}
 	
-	protected String getClassOriginPath()
+	protected final String getClassOriginPath()
 	{
 		String path = this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
 		if(path.indexOf("bin/") > -1)
@@ -106,17 +106,17 @@ public abstract class Game
 		return Clock.getFormattedHoursMinutes(gameCounter);
 	}
 	
-	public GameState getGameState()
+	public final GameState getGameState()
 	{
 		return gameState;
 	}
 	
-	public InputDevice getInputDevice()
+	public final InputDevice getInputDevice()
 	{
 		return inputDevice;
 	}
 	
-	public Preferences getPreferences()
+	public final Preferences getPreferences()
 	{	
 		return PREFERENCES;
 	}	
@@ -126,12 +126,12 @@ public abstract class Game
 		return getClassOriginPath() + "res/"; 
 	}	
 	
-	public int getScreenHeight()
+	public final int getScreenHeight()
 	{
 		return screenHeight;
 	}
 	
-	public int getScreenWidth()
+	public final int getScreenWidth()
 	{
 		return screenWidth;
 	}		
@@ -141,12 +141,12 @@ public abstract class Game
 		return Tile.getDefaultTileSize();
 	}
 	
-	public int getGameHashCode()
+	public final int getGameHashCode()
 	{
 		return gameTitle.hashCode();
 	}
 	
-	public String getGameTitle()
+	public final String getGameTitle()
 	{
 		return gameTitle;
 	}
@@ -157,7 +157,7 @@ public abstract class Game
 		return getGameCounter();
 	}
 
-	public boolean inDebugMode()
+	public final boolean inDebugMode()
 	{
 		return debugMode;
 	}	
@@ -206,7 +206,7 @@ public abstract class Game
 		}
 	}
 	
-	public boolean isRunning()
+	public final boolean isRunning()
 	{
 		return running;
 	}
@@ -225,7 +225,7 @@ public abstract class Game
 	 * @param height The height of the display required
 	 * @param fullscreen True if we want fullscreen mode
 	 */
-	public static void setDisplayMode(int width, int height, boolean fullscreen) 
+	public final static void setDisplayMode(int width, int height, boolean fullscreen) 
 	{
 
 	    // return if requested DisplayMode is already set
@@ -284,7 +284,7 @@ public abstract class Game
 	 * Sets the state of the game based on the provided GameState
 	 * @param s
 	 */
-	public void setGameState(GameState s)
+	public final void setGameState(GameState s)
 	{
 		gameState = s;
 	}
@@ -293,7 +293,7 @@ public abstract class Game
 	 * Sets the game title
 	 * @param s
 	 */
-	protected void setGameTitle(String s)
+	protected final void setGameTitle(String s)
 	{
 		gameTitle = s;
 	}
@@ -302,7 +302,7 @@ public abstract class Game
 	 * Sets the game's InputDevice
 	 * @param device
 	 */
-	public void setInputDevice(InputDevice device)
+	public final void setInputDevice(InputDevice device)
 	{
 		this.inputDevice = device;
 	}
@@ -311,7 +311,7 @@ public abstract class Game
 	 * Sets the boolean indicating the game is running
 	 * @param arg0
 	 */
-	public void setRunning(boolean arg0)
+	public final void setRunning(boolean arg0)
 	{
 		running = arg0;
 	}		

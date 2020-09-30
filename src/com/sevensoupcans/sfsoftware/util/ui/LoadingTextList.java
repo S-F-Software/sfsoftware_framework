@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import com.sevensoupcans.sfsoftware.game.Game;
 import com.sevensoupcans.sfsoftware.util.graphics.TextureFont;
 
-public class LoadingTextList<E> extends LoggedList<E> 
+public final class LoadingTextList<E> extends LoggedList<E> 
 {	
 	private static final long serialVersionUID = 1L;
 

@@ -17,7 +17,7 @@ import org.newdawn.slick.util.ResourceLoader;
 import com.sevensoupcans.sfsoftware.util.resources.ClasspathHelper;
 import com.sevensoupcans.sfsoftware.util.resources.FileUtils;
 
-public class Sound 
+public final class Sound 
 {
 	public static final String AUDIO_PATH = "res/audio";
 	private static boolean verbose = false;

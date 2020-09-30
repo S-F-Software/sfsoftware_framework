@@ -3,7 +3,7 @@ package com.sevensoupcans.sfsoftware.util.tile;
 import com.sevensoupcans.sfsoftware.util.MathUtils;
 import com.sevensoupcans.sfsoftware.util.graphics.Sprite;
 
-public class TileMapSpriteIntersection {
+public final class TileMapSpriteIntersection {
 
 	private final boolean bottomLeft;
 	private final boolean bottomRight;	

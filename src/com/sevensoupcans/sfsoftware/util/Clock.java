@@ -4,10 +4,10 @@ import java.util.ArrayList;
 
 import com.sevensoupcans.sfsoftware.game.Game;
 
-public class Clock 
+public final class Clock 
 {
-	private static char SEPARATOR = ':';
-	private static ArrayList<Clock> clocks = new ArrayList<Clock>();	
+	private final static char SEPARATOR = ':';
+	private final static ArrayList<Clock> clocks = new ArrayList<Clock>();	
 	private static long lastTick;
 	
 	private int clockInterval;
