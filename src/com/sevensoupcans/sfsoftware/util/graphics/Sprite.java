@@ -206,6 +206,16 @@ public class Sprite {
 				srcWidth, srcHeight, red, green, blue, alpha);
 	}
 	
+	public float getAlpha()
+	{
+		return this.alpha;
+	}
+
+	public float getBlue()
+	{
+		return this.blue;
+	}
+	
 	public int getBottom()
 	{
 		return (y + height);
@@ -221,6 +231,11 @@ public class Sprite {
 		return (y + (height / 2));
 	}
 	
+	public float getGreen()
+	{
+		return this.green;
+	}
+	
 	public int getHeight()
 	{
 		return height;
@@ -229,6 +244,11 @@ public class Sprite {
 	public int getLeft()
 	{
 		return x;
+	}
+	
+	public float getRed()
+	{
+		return this.red;
 	}
 	
 	public int getRight()

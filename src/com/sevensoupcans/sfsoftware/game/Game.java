@@ -101,7 +101,7 @@ public abstract class Game
 		return path;
 	}
 	
-	public String getGameCounter()
+	public final String getGameCounter()
 	{
 		return Clock.getFormattedHoursMinutes(gameCounter);
 	}
@@ -151,7 +151,7 @@ public abstract class Game
 		return gameTitle;
 	}
 	
-	public String incrementGameCounter()
+	public final String incrementGameCounter()
 	{
 		gameCounter++;
 		return getGameCounter();

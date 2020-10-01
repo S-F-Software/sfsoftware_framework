@@ -139,7 +139,7 @@ public class Actor extends Sprite implements Collidable
 				int newX = (int) (getX() + Math.round(getSpeed() * dirX));
 				int newY = (int) (getY() + Math.round(getSpeed() * dirY));				
 				// Create a temporary Actor object representing where OUR actor WILL move
-				Actor temp = new Actor(newX, newY, "", 0, 0, getWidth(), getHeight(), getGame());								
+				Actor temp = new Actor(newX, newY, "", 0, 0, getWidth(), getHeight(), getAssociatedGame());								
 				// Check using our collidingWith method if the two objects are colliding!
 				if(a.collidingWith(temp))
 				{
@@ -248,7 +248,7 @@ public class Actor extends Sprite implements Collidable
 	
 	public final Tile getCurrentTile()
 	{		
-		Tile[][] tilemap = getGame().getTileMap().getMap();
+		Tile[][] tilemap = getAssociatedGame().getTileMap().getMap();
 		
 		int xTile = Math.max(0, Math.min(tilemap.length - 1, getCurrentTileX()));
 		int yTile = Math.max(0, Math.min(tilemap[0].length - 1, getCurrentTileY()));		
@@ -268,7 +268,7 @@ public class Actor extends Sprite implements Collidable
 		return yTile;
 	}
 	
-	public Game getGame()
+	public Game getAssociatedGame()
 	{
 		return ASSOCIATED_GAME;
 	}
@@ -298,7 +298,7 @@ public class Actor extends Sprite implements Collidable
 			int xTile = (int) Math.floor((xPoint - playingFieldX) / TILE_SIZE);
 			int yTile = (int) Math.floor((yPoint - playingFieldY) / TILE_SIZE);	
 			
-			if(getGame().inDebugMode())
+			if(getAssociatedGame().inDebugMode())
 			{
 				Graphics.drawQuad(xPoint, yPoint, 1, 1, 1, 0, 1, 1);
 			}
@@ -312,7 +312,7 @@ public class Actor extends Sprite implements Collidable
 			
 			try
 			{
-				Tile[][] tileMap = getGame().getTileMap().getMap();
+				Tile[][] tileMap = getAssociatedGame().getTileMap().getMap();
 				if(!(tileMap[xTile][yTile].isWalkable()))
 				{
 					ableToSeeActor = false;
