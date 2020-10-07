@@ -3,6 +3,7 @@ package com.sevensoupcans.sfsoftware.util.ui;
 import com.sevensoupcans.sfsoftware.util.graphics.Graphics;
 import com.sevensoupcans.sfsoftware.util.graphics.RGBA;
 import com.sevensoupcans.sfsoftware.util.graphics.TextureFont;
+import com.sevensoupcans.sfsoftware.util.graphics.geometry.Quad;
 
 public class FillBar {
 	
@@ -38,7 +39,7 @@ public class FillBar {
 		if(hasBorder)
 			Graphics.drawRect(x, y, width, height, borderColor, 2);
 		
-		Graphics.drawQuad(x + 2, y + 2, (width - 4), (height - 4), emptyColorTop, emptyColorTop, 
+		Quad.draw(x + 2, y + 2, (width - 4), (height - 4), emptyColorTop, emptyColorTop, 
 				emptyColorBottom, emptyColorBottom);							
 		
 		if(displayValue < value)
@@ -52,7 +53,7 @@ public class FillBar {
 		
 		float displayWidth = (((float) displayValue) / maxValue) * (width - 4);
 		
-		Graphics.drawQuad(x + 2, y + 2, displayWidth, (height - 4), fillColorTop, fillColorTop, 
+		Quad.draw(x + 2, y + 2, displayWidth, (height - 4), fillColorTop, fillColorTop, 
 				fillColorBottom, fillColorBottom);
 		
 		if(statusText != null && !(statusText.equals("")))

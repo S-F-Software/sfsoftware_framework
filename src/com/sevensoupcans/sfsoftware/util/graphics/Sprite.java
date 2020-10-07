@@ -4,8 +4,10 @@ import org.lwjgl.opengl.GL11;
 
 import com.sevensoupcans.sfsoftware.game.Game;
 import com.sevensoupcans.sfsoftware.game.actor.attributes.Collidable;
+import com.sevensoupcans.sfsoftware.util.graphics.geometry.Quad;
+import com.sevensoupcans.sfsoftware.util.tile.TileMap;
 
-public class Sprite {
+public class Sprite extends Quad {
 	
 	public static void draw(float x, float y, String textureName, int width, int height, int srcX, int srcY, 
 			int srcWidth, int srcHeight)
@@ -117,20 +119,12 @@ public class Sprite {
 	
 	private boolean visible = true;
 	
-	private float red = 1.0f;
-	private float green = 1.0f;
-	private float blue = 1.0f;
-	private float alpha = 1.0f;
+	private float rotationAngle = 0;
 	
-	private int x;	
-	private int y;
 	private int srcX;
 	private int srcY;
 	
 	private Texture associatedTexture;
-	private int height = 0;
-	
-	private int width = 0;
 
 	public Sprite(int destX, int destY, String textureName)
 	{		
@@ -139,8 +133,12 @@ public class Sprite {
 	
 	public Sprite(int destX, int destY, String textureName, int destSrcX, int destSrcY)
 	{
-		x = destX;
-		y = destY;
+		this(destX, destY, textureName, 0, 0, destSrcX, destSrcY);
+	}
+	
+	public Sprite(int destX, int destY, String textureName, int width, int height, int destSrcX, int destSrcY)
+	{
+		super(destX, destY, width, height);		
 
 		if(!(textureName.equals("")) && !(Texture.isTextureLoaded(textureName))) System.out.println("The texture '" + textureName + "' was not found.");
 		
@@ -152,6 +150,21 @@ public class Sprite {
 	public Sprite(int destX, int destY, Texture texture)
 	{
 		this(destX, destY, texture.getName());
+	}
+	
+	public final boolean areCornersOnTexture(TileMap tileMap, String textureName)
+	{
+		if(tileMap.getTextureAtPoint(this.getLeft(), this.getTop()).getName().equals(textureName)) return true;
+		if(tileMap.getTextureAtPoint(this.getRight(), this.getTop()).getName().equals(textureName)) return true;
+		if(tileMap.getTextureAtPoint(this.getLeft(), this.getBottom()).getName().equals(textureName)) return true;
+		if(tileMap.getTextureAtPoint(this.getRight(), this.getBottom()).getName().equals(textureName)) return true;	
+		
+		return false;
+	}
+	
+	public final boolean areCornersOnTexture(TileMap tileMap, Texture texture)
+	{
+		return this.areCornersOnTexture(tileMap, texture.getName());
 	}
 	
 	public boolean collidingWith(Collidable object) 
@@ -174,9 +187,15 @@ public class Sprite {
 		return isColliding;		
 	}
 	
+	@Override
+	public void draw()
+	{
+		draw(this.getWidth(), this.getHeight());
+	}
+	
 	public void draw(int width, int height)
 	{
-		draw(width, height, srcX, srcY, width, height);
+		draw(width, height, this.getSrcX(), this.getSrcY(), width, height);
 	}
 	
 	// Only use this for non-scaled sprites. Assumes the source dimensions are the same as the destination ones.
@@ -187,8 +206,9 @@ public class Sprite {
 	
 	public void draw(int width, int height, int srcX, int srcY, int srcWidth, int srcHeight)
 	{	
-		draw(width, height, srcX, srcY, srcWidth, srcHeight, this.red, this.green, this.blue, this.alpha);
-	}	
+		draw(width, height, srcX, srcY, srcWidth, srcHeight, 
+				this.getRed(), this.getGreen(), this.getBlue(), this.getAlpha());
+	}
 	
 	public void draw(int width, int height, int srcX, int srcY, int srcWidth, int srcHeight, 
 			float red, float green, float blue, float alpha)
@@ -200,101 +220,56 @@ public class Sprite {
 	public void draw(int x, int y, int width, int height, int srcX, int srcY, int srcWidth, int srcHeight, 
 			float red, float green, float blue, float alpha)
 	{	
+		draw((int) this.getX(), (int) this.getY(), width, height, srcX, srcY, 
+				srcWidth, srcHeight, red, green, blue, alpha, this.getRotationAngle());
+	}
+	
+	public void draw(int x, int y, int width, int height, int srcX, int srcY, int srcWidth, int srcHeight, 
+			float red, float green, float blue, float alpha, float rotationAngle)
+	{	
 		if(!(this.visible)) return;
 		
-		Sprite.draw(x, y, associatedTexture.getName(), width, height, srcX, srcY, 
-				srcWidth, srcHeight, red, green, blue, alpha);
-	}
-	
-	public float getAlpha()
-	{
-		return this.alpha;
-	}
+		String textureName = associatedTexture != null ? associatedTexture.getName() : null;
+		
+		Sprite.draw(x, y, textureName, width, height, srcX, srcY, srcWidth, srcHeight, 
+				red, green, blue, alpha, rotationAngle);
+	}	
 
-	public float getBlue()
+	
+	public final float getRotationAngle()
 	{
-		return this.blue;
+		return this.rotationAngle;
 	}
 	
-	public int getBottom()
-	{
-		return (y + height);
-	}
-	
-	public int getCenterX()
-	{
-		return (x + (width / 2));
-	}
-	
-	public int getCenterY()
-	{
-		return (y + (height / 2));
-	}
-	
-	public float getGreen()
-	{
-		return this.green;
-	}
-	
-	public int getHeight()
-	{
-		return height;
-	}
-	
-	public int getLeft()
-	{
-		return x;
-	}
-	
-	public float getRed()
-	{
-		return this.red;
-	}
-	
-	public int getRight()
-	{
-		return (x + width);
-	}
-	
-	public int getSrcX()
+	public final int getSrcX()
 	{
 		return srcX;
 	}
 	
-	public int getSrcY()
+	public final int getSrcY()
 	{
 		return srcY;
 	}
 	
-	public Texture getTexture()
+	public final Texture getTexture()
 	{
 		return associatedTexture;
 	}
 	
-	public String getTextureName()
+	public final String getTextureName()
 	{
-		return associatedTexture.getName();
+		return (associatedTexture != null ? associatedTexture.getName() : "");
 	}
 	
-	public int getTop()
+	public final boolean isCenterOnTexture(TileMap tileMap, String textureName)
 	{
-		return y;
+		return (tileMap.getTextureAtPoint(this.getCenterX(), this.getCenterY()).getName().equals(textureName));
 	}
-	
-	public int getWidth()
+	public final boolean isCenterOnTexture(TileMap tileMap, Texture texture)
 	{
-		return width;
+		return this.isCenterOnTexture(tileMap, texture.getName());
 	}
-	
-	public float getX()
-	{
-		return x;
-	}
-	public float getY()
-	{
-		return y;
-	}
-	public boolean isOutOfGameBounds(Game game)
+	public final boolean isOutOfGameBounds(Game game)
 	{
 		int x = (int) getX();
 		int y = (int) getY();
@@ -303,7 +278,7 @@ public class Sprite {
 				|| y < (0 - getHeight()) || y > ((game.getPlayingFieldHeight() * game.getTileSize()) + getHeight()));		
 	}
 	
-	public boolean isVisible()
+	public final boolean isVisible()
 	{
 		return this.visible;
 	}
@@ -315,34 +290,14 @@ public class Sprite {
 	
 	public void move(int destX, int destY)
 	{
-		x = destX;
-		y = destY;
-	}
-	
-	public float setAlpha(float alpha)
-	{
-		return (this.alpha = alpha);
-	}
-	
-	public float setBlue(float blue)
-	{
-		return (this.blue = blue);
-	}
-	
-	public float setGreen(float green)
-	{
-		return (this.green = green);
-	}
-	
-	public void setHeight(int newHeight)
-	{
-		height = newHeight;
-	}
+		this.setX(destX);
+		this.setY(destY);
+	}		
 
-	public float setRed(float red)
+	public final float setRotationAngle(float rotationAngle)
 	{
-		return (this.red = red);
-	}	
+		return (this.rotationAngle = rotationAngle);
+	}
 	
 	public void setSrc(int sourceX, int sourceY)
 	{
@@ -365,27 +320,12 @@ public class Sprite {
 		associatedTexture = Texture.getTexture(newTextureName);
 	}
 	
-	public boolean setVisible(boolean visible)
+	public final boolean setVisible(boolean visible)
 	{
 		return (this.visible = visible);
 	}
 	
-	public void setWidth(int newWidth)
-	{
-		width = newWidth;
-	}
-	
-	public void setX(int destX)
-	{
-		x = destX;
-	}
-	
-	public void setY(int destY)
-	{
-		y = destY;
-	}
-	
-	public boolean toggleVisibility()
+	public final boolean toggleVisibility()
 	{
 		return (this.visible = !(this.visible));
 	}

@@ -8,9 +8,9 @@ import org.lwjgl.input.Keyboard;
 
 import com.sevensoupcans.sfsoftware.game.Game;
 import com.sevensoupcans.sfsoftware.util.Clock;
-import com.sevensoupcans.sfsoftware.util.graphics.Graphics;
 import com.sevensoupcans.sfsoftware.util.graphics.RGBA;
 import com.sevensoupcans.sfsoftware.util.graphics.TextureFont;
+import com.sevensoupcans.sfsoftware.util.graphics.geometry.Quad;
 import com.sevensoupcans.sfsoftware.util.input.InputDevice;
 import com.sevensoupcans.sfsoftware.util.input.Kboard;
 import com.sevensoupcans.sfsoftware.util.input.UserInput;
@@ -163,8 +163,8 @@ public class TextConsole implements UserInput
 		{
 			float alpha = Math.min((((float) yPos + 240) / 240), 0.75f);
 			
-			Graphics.drawQuad(0, yPos, game.getScreenWidth(), 240, new RGBA(r, g, b, alpha));				 
-			Graphics.drawQuad((game.getScreenWidth() - 8), yPos + ((float) cursorY / (getLineCount() - 15)) * 226, 4, 12, new RGBA(1.0f, 1.0f, 1.0f, alpha));		
+			Quad.draw(0, yPos, game.getScreenWidth(), 240, new RGBA(r, g, b, alpha));				 
+			Quad.draw((game.getScreenWidth() - 8), yPos + ((float) cursorY / (getLineCount() - 15)) * 226, 4, 12, new RGBA(1.0f, 1.0f, 1.0f, alpha));		
 			
 			
 			String[] lines = getLines(cursorY, getLines().length >= 15 ? 15 : getLines().length - 1);

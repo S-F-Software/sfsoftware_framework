@@ -15,6 +15,7 @@ import com.sevensoupcans.sfsoftware.util.graphics.Graphics;
 import com.sevensoupcans.sfsoftware.util.graphics.RGBA;
 import com.sevensoupcans.sfsoftware.util.graphics.Sprite;
 import com.sevensoupcans.sfsoftware.util.graphics.TextureFont;
+import com.sevensoupcans.sfsoftware.util.graphics.geometry.Quad;
 import com.sevensoupcans.sfsoftware.util.input.InputDevice;
 import com.sevensoupcans.sfsoftware.util.input.Kboard;
 import com.sevensoupcans.sfsoftware.util.input.Mouse;
@@ -69,8 +70,8 @@ public abstract class Game
 			font.drawString(35, (getScreenHeight() - 60) - (font.getHeight() * (size - 1)), s);
 			size--;
 		}
-		Graphics.drawQuad(0, 0, getScreenWidth(), (getScreenHeight() / 2), 0, 0, 0, 1);
-		Graphics.drawQuad(0, (getScreenHeight() / 2), getScreenWidth(), (getScreenHeight() / 2), new RGBA(0,0,0,1), new RGBA(0,0,0,1), new RGBA(0,0,0,0), new RGBA(0,0,0,0));
+		Quad.draw(0, 0, getScreenWidth(), (getScreenHeight() / 2), 0, 0, 0, 1);
+		Quad.draw(0, (getScreenHeight() / 2), getScreenWidth(), (getScreenHeight() / 2), new RGBA(0,0,0,1), new RGBA(0,0,0,1), new RGBA(0,0,0,0), new RGBA(0,0,0,0));
 		Graphics.update();
 	}	
 	

@@ -19,6 +19,8 @@ import org.lwjgl.opengl.GLContext;
 import org.newdawn.slick.opengl.PNGDecoder;
 import org.newdawn.slick.util.ResourceLoader;
 
+import com.sevensoupcans.sfsoftware.util.graphics.geometry.Circle;
+import com.sevensoupcans.sfsoftware.util.graphics.geometry.Quad;
 import com.sevensoupcans.sfsoftware.util.resources.ClasspathHelper;
 import com.sevensoupcans.sfsoftware.util.resources.FileUtils;
 
@@ -74,70 +76,34 @@ public abstract class Graphics
     	Display.destroy();
     }
     
+    @Deprecated
 	public static void drawCircle(float x, float y, float radius, float r1, float g1, float b1, float a1, float r2, float g2, float b2, float a2)
 	{
-		RGBA inner = new RGBA(r1, g1, b1, a1);
-		RGBA outer = new RGBA(r2, g2, b2, a2);
-		drawCircle(x, y, radius, inner, outer, 100);
+    	Circle.draw(x, y, radius, r1, g1, b1, a1, r2, g2, b2, a2);    	
 	}	
 	
+    @Deprecated
 	public static void drawCircle(float x, float y, float radius, float r, float g, float b, float a)
 	{
-		RGBA rgba = new RGBA(r, g, b, a);
-		drawCircle(x, y, radius, rgba, rgba, 100);
+    	Circle.draw(x, y, radius, r, g, b, a);    	
 	}
 	
+    @Deprecated
 	public static void drawCircle(float x, float y, float radius, RGBA innerRGBA, RGBA outerRGBA, int segments)
 	{		
-		GL11.glDisable(GL11.GL_TEXTURE_2D);
-		GL11.glColor4f(innerRGBA.getRed(), innerRGBA.getGreen(), innerRGBA.getBlue(), innerRGBA.getAlpha());	
-
-		GL11.glBegin(GL11.GL_TRIANGLE_FAN);
-	    GL11.glVertex2f(x, y); // Center of the circle
-	    
-	    GL11.glColor4f(outerRGBA.getRed(), outerRGBA.getGreen(), outerRGBA.getBlue(), outerRGBA.getAlpha());
-	    
-	    for (int i = 0; i <= segments; i++) // Last vertex same as first vertex 
-	    {
-	         double angle = i * 2.0 * Math.PI / segments;  // 360 deg for all segments
-	         GL11.glVertex2f(x + (float)Math.cos(angle) * radius, y + (float) Math.sin(angle) * radius);
-	    }
-		
-		GL11.glEnd();		
-		GL11.glEnable(GL11.GL_TEXTURE_2D);
+    	Circle.draw(x, y, radius, innerRGBA, outerRGBA, segments);    	    
 	}
 
+    @Deprecated
 	public static void drawCircleOutline(float x, float y, float radius, float r, float g, float b, float a)
 	{
-		drawCircleOutline(x, y, radius, r, g, b, a, 100, true);
+    	Circle.drawOutline(x, y, radius, r, g, b, a);    	
 	}	
 	
+    @Deprecated
 	public static void drawCircleOutline(float x, float y, float radius, float r, float g, float b, float a, int segments, boolean smooth)
 	{
-		GL11.glDisable(GL11.GL_TEXTURE_2D);
-		GL11.glColor4f(r,g,b,a);	
-
-		GL11.glBegin(GL11.GL_LINE_LOOP);
-		
-		if(smooth)
-		{
-			//GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-			//GL11.glEnable(GL11.GL_LINE_SMOOTH);
-		}
-	   		
-		for (int i = 0; i <= segments; i++) // Last vertex same as first vertex 
-    	{
-			double angle = i * 2.0 * Math.PI / segments;  // 360 deg for all segments
-			GL11.glVertex2f(x + (float)Math.cos(angle) * radius, y + (float) Math.sin(angle) * radius);
-    	}
-	
-	    if(smooth)
-	    {
-	    	//GL11.glDisable(GL11.GL_LINE_SMOOTH);
-	    }
-	    		
-		GL11.glEnd();						
-		GL11.glEnable(GL11.GL_TEXTURE_2D);
+    	Circle.drawOutline(x, y, radius, r, g, b, a, segments, smooth);    	
 	}
 
 	public static void drawDisplayBuffer(int x, int y, int width, int height)
@@ -186,50 +152,22 @@ public abstract class Graphics
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
 	}	
 	
+	@Deprecated
 	public static void drawQuad(float x, float y, float width, float height, RGBA rgba)
 	{	
-		drawQuad(x, y, width, height, rgba.getRed(), rgba.getGreen(), rgba.getBlue(), rgba.getAlpha());
+		Quad.draw(x, y, width, height, rgba);
 	}
 	
+	@Deprecated
 	public static void drawQuad(float x, float y, float width, float height, float r, float g, float b, float a)
 	{	
-		// set the color of the quad (R,G,B,A)
-		GL11.glDisable(GL11.GL_TEXTURE_2D);
-		GL11.glColor4f(r,g,b,a);		
-	    
-	    // draw quad
-	    GL11.glBegin(GL11.GL_QUADS);
-	    
-	    GL11.glVertex2f(x,y);
-		GL11.glVertex2f(x+width,y);
-		GL11.glVertex2f(x+width,y+height);
-		GL11.glVertex2f(x,y+height);
-	    
-		GL11.glEnd();
-		
-		GL11.glEnable(GL11.GL_TEXTURE_2D);
+		Quad.draw(x, y, width, height, r, g, b, a);
 	}
 	
+	@Deprecated
 	public static void drawQuad(float x, float y, float width, float height, RGBA topLeft, RGBA topRight, RGBA bottomLeft, RGBA bottomRight)
 	{	
-		// set the color of the quad (R,G,B,A)
-		GL11.glDisable(GL11.GL_TEXTURE_2D);		
-	    
-	    // draw quad
-	    GL11.glBegin(GL11.GL_QUADS);
-	    
-		GL11.glColor4f(topLeft.getRed(), topLeft.getGreen(), topLeft.getBlue(), topLeft.getAlpha());
-	    GL11.glVertex2f(x,y);
-		GL11.glColor4f(topRight.getRed(), topRight.getGreen(), topRight.getBlue(), topRight.getAlpha());
-		GL11.glVertex2f(x+width,y);
-		GL11.glColor4f(bottomRight.getRed(), bottomRight.getGreen(), bottomRight.getBlue(), bottomRight.getAlpha());
-		GL11.glVertex2f(x+width,y+height);
-		GL11.glColor4f(bottomLeft.getRed(), bottomLeft.getGreen(), bottomLeft.getBlue(), bottomLeft.getAlpha());
-		GL11.glVertex2f(x,y+height);
-	    
-		GL11.glEnd();
-		
-		GL11.glEnable(GL11.GL_TEXTURE_2D);
+		Quad.draw(x, y, width, height, topLeft, topRight, bottomLeft, bottomRight);		
 	}	
 	
 	public static void drawRect(float x, float y, float width, float height, RGBA rgba, int thickness)

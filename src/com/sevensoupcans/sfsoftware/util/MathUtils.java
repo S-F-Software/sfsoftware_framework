@@ -54,6 +54,16 @@ public abstract class MathUtils
 		return inRads;
 	}		
 	
+	public static int getNextEven(int value)
+	{
+		return value % 2 == 0 ? value : value + 1;
+	}
+	
+	public static int getNextOdd(int value)
+	{
+		return value % 2 == 1 ? value : value + 1;
+	}
+	
 	public static boolean inRange(int value, int min, int max) 
 	{
 		return (value>= min) && (value<= max);

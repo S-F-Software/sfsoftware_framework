@@ -6,8 +6,8 @@ import com.sevensoupcans.sfsoftware.game.Game;
 import com.sevensoupcans.sfsoftware.game.actor.attributes.Collidable;
 import com.sevensoupcans.sfsoftware.game.actor.attributes.Permanent;
 import com.sevensoupcans.sfsoftware.util.Updatable;
-import com.sevensoupcans.sfsoftware.util.graphics.Graphics;
 import com.sevensoupcans.sfsoftware.util.graphics.Sprite;
+import com.sevensoupcans.sfsoftware.util.graphics.geometry.Quad;
 import com.sevensoupcans.sfsoftware.util.graphics.particles.Particle;
 import com.sevensoupcans.sfsoftware.util.tile.Tile;
 
@@ -100,16 +100,16 @@ public class Actor extends Sprite implements Collidable
 	
 	public Actor(int destX, int destY, String texture, int srcX, int srcY, int destWidth, int destHeight, Game associatedGame) 
 	{
-		super(destX, destY, texture);
-		
-		setSrcX(srcX);
-		setSrcY(srcY);
+		super(destX, destY, texture);		
 		
 		this.ASSOCIATED_GAME = associatedGame;
 		this.TILE_SIZE = associatedGame.getTileMap().getTileSize();
 		
 		this.setHeight(destHeight);
-		this.setWidth(destWidth);			 		
+		this.setWidth(destWidth);
+		
+		this.setSrcX(srcX);
+		this.setSrcY(srcY);
 		
 		// Do not add the Player to our cast vector as this vector is cleared with each new room
 		if(!(this instanceof Permanent))			
@@ -177,6 +177,7 @@ public class Actor extends Sprite implements Collidable
 		return (int) Math.sqrt((x - getCenterX()) * (x - getCenterX()) + (y - getCenterY()) * (y - getCenterY()));		
 	}	
 	
+	@Override
 	public void draw()
 	{
 		super.draw(getWidth(), getHeight());
@@ -186,7 +187,7 @@ public class Actor extends Sprite implements Collidable
 	{
 		for(int i = 0; i < particleCount; i++)
 		{
-			new Particle((int)(getX() + (int) (Math.random() * getWidth())), (int)(getY() + (int) (Math.random() * getHeight())), red, green, blue, 2);
+			new Particle((int)(getX() + (int) (Math.random() * getWidth())), (int)(getY() + (int) (Math.random() * getHeight())), red, green, blue, (byte) 2);
 		}
 	}	
 	
@@ -194,7 +195,7 @@ public class Actor extends Sprite implements Collidable
 	{
 		for(int i = 0; i < particleCount; i++)
 		{
-			new Particle((int)(getX() + (int) (Math.random() * getWidth())), (int)(getY() + (int) (Math.random() * getHeight())), red, green, blue, size);
+			new Particle((int)(getX() + (int) (Math.random() * getWidth())), (int)(getY() + (int) (Math.random() * getHeight())), red, green, blue, (byte) size);
 		}
 	}	
 	
@@ -300,7 +301,7 @@ public class Actor extends Sprite implements Collidable
 			
 			if(getAssociatedGame().inDebugMode())
 			{
-				Graphics.drawQuad(xPoint, yPoint, 1, 1, 1, 0, 1, 1);
+				Quad.draw(xPoint, yPoint, 1, 1, 1, 0, 1, 1);
 			}
 			
 			// TODO Check if the point intersects with any non-walkable Actors.

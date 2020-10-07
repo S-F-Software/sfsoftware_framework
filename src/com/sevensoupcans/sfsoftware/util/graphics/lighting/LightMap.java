@@ -10,6 +10,7 @@ import com.sevensoupcans.sfsoftware.game.actor.Actor;
 import com.sevensoupcans.sfsoftware.util.graphics.FrameBuffer;
 import com.sevensoupcans.sfsoftware.util.graphics.Graphics;
 import com.sevensoupcans.sfsoftware.util.graphics.RGBA;
+import com.sevensoupcans.sfsoftware.util.graphics.geometry.Quad;
 
 public class LightMap {
 
@@ -79,7 +80,7 @@ public class LightMap {
 		RGBA quadColor = new RGBA(baselineColor.getRed(), baselineColor.getGreen(), baselineColor.getBlue(), alpha);
 		
 		Graphics.setBuffer(lightMapFrameBuffer);		
-		Graphics.drawQuad(0, 0, lightMapFrameBuffer.getWidth(), lightMapFrameBuffer.getHeight(), quadColor);
+		Quad.draw(0, 0, lightMapFrameBuffer.getWidth(), lightMapFrameBuffer.getHeight(), quadColor);
 		
 		// Draw the light sources associated with this map
 		LightSource.updateIntensity();

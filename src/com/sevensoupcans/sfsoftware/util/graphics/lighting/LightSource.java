@@ -1,8 +1,8 @@
 package com.sevensoupcans.sfsoftware.util.graphics.lighting;
 
 import com.sevensoupcans.sfsoftware.game.actor.Actor;
-import com.sevensoupcans.sfsoftware.util.graphics.Graphics;
 import com.sevensoupcans.sfsoftware.util.graphics.RGBA;
+import com.sevensoupcans.sfsoftware.util.graphics.geometry.Circle;
 import com.sevensoupcans.sfsoftware.util.tile.Tile;
 
 public class LightSource {
@@ -70,7 +70,7 @@ public class LightSource {
 			y = associatedActor.getCenterY();
 		}
 				
-		Graphics.drawCircle(x, y, (float) (radius + (Math.sin(intensity) * maximumIntensity)), 
+		Circle.draw(x, y, (float) (radius + (Math.sin(intensity) * maximumIntensity)), 
 				new RGBA(coreColor.getRed(), coreColor.getGreen(), coreColor.getBlue(), coreColor.getAlpha() > alpha ? alpha : coreColor.getAlpha()),
 				outerColor, segmentsToDraw);		
 	}
