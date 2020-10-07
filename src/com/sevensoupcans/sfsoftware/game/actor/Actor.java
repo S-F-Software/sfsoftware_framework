@@ -340,9 +340,10 @@ public class Actor extends Sprite implements Collidable
 	 * @param dirX
 	 * @param dirY
 	 */
-	protected void moveWithoutCheckingCollision(double dirX, double dirY)
+	protected boolean moveWithoutCheckingCollision(double dirX, double dirY)
 	{
 		super.move((float) (this.getX() + (dirX * speed)), (float) (this.getY() + (dirY * speed)));
+		return true;
 	}	
 	
 	public void remove()
