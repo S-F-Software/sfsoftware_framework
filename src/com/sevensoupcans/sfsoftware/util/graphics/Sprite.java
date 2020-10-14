@@ -106,6 +106,11 @@ public class Sprite extends Quad {
 		GL11.glPopMatrix();
 	}	
 	
+	public static String getTextureName(Sprite sprite)
+	{
+		return sprite != null ? sprite.getTextureName() : "";
+	}
+	
 	public static boolean isSpriteOutOfGameBounds(Game game, Sprite sprite)
 	{		
 		int x = (int) sprite.getX();
@@ -235,7 +240,6 @@ public class Sprite extends Quad {
 				red, green, blue, alpha, rotationAngle);
 	}	
 
-	
 	public final float getRotationAngle()
 	{
 		return this.rotationAngle;
