@@ -11,7 +11,7 @@ public class Tile extends Sprite {
 	 * 
 	 * @return
 	 */
-	public static int getDefaultTileSize() 
+	public final static int getDefaultTileSize() 
 	{
 		return DEFAULT_TILE_SIZE;
 	}
@@ -24,13 +24,13 @@ public class Tile extends Sprite {
 		 walkable = isWalkable;
 	}
 	
-	public boolean isWalkable()
+	public final boolean isWalkable()
 	{
 		return walkable;
 	}	
 	
 	@Override
-	public void setTexture(String newTex)
+	public final void setTexture(String newTex)
 	{
 		super.setTexture(newTex);
 		
@@ -38,7 +38,7 @@ public class Tile extends Sprite {
 		this.setSrcY(0);
 	}	
 	
-	public void setWalkable(boolean w)
+	public final void setWalkable(boolean w)
 	{
 		walkable = w;
 	}

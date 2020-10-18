@@ -1,5 +1,6 @@
 package com.sevensoupcans.sfsoftware.util.tile;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Set;
 
 import com.sevensoupcans.sfsoftware.util.graphics.Sprite;
@@ -50,8 +51,13 @@ public class TileMap {
 	{
 		this(width, height, tileSize, "");
 	}
-	
+
 	public TileMap(int width, int height, int tileSize, String initialTexture)
+	{
+		this(width, height, tileSize, initialTexture, Tile.class);
+	}
+	
+	public TileMap(int width, int height, int tileSize, String initialTexture, Class<? extends Tile> tileClass)
 	{
 		this.width = width;
 		this.height = height;
@@ -63,8 +69,18 @@ public class TileMap {
 		for(int i = 0; i < width; i++)
 		{
 			for(int j = 0; j < height; j++)
-			{		
-				map[i][j] = new Tile(i * tileSize, j * tileSize, initialTexture, true);
+			{					
+				try 
+				{
+					map[i][j] = tileClass.getConstructor(int.class, int.class, 
+							String.class, boolean.class).newInstance(i * tileSize, 
+									j * tileSize, initialTexture, true);
+				} 
+				catch (InstantiationException | IllegalAccessException | IllegalArgumentException
+						| InvocationTargetException | NoSuchMethodException | SecurityException e) 
+				{
+					map[i][j] = new Tile(i * tileSize, j * tileSize, initialTexture, true); 
+				}
 			}
 		}
 		

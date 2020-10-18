@@ -12,24 +12,27 @@ public final class TileMapSpriteIntersection {
 	
 	public TileMapSpriteIntersection(Sprite sprite, TileMap tileMap, int destX, int destY) 
 	{
-		Tile[][] tiles = tileMap.getMap();
-						
-		int upY = MathUtils.ensureRange((int) Math.floor((destY - (sprite.getHeight() / 2)) / tileMap.getTileSize()), 
-					0, 	tileMap.getHeight() - 1);
+		this(sprite, tileMap.getMap(), tileMap.getTileSize(), destX, destY);				
+	}
+	
+	public TileMapSpriteIntersection(Sprite sprite, Tile[][] tiles, int tileSize, int destX, int destY)
+	{
+		int upY = MathUtils.ensureRange((int) Math.floor((destY - (sprite.getHeight() / 2)) / tileSize), 
+				0, 	tiles[0].length - 1);
+
+		int downY = MathUtils.ensureRange((int) Math.floor(((destY + (sprite.getHeight() / 2)) - 1) / tileSize), 
+				0, tiles[0].length - 1);
+
+		int leftX = MathUtils.ensureRange((int) Math.floor((destX - (sprite.getWidth() / 2)) / tileSize), 
+				0, tiles.length - 1);
+
+		int rightX = MathUtils.ensureRange((int) Math.floor(((destX + (sprite.getWidth() / 2)) - 1) / tileSize), 
+				0, tiles.length - 1);				
 		
-		int downY = MathUtils.ensureRange((int) Math.floor(((destY + (sprite.getHeight() / 2)) - 1) / tileMap.getTileSize()), 
-				0, tileMap.getHeight() - 1);
-		
-		int leftX = MathUtils.ensureRange((int) Math.floor((destX - (sprite.getWidth() / 2)) / tileMap.getTileSize()), 
-				0, tileMap.getWidth() - 1);
-		
-		int rightX = MathUtils.ensureRange((int) Math.floor(((destX + (sprite.getWidth() / 2)) - 1) / tileMap.getTileSize()), 
-				0, tileMap.getWidth() - 1);				
-			
 		this.topLeft = tiles[leftX][upY].isWalkable();
 		this.bottomLeft = tiles[leftX][downY].isWalkable();
 		this.topRight = tiles[rightX][upY].isWalkable();						
-		this.bottomRight = tiles[rightX][downY].isWalkable();				
+		this.bottomRight = tiles[rightX][downY].isWalkable();
 	}
 	
 	public boolean isBottomLeftCornerWalkable()
