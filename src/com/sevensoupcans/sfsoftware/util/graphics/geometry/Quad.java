@@ -172,6 +172,12 @@ public class Quad {
 		return (this.red = red);
 	}
 	
+	public final void setSize(int newWidth, int newHeight)
+	{
+		this.setWidth(newWidth);
+		this.setHeight(newHeight);
+	}	
+	
 	public final void setWidth(int newWidth)
 	{
 		width = newWidth;
