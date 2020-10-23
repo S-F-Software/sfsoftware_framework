@@ -24,6 +24,22 @@ public class Tile extends Sprite {
 		 walkable = isWalkable;
 	}
 	
+	@Override
+	public boolean equals(Object obj)
+	{
+		if(obj instanceof Tile)
+		{
+			Tile tile = (Tile) obj;
+			
+			return (tile.getX() == this.getX()) 
+					&& (tile.getY() == this.getY())
+					&& (tile.isWalkable() == this.isWalkable())
+					&& (tile.getTextureName().equalsIgnoreCase(this.getTextureName()));
+		}
+		
+		return false;
+	}
+	
 	public final boolean isWalkable()
 	{
 		return walkable;

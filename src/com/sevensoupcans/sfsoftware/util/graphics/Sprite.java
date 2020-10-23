@@ -239,7 +239,7 @@ public class Sprite extends Quad {
 		Sprite.draw(x, y, textureName, width, height, srcX, srcY, srcWidth, srcHeight, 
 				red, green, blue, alpha, rotationAngle);
 	}	
-
+	
 	public final float getRotationAngle()
 	{
 		return this.rotationAngle;
