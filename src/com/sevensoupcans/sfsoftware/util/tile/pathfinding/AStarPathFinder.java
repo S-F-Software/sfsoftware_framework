@@ -183,4 +183,10 @@ public class AStarPathFinder implements PathFinder {
 		this.open.remove(node);
 	}
 
+	@Override
+	public TileMap getAssociatedTileMap() 
+	{
+		return this.tileMap;
+	}
+
 }

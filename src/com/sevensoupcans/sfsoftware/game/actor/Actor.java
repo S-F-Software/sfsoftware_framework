@@ -10,6 +10,10 @@ import com.sevensoupcans.sfsoftware.util.graphics.Sprite;
 import com.sevensoupcans.sfsoftware.util.graphics.geometry.Quad;
 import com.sevensoupcans.sfsoftware.util.graphics.particles.Particle;
 import com.sevensoupcans.sfsoftware.util.tile.Tile;
+import com.sevensoupcans.sfsoftware.util.tile.TileMap;
+import com.sevensoupcans.sfsoftware.util.tile.pathfinding.AStarPathFinder;
+import com.sevensoupcans.sfsoftware.util.tile.pathfinding.Path;
+import com.sevensoupcans.sfsoftware.util.tile.pathfinding.PathFinder;
 
 public class Actor extends Sprite implements Collidable 
 {
@@ -247,6 +251,11 @@ public class Actor extends Sprite implements Collidable
 		return inRads;
 	}		
 	
+	public Game getAssociatedGame()
+	{
+		return ASSOCIATED_GAME;
+	}
+	
 	public final Tile getCurrentTile()
 	{		
 		Tile[][] tilemap = getAssociatedGame().getTileMap().getMap();
@@ -255,25 +264,44 @@ public class Actor extends Sprite implements Collidable
 		int yTile = Math.max(0, Math.min(tilemap[0].length - 1, getCurrentTileY()));		
 		
 		return tilemap[xTile][yTile];
-	}
+	}		
 	
 	public final int getCurrentTileX()
 	{
 		int xTile = (int) Math.floor((getCenterX() - playingFieldX) / TILE_SIZE);
 		return xTile;
-	}		
+	}
 	
 	public final int getCurrentTileY()
 	{		
 		int yTile = (int) Math.floor((getCenterY() - playingFieldY) / TILE_SIZE);
 		return yTile;
 	}
-	
-	public Game getAssociatedGame()
-	{
-		return ASSOCIATED_GAME;
-	}
 
+	protected final Path getPathToActor(Actor a)
+	{
+		return this.getPathToActor(new AStarPathFinder(this.getAssociatedGame().getTileMap(), 15, false), a);
+	}	
+	
+	protected final Path getPathToActor(PathFinder pathFinder, Actor a)
+	{
+		return this.getPathToActor(pathFinder, a, pathFinder.getAssociatedTileMap());
+	}
+	
+	protected final Path getPathToActor(PathFinder pathFinder, Actor a, TileMap tileMap)
+	{	
+		// Get our x and y tile indexes on the tileMap.
+		int xTile = tileMap.getTileMapXIndexFromXCoordinate((int) this.getX());
+		int yTile = tileMap.getTileMapYIndexFromYCoordinate((int) this.getY());
+		
+		// Get the x and y tile indexes for the provided actor.
+		int actorXTile = tileMap.getTileMapXIndexFromXCoordinate((int) a.getX());
+		int actorYTile = tileMap.getTileMapYIndexFromYCoordinate((int) a.getY());
+		
+		// Find the path between our position and theirs
+		return pathFinder.getPath(this, xTile, yTile, actorXTile, actorYTile);
+	}	
+	
 	public int getSpeed() 
 	{
 		return speed;
