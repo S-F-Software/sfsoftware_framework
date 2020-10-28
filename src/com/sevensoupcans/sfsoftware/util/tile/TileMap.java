@@ -46,6 +46,12 @@ public class TileMap {
 	{
 		this(width, height, Tile.getDefaultTileSize(), initialTexture);
 	}
+	
+	public TileMap(int width, int height, Sprite initialTexture)
+	{
+		this(width, height, Tile.getDefaultTileSize(), initialTexture.getTextureName(), 
+				initialTexture.getSrcX(), initialTexture.getSrcY());
+	}	
 
 	public TileMap(int width, int height, int tileSize)
 	{
@@ -54,10 +60,22 @@ public class TileMap {
 
 	public TileMap(int width, int height, int tileSize, String initialTexture)
 	{
-		this(width, height, tileSize, initialTexture, Tile.class);
+		this(width, height, tileSize, initialTexture, 0, 0, Tile.class);
+	}
+
+	public TileMap(int width, int height, int tileSize, String initialTexture, 
+			int initialTextureSrcX,	int initialTextureSrcY)
+	{
+		this(width, height, tileSize, initialTexture, initialTextureSrcX, initialTextureSrcY, Tile.class);
+	}
+
+	public TileMap(int width, int height, int tileSize, String initialTexture, Class<? extends Tile> tileClass)
+	{
+		this(width, height, tileSize, initialTexture, 0, 0, tileClass);
 	}
 	
-	public TileMap(int width, int height, int tileSize, String initialTexture, Class<? extends Tile> tileClass)
+	public TileMap(int width, int height, int tileSize, String initialTexture, int initialTextureSrcX, 
+			int initialTextureSrcY, Class<? extends Tile> tileClass)
 	{
 		this.width = width;
 		this.height = height;
@@ -73,13 +91,15 @@ public class TileMap {
 				try 
 				{
 					map[i][j] = tileClass.getConstructor(int.class, int.class, 
-							String.class, boolean.class).newInstance(i * tileSize, 
-									j * tileSize, initialTexture, true);
+							String.class, int.class, int.class, int.class, boolean.class).newInstance(i * tileSize, 
+									j * tileSize, initialTexture, tileSize, initialTextureSrcX, 
+									initialTextureSrcY, true);
 				} 
 				catch (InstantiationException | IllegalAccessException | IllegalArgumentException
 						| InvocationTargetException | NoSuchMethodException | SecurityException e) 
 				{
-					map[i][j] = new Tile(i * tileSize, j * tileSize, initialTexture, true); 
+					map[i][j] = new Tile(i * tileSize, j * tileSize, initialTexture, tileSize, 
+							initialTextureSrcX, initialTextureSrcY, true);
 				}
 			}
 		}

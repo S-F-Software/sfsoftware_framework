@@ -52,7 +52,7 @@ public class Sprite extends Quad {
 			}
 			else
 			{
-				Texture.drawTexture(x, y, temp, width, height, srcX, srcY, srcWidth, srcHeight, red, green, blue, alpha, angle);
+				draw(x, y, temp, width, height, srcX, srcY, srcWidth, srcHeight, red, green, blue, alpha, angle);
 			}			
 		}
 	}
@@ -60,50 +60,8 @@ public class Sprite extends Quad {
 	public static void draw(float x, float y, Texture texture, int width, int height, int srcX, int srcY, 
 			int srcWidth, int srcHeight, float red, float green, float blue, float alpha, float angle)
 	{
-		// Bind the current texture to the current shader if one is in use.
-		/*if(useShader)
-		{
-			setShaderUniform(currentShader, "texture", getTextureId(temp));
-		}*/
-		
-        // enable alpha blending
-        GL11.glEnable(GL11.GL_BLEND);
-        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-		
-		texture.bind();								
-		
-		float fSrcX = ((float)srcX / texture.getWidth());
-		float fSrcY = ((float)srcY / texture.getHeight());
-		float fSrcWidth = (((float)srcX + (float)srcWidth) / texture.getWidth());
-		float fSrcHeight = (((float)srcY + (float)srcHeight) / texture.getHeight());			
-		
-		GL11.glPushMatrix();				
-						
-		// Rotation works! 1/4/14
-		if(angle != 0)
-		{
-			GL11.glTranslatef(x + (width / 2), y + (height / 2), 0); // move to the proper position
-			GL11.glRotatef(angle, 0, 0, 1); // now rotate
-			GL11.glTranslatef(-1 *(x+ (width / 2)), -1 * (y+(height  / 2)), 0);				
-		}
-		
-		GL11.glColor4f(red, green, blue, alpha);
-		GL11.glBegin(GL11.GL_QUADS);
-			// Top Left
-			GL11.glTexCoord2f(fSrcX, fSrcY);
-			GL11.glVertex2f(x,y);
-			// Top Right
-			GL11.glTexCoord2f(fSrcWidth, fSrcY);
-			GL11.glVertex2f(x + width, y);
-			// Bottom Right
-			GL11.glTexCoord2f(fSrcWidth,fSrcHeight);
-			GL11.glVertex2f(x + width,y + height);
-			// Bottom Left
-			GL11.glTexCoord2f(fSrcX,fSrcHeight);
-			GL11.glVertex2f(x,y + height);
-		GL11.glEnd();
-		
-		GL11.glPopMatrix();
+		Texture.drawTexture(x, y, texture, width, height, srcX, srcY, srcWidth, srcHeight, 
+				red, green, blue, alpha, angle);
 	}	
 	
 	public static String getTextureName(Sprite sprite)
@@ -129,27 +87,41 @@ public class Sprite extends Quad {
 	private int srcX;
 	private int srcY;
 	
-	private Texture associatedTexture;
+	// Used in the event the associatedTexture is null
+	private String targetTextureName;
+	private Texture associatedTexture;	
 
+	public Sprite(String textureName, int srcX, int srcY)
+	{
+		this(0, 0, textureName, srcX, srcY);
+	}
+	
 	public Sprite(int destX, int destY, String textureName)
 	{		
 		this(destX, destY, textureName, 0, 0);
 	}
 	
-	public Sprite(int destX, int destY, String textureName, int destSrcX, int destSrcY)
+	public Sprite(int destX, int destY, String textureName, int srcX, int srcY)
 	{
-		this(destX, destY, textureName, 0, 0, destSrcX, destSrcY);
+		this(destX, destY, textureName, 0, 0, srcX, srcY);
 	}
 	
-	public Sprite(int destX, int destY, String textureName, int width, int height, int destSrcX, int destSrcY)
+	public Sprite(int destX, int destY, String textureName, int width, int height, int srcX, int srcY)
 	{
 		super(destX, destY, width, height);		
-
-		if(!(textureName.equals("")) && !(Texture.isTextureLoaded(textureName))) System.out.println("The texture '" + textureName + "' was not found.");
 		
-		associatedTexture = Texture.getTexture(textureName);
-		srcX = destSrcX;
-		srcY = destSrcY;
+		if(Texture.isTextureLoaded(textureName))
+		{
+			this.associatedTexture = Texture.getTexture(textureName);	
+		}
+		else if(!(textureName.equals("")))
+		{
+			this.targetTextureName = textureName;
+			this.associatedTexture = null;			
+		}		
+		
+		this.srcX = srcX;
+		this.srcY = srcY;
 	}
 	
 	public Sprite(int destX, int destY, Texture texture)
@@ -234,9 +206,7 @@ public class Sprite extends Quad {
 	{	
 		if(!(this.visible)) return;
 		
-		String textureName = associatedTexture != null ? associatedTexture.getName() : null;
-		
-		Sprite.draw(x, y, textureName, width, height, srcX, srcY, srcWidth, srcHeight, 
+		Sprite.draw(x, y, this.getTextureName(), width, height, srcX, srcY, srcWidth, srcHeight, 
 				red, green, blue, alpha, rotationAngle);
 	}	
 	
@@ -257,12 +227,14 @@ public class Sprite extends Quad {
 	
 	public final Texture getTexture()
 	{
-		return associatedTexture;
+		return (this.associatedTexture != null ? 
+				this.associatedTexture : (Texture.isTextureLoaded(this.getTextureName()) ? this.setTexture(this.getTextureName()) : null));
 	}
 	
 	public final String getTextureName()
 	{
-		return (associatedTexture != null ? associatedTexture.getName() : "");
+		return (this.associatedTexture != null ? 
+				this.associatedTexture.getName() : (this.targetTextureName != null ? this.targetTextureName : ""));
 	}
 	
 	public final boolean isCenterOnTexture(TileMap tileMap, String textureName)
@@ -319,9 +291,9 @@ public class Sprite extends Quad {
 		srcY = sourceY;
 	}
 	
-	public void setTexture(String newTextureName)
+	public Texture setTexture(String newTextureName)
 	{
-		associatedTexture = Texture.getTexture(newTextureName);
+		return (this.associatedTexture = Texture.getTexture(newTextureName));
 	}
 	
 	public final boolean setVisible(boolean visible)

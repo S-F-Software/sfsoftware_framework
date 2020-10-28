@@ -218,8 +218,7 @@ public final class Texture
 	
 	private String generateTextureName(String path, boolean prependUnderscore)
 	{
-		if(path == null)
-			return "";
+		if(path == null) return String.valueOf(this.hashCode());
 		
 		String fileName = path.substring(path.lastIndexOf('/') + 1);
 		String textureName = fileName.substring(0, fileName.lastIndexOf(".")).trim();

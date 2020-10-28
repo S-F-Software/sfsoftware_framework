@@ -1,6 +1,7 @@
 package com.sevensoupcans.sfsoftware.util.tile;
 
 import com.sevensoupcans.sfsoftware.util.graphics.Sprite;
+import com.sevensoupcans.sfsoftware.util.graphics.Texture;
 
 public class Tile extends Sprite {
 
@@ -20,9 +21,19 @@ public class Tile extends Sprite {
 	
 	public Tile(int destX, int destY, String texture, boolean isWalkable)
 	{
-		 super(destX, destY, texture);
-		 walkable = isWalkable;
+		this(destX, destY, texture, 0, 0, isWalkable);
 	}
+	
+	public Tile(int destX, int destY, String texture, int srcX, int srcY, boolean isWalkable)
+	{
+		 this(destX, destY, texture, getDefaultTileSize(), srcX, srcY, isWalkable);
+	}
+	
+	public Tile(int destX, int destY, String texture, int tileSize, int srcX, int srcY, boolean isWalkable)
+	{
+		 super(destX, destY, texture, tileSize, tileSize, srcX, srcY);
+		 walkable = isWalkable;
+	}	
 	
 	@Override
 	public boolean equals(Object obj)
@@ -46,12 +57,14 @@ public class Tile extends Sprite {
 	}	
 	
 	@Override
-	public final void setTexture(String newTex)
+	public final Texture setTexture(String newTex)
 	{
 		super.setTexture(newTex);
 		
 		this.setSrcX(0);
 		this.setSrcY(0);
+		
+		return this.getTexture();
 	}	
 	
 	public final void setWalkable(boolean w)
