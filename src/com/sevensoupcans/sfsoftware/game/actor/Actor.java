@@ -307,6 +307,16 @@ public class Actor extends Sprite implements Collidable
 		return speed;
 	}	
 	
+	public double getXDirection()
+	{
+		return this.xDirection;
+	}
+	
+	public double getYDirection()
+	{
+		return this.yDirection;
+	}
+	
 	public int getZOrder()
 	{
 		return zOrder;
