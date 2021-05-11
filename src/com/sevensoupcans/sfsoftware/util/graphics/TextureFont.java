@@ -129,7 +129,7 @@ public class TextureFont
 	 * 
 	 * @return A BufferedImage containing the character
 	 */
-	private BufferedImage getFontImage(char ch) {
+	private BufferedImage getFontImage(final char ch) {
 		// Create a temporary image to extract the character's size
 		BufferedImage tempfontImage = new BufferedImage(1, 1,
 				BufferedImage.TYPE_INT_ARGB);
@@ -176,7 +176,7 @@ public class TextureFont
 	 * 
 	 * @param customCharsArray Characters that should be also added to the cache.
 	 */
-	private void createSet( char[] customCharsArray ) {
+	private void createSet(final char[] customCharsArray ) {
 		// If there are custom chars then I expand the font texture twice		
 		if	(customCharsArray != null && customCharsArray.length > 0) {
 			textureWidth *= 2;
@@ -259,7 +259,7 @@ public class TextureFont
 	 * 
 	 * @return The width of the characters
 	 */
-	public int getWidth(String whatchars) 
+	public int getWidth(final String whatchars) 
 	{
 		int totalwidth = 0;
 		IntObject intObject = null;
@@ -293,7 +293,7 @@ public class TextureFont
 	 * 
 	 * @return The height of a given string
 	 */
-	public int getHeight(String HeightString) 
+	public int getHeight(final String HeightString) 
 	{
 		return fontHeight;
 	}
@@ -320,7 +320,7 @@ public class TextureFont
 	 * @param color
 	 *            The color to draw the text
 	 */
-	public void drawString(float x, float y, String whatchars, RGBA color) 
+	public void drawString(final float x, final float y, final String whatchars, final RGBA color) 
 	{
 		drawString(x,y,whatchars,color,0,whatchars.length()-1);
 	}
@@ -328,7 +328,8 @@ public class TextureFont
 	/**
 	 * @see Font#drawString(float, float, String, RGBA, int, int)
 	 */
-	public void drawString(float x, float y, String whatchars, RGBA color, int startIndex, int endIndex) {
+	public void drawString(final float x, final float y, final String whatchars, final RGBA color, 
+			final int startIndex, final int endIndex) {
 
 		IntObject intObject = null;
 		int charCurrent;
@@ -365,7 +366,7 @@ public class TextureFont
 	 * @param whatchars
 	 *            The string to draw
 	 */
-	public void drawString(float x, float y, String whatchars) 
+	public void drawString(final float x, final float y, final String whatchars) 
 	{
 		drawString(x, y, whatchars, new RGBA(1.0f, 1.0f, 1.0f));
 	}

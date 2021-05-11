@@ -57,7 +57,7 @@ public class Tile extends Sprite {
 	}	
 	
 	@Override
-	public final Texture setTexture(String newTex)
+	public final Texture setTexture(final String newTex)
 	{
 		super.setTexture(newTex);
 		
@@ -67,7 +67,7 @@ public class Tile extends Sprite {
 		return this.getTexture();
 	}	
 	
-	public final void setWalkable(boolean w)
+	public final void setWalkable(final boolean w)
 	{
 		walkable = w;
 	}

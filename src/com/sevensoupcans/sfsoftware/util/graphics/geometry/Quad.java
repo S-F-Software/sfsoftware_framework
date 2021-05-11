@@ -4,34 +4,23 @@ import org.lwjgl.opengl.GL11;
 
 import com.sevensoupcans.sfsoftware.util.graphics.RGBA;
 
-public class Quad {
+public class Quad implements Intersectable {
 
-	public static void draw(float x, float y, float width, float height, RGBA rgba)
+	public static void draw(final float x, final float y, final float width, final float height, 
+			final RGBA rgba)
 	{	
 		draw(x, y, width, height, rgba.getRed(), rgba.getGreen(), rgba.getBlue(), rgba.getAlpha());
 	}
 	
-	public static void draw(float x, float y, float width, float height, float r, float g, float b, float a)
+	public static void draw(final float x, final float y, final float width, final float height, 
+			final float r, final float g, final float b, final float a)
 	{	
 		RGBA rgba = new RGBA(r, g, b, a);
 		draw(x, y, width, height, rgba, rgba, rgba, rgba);
-		
-		// set the color of the quad (R,G,B,A)
-		/*GL11.glDisable(GL11.GL_TEXTURE_2D);
-		GL11.glColor4f(r,g,b,a);*/		
-	    
-	    // draw quad
-	    /*GL11.glBegin(GL11.GL_QUADS);	    
-	    GL11.glVertex2f(x,y);
-		GL11.glVertex2f(x+width,y);
-		GL11.glVertex2f(x+width,y+height);
-		GL11.glVertex2f(x,y+height);	    
-		GL11.glEnd();
-		
-		GL11.glEnable(GL11.GL_TEXTURE_2D);*/
 	}
 	
-	public static void draw(float x, float y, float width, float height, RGBA topLeft, RGBA topRight, RGBA bottomLeft, RGBA bottomRight)
+	public static void draw(final float x, final float y, final float width, final float height, 
+			final RGBA topLeft, final RGBA topRight, final RGBA bottomLeft, final RGBA bottomRight)
 	{	
 		// set the color of the quad (R,G,B,A)
 		GL11.glDisable(GL11.GL_TEXTURE_2D);		
@@ -191,6 +180,14 @@ public class Quad {
 	public void setY(int destY)
 	{
 		y = destY;
+	}
+
+	@Override
+	public boolean intersectsWith(final float xPos, final float yPos) {
+		return (xPos >= this.getX() && 
+				xPos <= (this.getX() + this.getWidth()) && 
+				yPos >= this.getY() && 
+				yPos <= (this.getY() + this.getHeight()));
 	}
 
 }

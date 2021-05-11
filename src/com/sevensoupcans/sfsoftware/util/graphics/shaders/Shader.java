@@ -12,13 +12,13 @@ public class Shader {
 	
 	private final int shaderId;
 	
-    private static String getLogInfo(int obj) 
+    private static String getLogInfo(final int obj) 
     {
         return ARBShaderObjects.glGetInfoLogARB(obj, ARBShaderObjects.glGetObjectParameteriARB(obj, 
         		ARBShaderObjects.GL_OBJECT_INFO_LOG_LENGTH_ARB));
     }
 	
-	public Shader(String fileContents, int type)
+	public Shader(final String fileContents, final int type)
 	{
     	int shader = 0;
     	try 
@@ -47,7 +47,7 @@ public class Shader {
 		return shaderId;
 	}
 	
-	public void setShaderUniform(String attribute, int value)
+	public void setShaderUniform(final String attribute, final int value)
 	{		
 		int attributeLoc = ARBShaderObjects.glGetUniformLocationARB(getId(), attribute);
 		ARBShaderObjects.glUniform1iARB(attributeLoc, value);			

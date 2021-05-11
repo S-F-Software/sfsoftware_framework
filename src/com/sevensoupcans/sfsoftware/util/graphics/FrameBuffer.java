@@ -80,22 +80,22 @@ public class FrameBuffer
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 	}
 	
-	public void draw(int x, int y)
+	public void draw(final int x, final int y)
 	{
 		draw(x, y, getWidth(), getHeight());
 	}
 	
-	public void draw(int x, int y, int width, int height)
+	public void draw(final int x, final int y, final int width, final int height)
 	{
 		draw(x, y, width, height, 0, 0, width, height);
 	}
 
-	public void draw(int x, int y, int width, int height, int srcX, int srcY, int srcWidth, int srcHeight)
+	public void draw(final int x, final int y, final int width, final int height, final int srcX, final int srcY, final int srcWidth, final int srcHeight)
 	{
 		draw(x, y, width, height, srcX, srcY, srcWidth, srcHeight, 1.0f, 1.0f, 1.0f, 1.0f);
 	}
 	
-	public void draw(int x, int y, int width, int height, int srcX, int srcY, int srcWidth, 
+	public void draw(final int x, final int y, final int width, final int height, final int srcX, final int srcY, final int srcWidth, 
 			int srcHeight, float red, float green, float blue, float alpha)
 	{
 		GL11.glPushMatrix();		
@@ -174,12 +174,12 @@ public class FrameBuffer
 		setAsCurrentBuffer(false);
 	}
 	
-	public void setAsCurrentBuffer(boolean clearBuffer)
+	public void setAsCurrentBuffer(final boolean clearBuffer)
 	{
 		Graphics.setBuffer(this, clearBuffer);
 	}
 	
-	public void setCurrentShader(int programId)
+	public void setCurrentShader(final int programId)
 	{
 		/*if(programId == 0)
 		{
@@ -198,7 +198,7 @@ public class FrameBuffer
 		return width;
 	}
 
-	private void setWidth(int width) 
+	private void setWidth(final int width) 
 	{
 		this.width = width;
 	}
@@ -207,7 +207,7 @@ public class FrameBuffer
 		return height;
 	}
 
-	private void setHeight(int height) {
+	private void setHeight(final int height) {
 		this.height = height;
 	}	
 	

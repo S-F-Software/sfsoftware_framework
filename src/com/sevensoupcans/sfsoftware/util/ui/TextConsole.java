@@ -68,7 +68,7 @@ public class TextConsole implements UserInput
 		return getLines().length;
 	}
 	
-	private String[] getLines(int startPos, int lineCount) throws ArrayIndexOutOfBoundsException
+	private String[] getLines(final int startPos, final int lineCount) throws ArrayIndexOutOfBoundsException
 	{		
 		String[] fullLines = getLines();					
 		return Arrays.copyOfRange(fullLines, startPos, Math.min(startPos + lineCount, fullLines.length));
@@ -81,7 +81,7 @@ public class TextConsole implements UserInput
 	}
 	
 	@Override
-	public boolean pollInput(InputDevice inputDevice)
+	public boolean pollInput(final InputDevice inputDevice)
 	{
 		boolean pressed = false;
 		

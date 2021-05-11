@@ -22,7 +22,7 @@ public class Actor extends Sprite implements Collidable
 	
 	protected final static Vector<Actor> cast = new Vector<Actor>();
 	
-	public final static double getAngle(Actor a, Actor b)
+	public final static double getAngle(final Actor a, final Actor b)
 	{
 		double dx = a.getCenterX() - b.getCenterX(); // (a.getX() + (a.getWidth() / 2)) - (b.getX() + (b.getWidth() / 2));
 		double dy = a.getCenterY() - b.getCenterY(); // (a.getY() + (a.getHeight() / 2)) - (b.getY() + (b.getHeight() / 2));
@@ -45,11 +45,11 @@ public class Actor extends Sprite implements Collidable
 		return cast;
 	}
 			
-	public final static void remove(Actor a)
+	public final static void remove(final Actor a)
 	{
 		cast.remove(a);
 	}
-	public static void setPlayingField(int x, int y)
+	public static void setPlayingField(final int x, final int y)
 	{
 		playingFieldX = x;
 		playingFieldY = y;
@@ -62,7 +62,7 @@ public class Actor extends Sprite implements Collidable
 	/**
 	 * Updates all Actors - this includes drawing
 	 */
-	public static void updateCast(int z) 
+	public static void updateCast(final int z) 
 	{		
 		// Copy the Actor vector to an array to avoid concurrent modification issues
 		Actor[] c = new Actor[cast.size()];
@@ -121,11 +121,11 @@ public class Actor extends Sprite implements Collidable
 	}
 	
 	@Override
-	public boolean collidingWith(Collidable object) {		
+	public boolean collidingWith(final Collidable object) {		
 		return super.collidingWith(object);	
 	}
 	
-	protected boolean collidingWithCast(double dirX, double dirY)
+	protected boolean collidingWithCast(final double dirX, final double dirY)
 	{				
 		boolean b = false;
 		// Copy the Actor vector to an array to avoid concurrent modification issues
@@ -161,12 +161,12 @@ public class Actor extends Sprite implements Collidable
 	}	
 	
 	@Override
-	public boolean collisionResult(Collidable object) {
+	public boolean collisionResult(final Collidable object) {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
-	protected int distanceToActor(Actor a)
+	protected int distanceToActor(final Actor a)
 	{
 		int x1 = a.getCenterX(); // (a.getX() + (a.getWidth() / 2));
 		int x2 = getCenterX(); // (getX() + (getWidth() / 2));
@@ -176,7 +176,7 @@ public class Actor extends Sprite implements Collidable
 		return (int) Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
 	}
 	
-	protected final int distanceToPoint(int x, int y)
+	protected final int distanceToPoint(final int x, final int y)
 	{
 		return (int) Math.sqrt((x - getCenterX()) * (x - getCenterX()) + (y - getCenterY()) * (y - getCenterY()));		
 	}	
@@ -187,7 +187,7 @@ public class Actor extends Sprite implements Collidable
 		super.draw(getWidth(), getHeight());
 	}
 	
-	protected void generateParticles(int particleCount, float red, float green, float blue)
+	protected void generateParticles(final int particleCount, final float red, final float green, final float blue)
 	{
 		for(int i = 0; i < particleCount; i++)
 		{
@@ -195,7 +195,7 @@ public class Actor extends Sprite implements Collidable
 		}
 	}	
 	
-	protected void generateParticles(int particleCount, float red, float green, float blue, int size)
+	protected void generateParticles(final int particleCount, final float red, final float green, final float blue, final int size)
 	{
 		for(int i = 0; i < particleCount; i++)
 		{
@@ -203,12 +203,12 @@ public class Actor extends Sprite implements Collidable
 		}
 	}	
 	
-	protected final double getAngleFromActor(Actor a)
+	protected final double getAngleFromActor(final Actor a)
 	{
 		return getAngle(a, this);
 	}	
 	
-	protected final double getAngleFromPoint(double x, double y)
+	protected final double getAngleFromPoint(final double x, final double y)
 	{
 		double dx = x - getCenterX(); // (getX() + (getWidth() / 2)) - x;
 		double dy = y - getCenterY(); // (getY() + (getHeight() / 2)) - y;
@@ -227,12 +227,12 @@ public class Actor extends Sprite implements Collidable
 		return inRads;
 	}
 	
-	protected final double getAngleToActor(Actor b)
+	protected final double getAngleToActor(final Actor b)
 	{
 		return getAngle(this, b);
 	}
 	
-	protected final double getAngleToPoint(double x, double y)
+	protected final double getAngleToPoint(final double x, final double y)
 	{
 		double dx = getCenterX() - x;
 		double dy = getCenterY() - y;
@@ -278,17 +278,17 @@ public class Actor extends Sprite implements Collidable
 		return yTile;
 	}
 
-	protected final Path getPathToActor(Actor a)
+	protected final Path getPathToActor(final Actor a)
 	{
 		return this.getPathToActor(new AStarPathFinder(this.getAssociatedGame().getTileMap(), 15, false), a);
 	}	
 	
-	protected final Path getPathToActor(PathFinder pathFinder, Actor a)
+	protected final Path getPathToActor(final PathFinder pathFinder, final Actor a)
 	{
 		return this.getPathToActor(pathFinder, a, pathFinder.getAssociatedTileMap());
 	}
 	
-	protected final Path getPathToActor(PathFinder pathFinder, Actor a, TileMap tileMap)
+	protected final Path getPathToActor(final PathFinder pathFinder, final Actor a, final TileMap tileMap)
 	{	
 		// Get our x and y tile indexes on the tileMap.
 		int xTile = tileMap.getTileMapXIndexFromXCoordinate((int) this.getX());
@@ -322,7 +322,7 @@ public class Actor extends Sprite implements Collidable
 		return zOrder;
 	}
 	
-	protected final boolean hasLineOfSightToActor(Actor a)
+	protected final boolean hasLineOfSightToActor(final Actor a)
 	{
 		boolean ableToSeeActor = true;
 		double directionAngle = getAngleToActor(a);
@@ -378,7 +378,7 @@ public class Actor extends Sprite implements Collidable
 	 * @param dirX
 	 * @param dirY
 	 */
-	protected boolean moveWithoutCheckingCollision(double dirX, double dirY)
+	protected boolean moveWithoutCheckingCollision(final double dirX, final double dirY)
 	{
 		super.move((float) (this.getX() + (dirX * speed)), (float) (this.getY() + (dirY * speed)));
 		return true;
@@ -389,17 +389,17 @@ public class Actor extends Sprite implements Collidable
 		cast.remove(this);
 	}
 	
-	public void setSpeed(int newSpeed)
+	public void setSpeed(final int newSpeed)
 	{
 		speed = newSpeed;
 	}	
 	
-	public final void setWalkable(boolean b)
+	public final void setWalkable(final boolean b)
 	{
 		isWalkable = b;
 	}
 	
-	public void setZOrder(int i)
+	public void setZOrder(final int i)
 	{
 		zOrder = i;
 	}

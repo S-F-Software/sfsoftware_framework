@@ -107,7 +107,7 @@ public class TileMap {
 		this.setAllTilesSrcFromBitMaskId(4);
 	}
 
-	public final boolean containsTexture(String textureName)
+	public final boolean containsTexture(final String textureName)
 	{
 		return (this.getTextureCount(textureName) > 0);		
 	}
@@ -117,12 +117,12 @@ public class TileMap {
 		draw(1.0f, 1.0f, 1.0f, 1.0f);
 	}
 	
-	public final void draw(float alpha)
+	public final void draw(final float alpha)
 	{
 		draw(1.0f, 1.0f, 1.0f, alpha);
 	}
 	
-	public final void draw(float red, float green, float blue, float alpha)
+	public final void draw(final float red, final float green, final float blue, final float alpha)
 	{
 		for(int i = 0; i < this.width; i++)
 		{
@@ -146,7 +146,7 @@ public class TileMap {
 	 * @param tileX Starting x tile point
 	 * @param tileY Starting y tile point
 	 */
-	public final void floodFillTileVisibility(int tileX, int tileY)
+	public final void floodFillTileVisibility(final int tileX, final int tileY)
 	{
 		try
 		{
@@ -211,7 +211,7 @@ public class TileMap {
 	 * @param y The y position of the tile being checked against
 	 * @return An id between 0 and 15 based on the surrounding tiles matching the tile's texture
 	 */
-	public final int getBitMaskTileId(int x, int y)
+	public final int getBitMaskTileId(final int x, final int y)
 	{
 		int id = 15;
 		String binStr = "";
@@ -274,7 +274,7 @@ public class TileMap {
 	 * @param textureName
 	 * @return
 	 */
-	public final int getTextureCount(String textureName)
+	public final int getTextureCount(final String textureName)
 	{
 		int tileCount = 0;
 		
@@ -294,7 +294,7 @@ public class TileMap {
 		return (this.tileSize <= 0 ? Tile.getDefaultTileSize() : this.tileSize);
 	}
 	
-	public final Tile getTileAtCoordinate(int x, int y)
+	public final Tile getTileAtCoordinate(final int x, final int y)
 	{
 		int tileX = this.getTileMapXIndexFromXCoordinate(x);
 		int tileY = this.getTileMapYIndexFromYCoordinate(y);
@@ -312,12 +312,12 @@ public class TileMap {
 		return tile;		
 	}
 	
-	public final int getTileMapXIndexFromXCoordinate(int x)
+	public final int getTileMapXIndexFromXCoordinate(final int x)
 	{
 		return (int) Math.floor(x / this.getTileSize());
 	}		
 	
-	public final int getTileMapYIndexFromYCoordinate(int y)
+	public final int getTileMapYIndexFromYCoordinate(final int y)
 	{		
 		return (int) Math.floor(y / this.getTileSize());
 	}
@@ -329,7 +329,7 @@ public class TileMap {
 	 * @param y The y coordinate
 	 * @return Texture located in the tile map at the specified point
 	 */
-	public final Texture getTextureAtPoint(int x, int y)
+	public final Texture getTextureAtPoint(final int x, final int y)
 	{		
 		return this.getMap()[this.getTileMapXIndexFromXCoordinate(x)][this.getTileMapYIndexFromYCoordinate(y)].getTexture();
 	}
@@ -346,7 +346,7 @@ public class TileMap {
 	 * @param replacementTextureName The name of the texture replacing the target
 	 * @return
 	 */
-	public final boolean replaceAllTextures(String targetTextureName, String replacementTextureName)
+	public final boolean replaceAllTextures(final String targetTextureName, final String replacementTextureName)
 	{
 		boolean replacedTiles = false;
 		
@@ -365,7 +365,7 @@ public class TileMap {
 		return replacedTiles;
 	}
 	
-	private final Tile[][] setAllTilesSrcFromBitMaskId(int spriteSheetWidth)
+	private final Tile[][] setAllTilesSrcFromBitMaskId(final int spriteSheetWidth)
 	{
 		if(bitMaskedTextureList == null) return null;
 		
@@ -388,7 +388,7 @@ public class TileMap {
 	 * @param bitMaskedTextureList List of texture names to be affected by bit masking
 	 * @param spriteSheetWidth The number of frames wide the tile's texture is
 	 */
-	public final Tile[][] setAllTilesSrcFromBitMaskId(Set<String> bitMaskedTextureList, int spriteSheetWidth)
+	public final Tile[][] setAllTilesSrcFromBitMaskId(final Set<String> bitMaskedTextureList, int spriteSheetWidth)
 	{
 		for(int xTile = 0; xTile < map.length; xTile++)
 		{
@@ -410,7 +410,7 @@ public class TileMap {
 	 * @param spriteSheetWidth The number of frames wide the tile's texture is
 	 * @return
 	 */
-	public final Tile setTileSrcFromBitMaskId(int x, int y, int spriteSheetWidth)
+	public final Tile setTileSrcFromBitMaskId(final int x, final int y, final int spriteSheetWidth)
 	{
 		int bitMaskId = getBitMaskTileId(x, y);		
 		int srcX = (bitMaskId % spriteSheetWidth) * getTileSize(); 

@@ -51,28 +51,29 @@ public class LightMap {
 		this.lights = lights;
 	}
 	
-	public boolean addLightSource(LightSource ls)
+	public boolean addLightSource(final LightSource ls)
 	{
 		return this.lights.add(ls);
 	}
 	
-	public void draw(int x, int y)
+	public void draw(final int x, final int y)
 	{
 		draw(x, y, lightMapFrameBuffer.getWidth(), lightMapFrameBuffer.getHeight());
 	}
 	
-	public void draw(int x, int y, int width, int height)
+	public void draw(final int x, final int y, final int width, final int height)
 	{
 		draw(x, y, width, height, 0, 0, width, height);
 	}
 
-	public void draw(int x, int y, int width, int height, int srcX, int srcY, int srcWidth, int srcHeight)
+	public void draw(final int x, final int y, final int width, final int height, final int srcX, 
+			final int srcY, final int srcWidth, final int srcHeight)
 	{
 		draw(x, y, width, height, srcX, srcY, srcWidth, srcHeight, 1.0f);
 	}
 	
-	public void draw(int x, int y, int width, int height, int srcX, int srcY, int srcWidth, 
-				int srcHeight, float alpha)
+	public void draw(final int x, final int y, final int width, final int height, final int srcX, 
+			final int srcY, final int srcWidth, final int srcHeight, final float alpha)
 	{
 		// Capture the current display buffer so we can revert back to it after rendering the lightmap.
 		FrameBuffer fbo = Graphics.getCurrentDisplayBuffer();
@@ -141,7 +142,7 @@ public class LightMap {
 		
 	}
 	
-	public ArrayList<LightSource> getLightSourcesForActor(Actor actor)
+	public ArrayList<LightSource> getLightSourcesForActor(final Actor actor)
 	{
 		ArrayList<LightSource> associatedLightSources = new ArrayList<LightSource>();
 		
@@ -152,7 +153,7 @@ public class LightMap {
 		return associatedLightSources;
 	}
 	
-	public boolean removeLightSource(LightSource ls)
+	public boolean removeLightSource(final LightSource ls)
 	{
 		return lights.remove(ls);
 	}

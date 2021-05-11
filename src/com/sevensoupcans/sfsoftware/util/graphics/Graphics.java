@@ -1,10 +1,7 @@
 package com.sevensoupcans.sfsoftware.util.graphics;
 
-import java.io.BufferedReader;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
@@ -19,7 +16,6 @@ import org.lwjgl.opengl.GLContext;
 import org.newdawn.slick.opengl.PNGDecoder;
 import org.newdawn.slick.util.ResourceLoader;
 
-import com.sevensoupcans.sfsoftware.util.graphics.geometry.Circle;
 import com.sevensoupcans.sfsoftware.util.graphics.geometry.Quad;
 import com.sevensoupcans.sfsoftware.util.resources.ClasspathHelper;
 import com.sevensoupcans.sfsoftware.util.resources.FileUtils;
@@ -29,18 +25,14 @@ public abstract class Graphics
 	public static final String DEFAULT_GRAPHICS_FILE_PATH = "res/graphics";
 	
 	private static boolean verbose = false;
-	//private static boolean useShader = false;
 	private static int displayHeight = 0;
 	private static int displayWidth = 0;
-	//private static int currentShader;
 	public static int shaderProgram;
 	private static String[] maskTextures;	
-	private static HashMap <String, Integer> shaders = new HashMap<String, Integer>();
 	
 	private static long window;	
 	private static FrameBuffer primaryDisplayBuffer;
 	private static FrameBuffer currentDisplayBuffer;
-	//private static int currentBufferID = 0;
 	
 	public static FrameBuffer getCurrentDisplayBuffer()
 	{
@@ -75,36 +67,6 @@ public abstract class Graphics
     {
     	Display.destroy();
     }
-    
-    @Deprecated
-	public static void drawCircle(float x, float y, float radius, float r1, float g1, float b1, float a1, float r2, float g2, float b2, float a2)
-	{
-    	Circle.draw(x, y, radius, r1, g1, b1, a1, r2, g2, b2, a2);    	
-	}	
-	
-    @Deprecated
-	public static void drawCircle(float x, float y, float radius, float r, float g, float b, float a)
-	{
-    	Circle.draw(x, y, radius, r, g, b, a);    	
-	}
-	
-    @Deprecated
-	public static void drawCircle(float x, float y, float radius, RGBA innerRGBA, RGBA outerRGBA, int segments)
-	{		
-    	Circle.draw(x, y, radius, innerRGBA, outerRGBA, segments);    	    
-	}
-
-    @Deprecated
-	public static void drawCircleOutline(float x, float y, float radius, float r, float g, float b, float a)
-	{
-    	Circle.drawOutline(x, y, radius, r, g, b, a);    	
-	}	
-	
-    @Deprecated
-	public static void drawCircleOutline(float x, float y, float radius, float r, float g, float b, float a, int segments, boolean smooth)
-	{
-    	Circle.drawOutline(x, y, radius, r, g, b, a, segments, smooth);    	
-	}
 
 	public static void drawDisplayBuffer(int x, int y, int width, int height)
 	{
@@ -152,24 +114,6 @@ public abstract class Graphics
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
 	}	
 	
-	@Deprecated
-	public static void drawQuad(float x, float y, float width, float height, RGBA rgba)
-	{	
-		Quad.draw(x, y, width, height, rgba);
-	}
-	
-	@Deprecated
-	public static void drawQuad(float x, float y, float width, float height, float r, float g, float b, float a)
-	{	
-		Quad.draw(x, y, width, height, r, g, b, a);
-	}
-	
-	@Deprecated
-	public static void drawQuad(float x, float y, float width, float height, RGBA topLeft, RGBA topRight, RGBA bottomLeft, RGBA bottomRight)
-	{	
-		Quad.draw(x, y, width, height, topLeft, topRight, bottomLeft, bottomRight);		
-	}	
-	
 	public static void drawRect(float x, float y, float width, float height, RGBA rgba, int thickness)
 	{
 		drawRect(x, y, width, height, rgba.getRed(), rgba.getGreen(), rgba.getBlue(), rgba.getAlpha(), thickness);
@@ -177,48 +121,12 @@ public abstract class Graphics
 	
 	public static void drawRect(float x, float y, float width, float height, float r, float g, float b, float a, int thickness)
 	{
-		drawQuad(x, y, thickness, height, r, g, b, a);
-		drawQuad(x + (width - thickness), y, thickness, height, r, g, b, a);		
-		drawQuad(x + thickness, y, width - thickness, thickness, r, g, b, a);
-		drawQuad(x + thickness, y + (height - thickness), width - thickness, thickness, r, g, b, a);				
+		Quad.draw(x, y, thickness, height, r, g, b, a);
+		Quad.draw(x + (width - thickness), y, thickness, height, r, g, b, a);		
+		Quad.draw(x + thickness, y, width - thickness, thickness, r, g, b, a);
+		Quad.draw(x + thickness, y + (height - thickness), width - thickness, thickness, r, g, b, a);				
 	}
-	
-	@Deprecated
-	public static void drawSprite(float x, float y, String textureName, int width, int height, int srcX, int srcY, 
-			int srcWidth, int srcHeight)
-	{
-		Sprite.draw(x,y,textureName,width,height,srcX,srcY,srcWidth,srcHeight, 1, 1, 1, 1);
-	}
-	
-	/**
-	 * draw a quad with the image on it
-	 */
-	@Deprecated
-	public static void drawSprite(float x, float y, String textureName, int width, int height, int srcX, int srcY, 
-			int srcWidth, int srcHeight, float red, float green, float blue, float alpha) 
-	{
-		Sprite.draw(x, y, textureName, width, height, srcX, srcY, srcWidth, srcHeight, red, green, blue, alpha, 0);
-	}
-	
-	@Deprecated
-	public static void drawSprite(float x, float y, Texture texture, int width, int height, int srcX, int srcY, 
-			int srcWidth, int srcHeight, float red, float green, float blue, float alpha, float angle)
-	{
-		Sprite.draw(x, y, texture, width, height, srcX, srcY, srcWidth, srcHeight, 
-				red, green, blue, alpha, angle);
-	}
-	
-	/**
-	 * draw a quad with the image on it - accept float for rotation!
-	 */
-	@Deprecated
-	public static void drawSprite(float x, float y, String textureName, int width, int height, int srcX, int srcY, 
-			int srcWidth, int srcHeight, float red, float green, float blue, float alpha, float angle) 
-	{		
-		Sprite.draw(x, y, textureName, width, height, srcX, srcY, srcWidth, srcHeight, 
-				red, green, blue, alpha, angle);
-	}	
-	
+
 	public static boolean isCloseRequested()
 	{
 		return Display.isCloseRequested();
@@ -275,14 +183,6 @@ public abstract class Graphics
 			primaryDisplayBuffer = new FrameBuffer(width, height);
 		}
 		
-		try 
-		{
-			Graphics.loadShaders();
-		} 
-		catch (Exception e) 
-		{		
-			e.printStackTrace();
-		}
 	}   	
 
 	/**
@@ -346,26 +246,7 @@ public abstract class Graphics
 	        System.out.println("Unable to setup mode "+width+"x"+height+" fullscreen="+fullscreen + e);
 	    }
 	}	
-	
-	public static void loadShaders() throws Exception
-	{
-		// Handle shaders
-		/*int vertShader = createShader("res/shaders/screen.vert", ARBVertexShader.GL_VERTEX_SHADER_ARB);
-		int fragShader = createShader("res/shaders/screen.frag", ARBFragmentShader.GL_FRAGMENT_SHADER_ARB);
-		shaderProgram = ARBShaderObjects.glCreateProgramObjectARB();
-		
-		if(shaderProgram != 0)
-		{
-			ARBShaderObjects.glAttachObjectARB(shaderProgram, vertShader);
-			ARBShaderObjects.glAttachObjectARB(shaderProgram, fragShader);
-			
-			ARBShaderObjects.glLinkProgramARB(shaderProgram);
-			ARBShaderObjects.glValidateProgramARB(shaderProgram);
-		
-			System.out.println("Shader program " + shaderProgram + " initialized.");			
-		}*/
-	}
-	
+
 	public static HashMap<String, Texture> loadTextures(Class<?> invokingClass)
 	{
 		return loadTextures(DEFAULT_GRAPHICS_FILE_PATH, invokingClass);
@@ -433,7 +314,7 @@ public abstract class Graphics
 	/*	Thanks for this one goes out to
 	/	http://www.thehelper.net/threads/java-lwjgl-opengl-display-seticon-question.156958/
 	*/
-	private static ByteBuffer loadIcon(String path) throws IOException 
+	private static ByteBuffer loadIcon(final String path) throws IOException 
 	{
         InputStream inputStream = ResourceLoader.getResourceAsStream(path); //new FileInputStream(path);
         try 
@@ -456,7 +337,7 @@ public abstract class Graphics
 	 * @param icon16	16x16 version of the app icon
 	 * @param icon32	32x32 verison of the app icon
 	 */
-	public static void setAppIcon(String icon16, String icon32)
+	public static void setAppIcon(final String icon16, final String icon32)
 	{ 
 		try 
 		{
@@ -469,20 +350,6 @@ public abstract class Graphics
 		
 	}	
 	
-	/*public static void setCurrentShader(int programId)
-	{
-		if(programId == 0)
-		{
-			useShader = false;
-		}
-		{
-			useShader = true;
-		}
-		
-		currentShader = programId;
-		ARBShaderObjects.glUseProgramObjectARB(programId);		
-	}*/	
-
 	/**
 	 * Sets the buffer to draw to - 0 is the main buffer.
 	 * 
@@ -491,7 +358,7 @@ public abstract class Graphics
 	 * @param bufferHeight
 	 * @param clearBuffer
 	 */
-	private static void setBuffer(int bufferId, int bufferWidth, int bufferHeight, boolean clearBuffer)
+	private static void setBuffer(final int bufferId, final int bufferWidth, final int bufferHeight, final boolean clearBuffer)
 	{
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
 		GL30.glBindFramebuffer(GL30.GL_FRAMEBUFFER, bufferId);
@@ -506,7 +373,7 @@ public abstract class Graphics
 	 * @param fbo
 	 * @param clearBuffer
 	 */
-	public static void setBuffer(FrameBuffer fbo, boolean clearBuffer)
+	public static void setBuffer(final FrameBuffer fbo, final boolean clearBuffer)
 	{		
 		if(fbo != null)
 		{
@@ -524,12 +391,12 @@ public abstract class Graphics
 	 * 
 	 * @param fbo
 	 */
-	public static void setBuffer(FrameBuffer fbo)
+	public static void setBuffer(final FrameBuffer fbo)
 	{
 		setBuffer(fbo, false);
 	}
 	
-	public static void setMaskTextureList(String[] textureList)
+	public static void setMaskTextureList(final String[] textureList)
 	{
 		maskTextures = textureList;
 	}
@@ -540,66 +407,11 @@ public abstract class Graphics
 	 * @param xScaler
 	 * @param yScaler
 	 */
-	public static void setScaledDisplay(double xScaler, double yScaler)
+	public static void setScaledDisplay(final double xScaler, final double yScaler)
 	{
 		GL11.glOrtho(0, getDisplayWidth() / xScaler, getDisplayHeight() / yScaler, 0, 1, -1);
 	}
     
-    private static String readFileAsString(String filename) throws Exception 
-    {
-        StringBuilder source = new StringBuilder();        
-        InputStream in = new FileInputStream(filename); 
-        		//ResourceLoader.getResourceAsStream(filename);
-        Exception exception = null;
-        
-        BufferedReader reader;
-        try{
-            reader = new BufferedReader(new InputStreamReader(in,"UTF-8"));
-            
-            Exception innerExc= null;
-            try {
-            	String line;
-                while((line = reader.readLine()) != null)
-                    source.append(line).append('\n');
-            }
-            catch(Exception exc) {
-            	exception = exc;
-            }
-            finally {
-            	try {
-            		reader.close();
-            	}
-            	catch(Exception exc) {
-            		if(innerExc == null)
-            			innerExc = exc;
-            		else
-            			exc.printStackTrace();
-            	}
-            }
-            
-            if(innerExc != null)
-            	throw innerExc;
-        }
-        catch(Exception exc) {
-        	exception = exc;
-        }
-        finally {
-        	try {
-        		in.close();
-        	}
-        	catch(Exception exc) {
-        		if(exception == null)
-        			exception = exc;
-        		else
-					exc.printStackTrace();
-        	}
-        	
-        	if(exception != null)
-        		throw exception;
-        }
-        return source.toString();
-    }
-
     public static FrameBuffer getPrimaryDisplayBuffer()
     {
     	return primaryDisplayBuffer;
@@ -610,7 +422,7 @@ public abstract class Graphics
     	return Display.isFullscreen();
     }
     
-    public static void sync(int fps)
+    public static void sync(final int fps)
     {
     	Display.sync(fps);
     }
@@ -620,7 +432,7 @@ public abstract class Graphics
     	Display.update();
     }
     
-    public static void update(boolean sync)
+    public static void update(final boolean sync)
     {
     	update();
     	if(sync) sync(60);
@@ -630,7 +442,7 @@ public abstract class Graphics
 		return displayHeight;
 	}
 
-	private static void setDisplayHeight(int displayHeight) {
+	private static void setDisplayHeight(final int displayHeight) {
 		Graphics.displayHeight = displayHeight;
 	}
 
@@ -638,11 +450,11 @@ public abstract class Graphics
 		return displayWidth;
 	}
 
-	private static void setDisplayWidth(int displayWidth) {
+	private static void setDisplayWidth(final int displayWidth) {
 		Graphics.displayWidth = displayWidth;
 	}	
 	
-	public static void setVSync(boolean vsync)
+	public static void setVSync(final boolean vsync)
 	{
 		Display.setVSyncEnabled(vsync);
 	}

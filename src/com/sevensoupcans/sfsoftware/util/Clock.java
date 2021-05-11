@@ -26,7 +26,7 @@ public final class Clock
 		clocks.add(this);
 	}
 	
-	public static String getFormattedHoursMinutes(long time)
+	public static String getFormattedHoursMinutes(final long time)
 	{		
 		String minutes = Integer.toString((int)((time % 3600) / 60));
 		String hours = Integer.toString((int)(time / 3600));
@@ -42,7 +42,7 @@ public final class Clock
 		return hours + SEPARATOR + minutes;			
 	}
 	
-	public static String getFormattedTime(long time)
+	public static String getFormattedTime(final long time)
 	{				
 		String seconds = Integer.toString((int)(time % 60));
 		String minutes = Integer.toString((int)((time % 3600) / 60));
@@ -89,7 +89,7 @@ public final class Clock
 		}
 	}
 
-	public static void updateAll(Game g)
+	public static void updateAll(final Game g)
 	{
 		for(Clock c: clocks)
 		{
@@ -108,7 +108,7 @@ public final class Clock
 		return updateClock(null);
 	}
 	
-	public boolean updateClock(Game g) 
+	public boolean updateClock(final Game g) 
 	{
 		boolean triggerEvent = false;		
 	    if (getTime() - clockLastTick > getInterval()) 
@@ -127,7 +127,7 @@ public final class Clock
 	    return triggerEvent;
 	}	
 	
-	public static void update(Game g) {
+	public static void update(final Game g) {
 	    if (getTime() - lastTick > 1000) {
 	    	if(!(g.isPaused))
 	    	{
@@ -148,7 +148,7 @@ public final class Clock
 	/**
 	 * @param clockInterval the clockInterval to set
 	 */
-	public void setInterval(int i) 
+	public void setInterval(final int i) 
 	{
 		clockInterval = i;
 	}	

@@ -46,17 +46,13 @@ public final class Texture
 	/**
 	 * Draw a quad with the image on it - accept float for rotation!
 	 */
-	public static void drawTexture(float x, float y, Texture texture, int width, int height, int srcX, int srcY, int srcWidth, int srcHeight, float red, float green, float blue, float alpha, float angle) 
+	public static void drawTexture(final float x, final float y, final Texture texture, final int width, 
+			final int height, final int srcX, final int srcY, final int srcWidth, final int srcHeight, 
+			final float red, final float green, final float blue, final float alpha, final float angle) 
 	{		
 		// If the provided texture string is null or empty, don't try to draw it. :)
 		if(texture != null)
-		{										
-			// Bind the current texture to the current shader if one is in use.
-			/*if(useShader)
-			{
-				setShaderUniform(currentShader, "texture", getTextureId(texture));
-			}*/
-			
+		{
 	        // Enable alpha blending
 	        GL11.glEnable(GL11.GL_BLEND);
 	        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
@@ -103,7 +99,7 @@ public final class Texture
 		return DEFAULT_TRANSPARENT_COLOR;
 	}
 	
-    public static boolean isTextureLoaded(String textureName)
+    public static boolean isTextureLoaded(final String textureName)
     {
     	return loadedTextures.containsKey(textureName);
     }
@@ -113,7 +109,7 @@ public final class Texture
 		return loadedTextures;
 	}
 	
-	public static Texture getTexture(String textureName)
+	public static Texture getTexture(final String textureName)
 	{
 		return loadedTextures.get(textureName);
 	}
@@ -197,7 +193,7 @@ public final class Texture
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, getID());
 	}
 	
-	public boolean containsColor(RGBA rgba)
+	public boolean containsColor(final RGBA rgba)
 	{
 		// Alpha is not stored in the color palette - a color value where alpha is 1.0f should be provided.
 		if(rgba.getAlpha() < 1.0f) return false;		
@@ -209,14 +205,15 @@ public final class Texture
 		return loadedTextures.remove(this.getName());
 	}
 	
-	public void draw(float x, float y, int width, int height, int srcX, int srcY, 
-			int srcWidth, int srcHeight, float red, float green, float blue, float alpha, float angle)
+	public void draw(final float x, final float y, final int width, final int height, final int srcX, final int srcY, 
+			final int srcWidth, final int srcHeight, final float red, final float green, final float blue, 
+			final float alpha, final float angle)
 	{
 		drawTexture(x, y, this, width, height, srcX, srcY, srcWidth, srcHeight, 
 				red, green, blue, alpha, angle);
 	}
 	
-	private String generateTextureName(String path, boolean prependUnderscore)
+	private String generateTextureName(final String path, final boolean prependUnderscore)
 	{
 		if(path == null) return String.valueOf(this.hashCode());
 		
@@ -284,7 +281,7 @@ public final class Texture
 		return TEXTURE_ID;
 	}
 	
-	public void swapColors(RGBA[] colorsToReplace, RGBA[] replacementColors)
+	public void swapColors(final RGBA[] colorsToReplace, final RGBA[] replacementColors)
 	{
 		if(colorsToReplace.length != replacementColors.length) return;
 		
@@ -336,7 +333,7 @@ public final class Texture
 		glBindTexture(GL_TEXTURE_2D, 0);		
 	}
 	
-	public void swapColor(RGBA colorToReplace, RGBA replacementColor)
+	public void swapColor(final RGBA colorToReplace, final RGBA replacementColor)
 	{
 		RGBA[] colorsToReplace = { colorToReplace };
 		RGBA[] replacementColors = { replacementColor };

@@ -54,18 +54,18 @@ public final class Sound
 		}
 	}
 	
-	public static void loadAudio(Class<?> invokingClass)
+	public static void loadAudio(final Class<?> invokingClass)
 	{
 		loadAudio(AUDIO_PATH, invokingClass);
 	}
 	
-	public static void loadAudio(String audioResourcePath, Class<?> invokingClass)
+	public static void loadAudio(final String audioResourcePath, final Class<?> invokingClass)
 	{		
 		loadOggs(audioResourcePath, invokingClass);
 		loadWaves(audioResourcePath, invokingClass);
 	}
 	
-	public static HashMap<String, Audio> loadOggs(String audioResourcePath, Class<?> invokingClass)
+	public static HashMap<String, Audio> loadOggs(final String audioResourcePath, final Class<?> invokingClass)
 	{
 		try 
 		{			 	
@@ -103,7 +103,7 @@ public final class Sound
 		return soundLib;
 	}
 	
-	public static HashMap<String, Audio> loadWaves(String audioResourcePath, Class<?> invokingClass)
+	public static HashMap<String, Audio> loadWaves(final String audioResourcePath, final Class<?> invokingClass)
 	{
 		try 
 		{			  	  
@@ -146,11 +146,11 @@ public final class Sound
 		return playMusic(s);
 	}
 	
-	public static void playMusic(String songName)
+	public static void playMusic(final String songName)
 	{
 		playMusic(songName, false);
 	}
-	public static void playMusic(String songName, boolean loopSong)
+	public static void playMusic(final String songName, final boolean loopSong)
 	{		
 		oggStream = musicLib.get(songName);
 		if(oggStream != null)
@@ -160,7 +160,7 @@ public final class Sound
 		}
 	}
 	
-	public static String playMusic(String[] doNotPlayList)
+	public static String playMusic(final String[] doNotPlayList)
 	{		
 		// Play a random song not contained on the "do not play" list!
 		List<String> keysAsArray = new ArrayList<String>(musicLib.keySet());
@@ -176,12 +176,12 @@ public final class Sound
 		return songName;
 	}
 	
-	public static Sound playSound(String soundName)
+	public static Sound playSound(final String soundName)
 	{		
 		return playSound(soundName, 1.0f);
 	}
 	
-	public static Sound playSound(String soundName, float pitch)
+	public static Sound playSound(final String soundName, final float pitch)
 	{
 		Audio temp = soundLib.get(soundName);
 		if(temp != null)
@@ -193,23 +193,23 @@ public final class Sound
 		return null;
 	}
 	
-	public static void pollSoundStore(int i)
+	public static void pollSoundStore(final int i)
 	{
 		SoundStore.get().poll(i);
 	}
 	
-	public static void setMusicPitch(float pitch)
+	public static void setMusicPitch(final float pitch)
 	{
 		SoundStore.get().setMusicPitch(pitch);
 	}
 	
-	public static void setMusicVolume(float volume)
+	public static void setMusicVolume(final float volume)
 	{
 		SoundStore.get().setMusicVolume(volume); 
 		musicVolume = volume;
 	}
 	
-	public static void setSoundEffectVolume(float volume)
+	public static void setSoundEffectVolume(final float volume)
 	{
 		soundEffectVolume = volume;
 	}
@@ -224,7 +224,7 @@ public final class Sound
 	private Audio associatedAudio;
 	private String name;
 	
-	public Sound(Audio audio, String name)
+	public Sound(final Audio audio, final String name)
 	{
 		this.associatedAudio = audio;
 		this.name = name;
@@ -245,12 +245,12 @@ public final class Sound
 		this.play(1.0f, false);
 	}
 	
-	public void play(float pitch)
+	public void play(final float pitch)
 	{
 		this.play(pitch, false);
 	}
 	
-	public void play(float pitch, boolean loop)
+	public void play(final float pitch, final boolean loop)
 	{
 		if(this.associatedAudio == null) return;
 		this.associatedAudio.playAsSoundEffect(pitch, soundEffectVolume, loop);

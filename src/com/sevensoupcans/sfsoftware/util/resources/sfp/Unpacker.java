@@ -17,7 +17,7 @@ public class Unpacker
 	// Maximum length of filenames specified by the packing tool
 	private static final int MAXFILELEN = 64;
 	
-	public static ArrayList<String> getFileList(String BinFile) throws IOException
+	public static ArrayList<String> getFileList(final String BinFile) throws IOException
 	{
 		ArrayList<String> al = new ArrayList<String>();
 										
@@ -68,7 +68,7 @@ public class Unpacker
 		return al;
 	}
 	
-	public static void extractFile(String BinFile, String DestDir, long ResKey)
+	public static void extractFile(final String BinFile, final String DestDir, final long ResKey)
 	{		
 		try 
 		{								

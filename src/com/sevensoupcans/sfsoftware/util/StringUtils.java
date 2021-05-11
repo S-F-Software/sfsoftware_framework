@@ -12,7 +12,7 @@ public abstract class StringUtils
 	 * @param source
 	 * @return
 	 */
-	public static String capitalizeString(String source)
+	public static String capitalizeString(final String source)
 	{
 		StringBuffer res = new StringBuffer();
 

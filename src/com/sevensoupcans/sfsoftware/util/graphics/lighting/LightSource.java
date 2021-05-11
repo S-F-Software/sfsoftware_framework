@@ -61,7 +61,7 @@ public class LightSource {
 		this.associatedActor = associatedActor;
 	}
 	
-	public void draw(float alpha)
+	public void draw(final float alpha)
 	{
 		// If the light source is associated with an Actor, the position is updated based on the Actor's
 		if(associatedActor != null)

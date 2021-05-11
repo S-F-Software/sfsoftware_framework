@@ -9,14 +9,15 @@ import com.sevensoupcans.sfsoftware.util.tile.TileMap;
 
 public class Sprite extends Quad {
 	
-	public static void draw(float x, float y, String textureName, int width, int height, int srcX, int srcY, 
-			int srcWidth, int srcHeight)
+	public static void draw(final float x, final float y, final String textureName, final int width, 
+			final int height, final int srcX, final int srcY, final int srcWidth, final int srcHeight)
 	{
 		draw(x,y,textureName,width,height,srcX,srcY,srcWidth,srcHeight, 1, 1, 1, 1);
 	}
 	
-	public static void draw(float x, float y, String textureName, int width, int height, int srcX, int srcY, 
-			int srcWidth, int srcHeight, float red, float green, float blue, float alpha) 
+	public static void draw(final float x, final float y, final String textureName, final int width, 
+			final int height, final int srcX, final int srcY, final int srcWidth, final int srcHeight, 
+			final float red, final float green, final float blue, final float alpha) 
 	{
 		draw(x, y, textureName, width, height, srcX, srcY, srcWidth, srcHeight, 
 				red, green, blue, alpha, 0);
@@ -25,8 +26,9 @@ public class Sprite extends Quad {
 	/**
 	 * draw a quad with the image on it - accept float for rotation!
 	 */
-	public static void draw(float x, float y, String textureName, int width, int height, int srcX, int srcY, 
-			int srcWidth, int srcHeight, float red, float green, float blue, float alpha, float angle) 
+	public static void draw(final float x, final float y, final String textureName, final int width, 
+			final int height, final int srcX, final int srcY, final int srcWidth, final int srcHeight, 
+			final float red, final float green, final float blue, final float alpha, final float angle) 
 	{		
 		// If the provided texture string is null or empty, don't try to draw it. :)
 		if(textureName != null && !(textureName.equals("")))
@@ -57,19 +59,20 @@ public class Sprite extends Quad {
 		}
 	}
 	
-	public static void draw(float x, float y, Texture texture, int width, int height, int srcX, int srcY, 
-			int srcWidth, int srcHeight, float red, float green, float blue, float alpha, float angle)
+	public static void draw(final float x, final float y, final Texture texture, final int width, final int height, 
+			final int srcX, final int srcY, final int srcWidth, final int srcHeight, final float red, final float green, 
+			final float blue, final float alpha, final float angle)
 	{
 		Texture.drawTexture(x, y, texture, width, height, srcX, srcY, srcWidth, srcHeight, 
 				red, green, blue, alpha, angle);
 	}	
 	
-	public static String getTextureName(Sprite sprite)
+	public static String getTextureName(final Sprite sprite)
 	{
 		return sprite != null ? sprite.getTextureName() : "";
 	}
 	
-	public static boolean isSpriteOutOfGameBounds(Game game, Sprite sprite)
+	public static boolean isSpriteOutOfGameBounds(final Game game, final Sprite sprite)
 	{		
 		int x = (int) sprite.getX();
 		int y = (int) sprite.getY();
@@ -129,7 +132,7 @@ public class Sprite extends Quad {
 		this(destX, destY, texture.getName());
 	}
 	
-	public final boolean areCornersOnTexture(TileMap tileMap, String textureName)
+	public final boolean areCornersOnTexture(final TileMap tileMap, final String textureName)
 	{
 		if(tileMap.getTextureAtPoint(this.getLeft(), this.getTop()).getName().equals(textureName)) return true;
 		if(tileMap.getTextureAtPoint(this.getRight(), this.getTop()).getName().equals(textureName)) return true;
@@ -139,12 +142,12 @@ public class Sprite extends Quad {
 		return false;
 	}
 	
-	public final boolean areCornersOnTexture(TileMap tileMap, Texture texture)
+	public final boolean areCornersOnTexture(final TileMap tileMap, final Texture texture)
 	{
 		return this.areCornersOnTexture(tileMap, texture.getName());
 	}
 	
-	public boolean collidingWith(Collidable object) 
+	public boolean collidingWith(final Collidable object) 
 	{		
 		boolean isColliding = false;
 		if(object instanceof Sprite)
@@ -170,39 +173,43 @@ public class Sprite extends Quad {
 		draw(this.getWidth(), this.getHeight());
 	}
 	
-	public void draw(int width, int height)
+	public void draw(final int width, final int height)
 	{
 		draw(width, height, this.getSrcX(), this.getSrcY(), width, height);
 	}
 	
 	// Only use this for non-scaled sprites. Assumes the source dimensions are the same as the destination ones.
-	public void draw(int width, int height, int srcX, int srcY)
+	public void draw(final int width, final int height, final int srcX, final int srcY)
 	{
 		draw(width, height, srcX, srcY, width, height);
 	}
 	
-	public void draw(int width, int height, int srcX, int srcY, int srcWidth, int srcHeight)
+	public void draw(final int width, final int height, final int srcX, final int srcY, 
+			final int srcWidth, final int srcHeight)
 	{	
 		draw(width, height, srcX, srcY, srcWidth, srcHeight, 
 				this.getRed(), this.getGreen(), this.getBlue(), this.getAlpha());
 	}
 	
-	public void draw(int width, int height, int srcX, int srcY, int srcWidth, int srcHeight, 
-			float red, float green, float blue, float alpha)
+	public void draw(final int width, final int height, final int srcX, final int srcY, 
+			final int srcWidth, final int srcHeight, final float red, final float green, 
+			final float blue, final float alpha)
 	{
 		draw((int) this.getX(), (int) this.getY(), width, height, srcX, srcY, 
 				srcWidth, srcHeight, red, green, blue, alpha);								
 	}
 	
-	public void draw(int x, int y, int width, int height, int srcX, int srcY, int srcWidth, int srcHeight, 
-			float red, float green, float blue, float alpha)
+	public void draw(final int x, final int y, final int width, final int height, final int srcX, 
+			final int srcY, final int srcWidth, final int srcHeight, final float red, final float green, 
+			final float blue, final float alpha)
 	{	
 		draw((int) this.getX(), (int) this.getY(), width, height, srcX, srcY, 
 				srcWidth, srcHeight, red, green, blue, alpha, this.getRotationAngle());
 	}
 	
-	public void draw(int x, int y, int width, int height, int srcX, int srcY, int srcWidth, int srcHeight, 
-			float red, float green, float blue, float alpha, float rotationAngle)
+	public void draw(final int x, final int y, final int width, final int height, final int srcX, 
+			final int srcY, final int srcWidth, final int srcHeight, final float red, final float green, 
+			final float blue, final float alpha, final float rotationAngle)
 	{	
 		if(!(this.visible)) return;
 		
@@ -237,15 +244,15 @@ public class Sprite extends Quad {
 				this.associatedTexture.getName() : (this.targetTextureName != null ? this.targetTextureName : ""));
 	}
 	
-	public final boolean isCenterOnTexture(TileMap tileMap, String textureName)
+	public final boolean isCenterOnTexture(final TileMap tileMap, final String textureName)
 	{
 		return (tileMap.getTextureAtPoint(this.getCenterX(), this.getCenterY()).getName().equals(textureName));
 	}
-	public final boolean isCenterOnTexture(TileMap tileMap, Texture texture)
+	public final boolean isCenterOnTexture(final TileMap tileMap, final Texture texture)
 	{
 		return this.isCenterOnTexture(tileMap, texture.getName());
 	}
-	public final boolean isOutOfGameBounds(Game game)
+	public final boolean isOutOfGameBounds(final Game game)
 	{
 		int x = (int) getX();
 		int y = (int) getY();
@@ -259,44 +266,44 @@ public class Sprite extends Quad {
 		return this.visible;
 	}
 	
-	public void move(float destX, float destY)
+	public void move(final float destX, final float destY)
 	{
 		move(Math.round(destX), Math.round(destY));
 	}	
 	
-	public void move(int destX, int destY)
+	public void move(final int destX, final int destY)
 	{
 		this.setX(destX);
 		this.setY(destY);
 	}		
 
-	public final float setRotationAngle(float rotationAngle)
+	public final float setRotationAngle(final float rotationAngle)
 	{
 		return (this.rotationAngle = rotationAngle);
 	}
 	
-	public void setSrc(int sourceX, int sourceY)
+	public void setSrc(final int sourceX, final int sourceY)
 	{
 		srcX = sourceX;
 		srcY = sourceY;
 	}
 	
-	public void setSrcX(int sourceX)
+	public void setSrcX(final int sourceX)
 	{
 		srcX = sourceX;
 	}
 	
-	public void setSrcY(int sourceY)
+	public void setSrcY(final int sourceY)
 	{
 		srcY = sourceY;
 	}
 	
-	public Texture setTexture(String newTextureName)
+	public Texture setTexture(final String newTextureName)
 	{
 		return (this.associatedTexture = Texture.getTexture(newTextureName));
 	}
 	
-	public final boolean setVisible(boolean visible)
+	public final boolean setVisible(final boolean visible)
 	{
 		return (this.visible = visible);
 	}

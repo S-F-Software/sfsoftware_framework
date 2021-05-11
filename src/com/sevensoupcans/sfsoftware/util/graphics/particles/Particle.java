@@ -12,7 +12,9 @@ public class Particle implements Updatable
 {
 	private static Vector<Particle> particles = new Vector<Particle>();
 	
-	public static void generateParticles(int originX, int originY, int originWidth, int originHeight, int particleCount, float red, float green, float blue, int size)
+	public static void generateParticles(final int originX, final int originY, final int originWidth, 
+			final int originHeight, final int particleCount, final float red, final float green, 
+			final float blue, final int size)
 	{
 		for(int i = 0; i < particleCount; i++)
 		{
@@ -96,12 +98,12 @@ public class Particle implements Updatable
 		particles.add(this);
 	}
 	
-	public final float setDecayRate(float decayRate)
+	public final float setDecayRate(final float decayRate)
 	{
 		return (this.decayRate = decayRate);
 	}
 	
-	public final void setLifeSpan(int lifeSpanInMilliseconds)
+	public final void setLifeSpan(final int lifeSpanInMilliseconds)
 	{
 		this.deathClock = new Clock(lifeSpanInMilliseconds);
 	}	

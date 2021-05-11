@@ -10,9 +10,6 @@ public final class Kboard implements InputDevice {
 	public static final int[] upKeys = 	{Keyboard.KEY_W, Keyboard.KEY_UP};
 	public static final int[] downKeys = 	{Keyboard.KEY_S, Keyboard.KEY_DOWN};
 	
-	// TODO As tab and right shift aren't universal "pause keys," it may be worth moving this elsewhere
-	public static final int[] pauseKeys = {Keyboard.KEY_TAB, Keyboard.KEY_RSHIFT};
-	
 	public static final int[] alphabetKeys = { Keyboard.KEY_Q, Keyboard.KEY_W, Keyboard.KEY_E, Keyboard.KEY_R,
 			Keyboard.KEY_T,Keyboard.KEY_Y,Keyboard.KEY_U,Keyboard.KEY_I,Keyboard.KEY_O,Keyboard.KEY_P,
 			Keyboard.KEY_A,Keyboard.KEY_S,Keyboard.KEY_D,Keyboard.KEY_F,Keyboard.KEY_G,Keyboard.KEY_H,
@@ -39,12 +36,34 @@ public final class Kboard implements InputDevice {
 	
 	public static final int KEY_A = Keyboard.KEY_A;
 	public static final int KEY_D = Keyboard.KEY_D;
+	public static final int KEY_E = Keyboard.KEY_E;
+	public static final int KEY_ESCAPE = Keyboard.KEY_ESCAPE;	
 	public static final int KEY_F = Keyboard.KEY_F;
-	public static final int KEY_S = Keyboard.KEY_S;
-	public static final int KEY_W = Keyboard.KEY_W;		
-	public static final int KEY_GRAVE = Keyboard.KEY_GRAVE;
+	public static final int KEY_GRAVE = Keyboard.KEY_GRAVE;		
+	public static final int KEY_LBRACKET = Keyboard.KEY_LBRACKET;
+	public static final int KEY_LCONTROL = Keyboard.KEY_LCONTROL;
+	public static final int KEY_LSHIFT = Keyboard.KEY_LSHIFT;
+	public static final int KEY_PAUSE = Keyboard.KEY_PAUSE;
+	public static final int KEY_RBRACKET = Keyboard.KEY_RBRACKET;
+	public static final int KEY_RCONTROL = Keyboard.KEY_RCONTROL;
+	public static final int KEY_RETURN = Keyboard.KEY_RETURN;	
+	public static final int KEY_RSHIFT = Keyboard.KEY_RSHIFT;	
+	public static final int KEY_S = Keyboard.KEY_S;	
+	public static final int KEY_SPACE = Keyboard.KEY_SPACE;
+	public static final int KEY_TAB = Keyboard.KEY_TAB;	
+	public static final int KEY_W = Keyboard.KEY_W;			
 	
 	private static final Vector<Integer> lastKeyState = new Vector<Integer>();
+	
+	private int AButtonKey = Keyboard.KEY_SPACE;
+	private int BButtonKey = Keyboard.KEY_LCONTROL;
+	private int XButtonKey = Keyboard.KEY_LSHIFT;
+	private int YButtonKey = Keyboard.KEY_RCONTROL;
+	private int BackButtonKey = Keyboard.KEY_ESCAPE;
+	private int ShoulderLeftKey = Keyboard.KEY_LBRACKET;
+	private int ShoulderRightKey = Keyboard.KEY_RBRACKET;
+	private int StartButtonKey = Keyboard.KEY_RETURN;
+	private int[] pauseKeys = {Keyboard.KEY_PAUSE};
 	
 	public static String getKeyName(int key)
 	{
@@ -132,36 +151,35 @@ public final class Kboard implements InputDevice {
 
 	@Override
 	public boolean isButtonADown() {
-		return Kboard.isKeyDown(Keyboard.KEY_SPACE);
+		return Kboard.isKeyDown(this.AButtonKey);
 	}
 
 	@Override
 	public boolean isButtonBDown() {
-		return Kboard.isKeyDown(Keyboard.KEY_LCONTROL);
+		return Kboard.isKeyDown(this.BButtonKey);
 	}
 
 	@Override
 	public boolean isButtonShoulderLeftDown() 
 	{
-		return Kboard.isKeyDown(Keyboard.KEY_LBRACKET);
+		return Kboard.isKeyDown(this.ShoulderLeftKey);
 	}
 
 	@Override
 	public boolean isButtonShoulderRightDown() 
 	{
-		return Kboard.isKeyDown(Keyboard.KEY_RBRACKET);
+		return Kboard.isKeyDown(this.ShoulderRightKey);
 	}
 	
 
 	@Override
 	public boolean isButtonXDown() {
-		return Kboard.isKeyDown(Keyboard.KEY_LSHIFT);
+		return Kboard.isKeyDown(this.XButtonKey);
 	}
 
 	@Override
 	public boolean isButtonYDown() {
-		// TODO Auto-generated method stub
-		return false;
+		return Kboard.isKeyDown(this.YButtonKey);
 	}
 
 	@Override
@@ -177,7 +195,7 @@ public final class Kboard implements InputDevice {
 	@Override
 	public boolean isRightDown() { 
 		return Kboard.isKeyDown(rightKeys);
-	}// TODO Auto-generated method stub
+	}
 
 	@Override
 	public boolean isUpDown() {
@@ -188,6 +206,51 @@ public final class Kboard implements InputDevice {
 	public void poll() {		
 	}
 
+	public void mapKeyAsAButton(final int key)
+	{		
+		this.AButtonKey = key;
+	}
+	
+	public void mapKeyAsBButton(final int key)
+	{
+		this.BButtonKey = key;
+	}
+	
+	public void mapKeyAsBackButton(final int key)
+	{
+		this.BackButtonKey = key;
+	}	
+	
+	public void mapKeyAsStartButton(final int key)
+	{
+		this.StartButtonKey = key;
+	}
+	
+	public void mapKeyAsXButton(final int key)
+	{
+		this.XButtonKey = key;
+	}	
+
+	public void mapKeyAsYButton(final int key)
+	{
+		this.YButtonKey = key;
+	}
+	
+	public void mapKeyAsLeftShoulderButton(final int key)
+	{
+		this.ShoulderLeftKey = key;
+	}
+	
+	public void mapKeyAsRightShoulderButton(final int key)
+	{
+		this.ShoulderRightKey = key;
+	}		
+	
+	public void setPauseKeys(int[] keys)
+	{
+		pauseKeys = keys;
+	}	
+	
 	@Override
 	public void storeState() {
 		Kboard.storeKBState();		
@@ -195,40 +258,39 @@ public final class Kboard implements InputDevice {
 
 	@Override
 	public boolean wasBackPressed() {
-		return Kboard.keyPressed(Keyboard.KEY_ESCAPE);
+		return Kboard.keyPressed(this.BackButtonKey);
 	}
 
 	@Override
 	public boolean wasButtonAPressed() {
-		return Kboard.keyPressed(Keyboard.KEY_SPACE);
+		return Kboard.keyPressed(this.AButtonKey);
 	}
 
 	@Override
 	public boolean wasButtonBPressed() {
-		return Kboard.keyPressed(Keyboard.KEY_LCONTROL);
+		return Kboard.keyPressed(this.BButtonKey);
 	}
 
 	@Override
 	public boolean wasButtonShoulderLeftPressed() 
 	{
-		return Kboard.keyPressed(Keyboard.KEY_LBRACKET);
+		return Kboard.keyPressed(this.ShoulderLeftKey);
 	}
 
 	@Override
 	public boolean wasButtonShoulderRightPressed() 
 	{
-		return Kboard.keyPressed(Keyboard.KEY_RBRACKET);
+		return Kboard.keyPressed(this.ShoulderRightKey);
 	}
 
 	@Override
 	public boolean wasButtonXPressed() {
-		return Kboard.keyPressed(Keyboard.KEY_LSHIFT);
+		return Kboard.keyPressed(this.XButtonKey);
 	}
 
 	@Override
 	public boolean wasButtonYPressed() {
-		// TODO Auto-generated method stub
-		return false;
+		return Kboard.keyPressed(this.YButtonKey);
 	}
 
 	@Override
@@ -243,7 +305,7 @@ public final class Kboard implements InputDevice {
 
 	@Override
 	public boolean wasPausedPressed() {
-		return Kboard.keyPressed(Kboard.pauseKeys);
+		return Kboard.keyPressed(pauseKeys);
 	}
 
 	@Override
@@ -253,7 +315,7 @@ public final class Kboard implements InputDevice {
 
 	@Override
 	public boolean wasStartPressed() {
-		return Kboard.keyPressed(Keyboard.KEY_RETURN);
+		return Kboard.keyPressed(this.StartButtonKey);
 	}
 
 	@Override

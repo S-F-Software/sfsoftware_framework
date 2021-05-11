@@ -34,7 +34,7 @@ public class FillBar {
 		this.font = font;
 	}
 	
-	public void draw(int x, int y, int width, int height, String statusText)
+	public void draw(final int x, final int y, final int width, final int height, final String statusText)
 	{
 		if(hasBorder)
 			Graphics.drawRect(x, y, width, height, borderColor, 2);
@@ -70,17 +70,17 @@ public class FillBar {
 		return this.value;
 	}
 	
-	public final void setBordered(boolean hasBorder)
+	public final void setBordered(final boolean hasBorder)
 	{
 		this.hasBorder = hasBorder;
 	}
 	
-	public final void setMaxValue(int maxValue)
+	public final void setMaxValue(final int maxValue)
 	{
 		this.maxValue = maxValue;
 	}
 	
-	public final void setValue(int value)
+	public final void setValue(final int value)
 	{
 		this.value = value;
 	}

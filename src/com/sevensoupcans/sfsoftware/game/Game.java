@@ -1,6 +1,7 @@
 package com.sevensoupcans.sfsoftware.game;
 
 import java.awt.Font;
+import java.util.ArrayList;
 import java.util.prefs.Preferences;
 
 import org.lwjgl.LWJGLException;
@@ -46,7 +47,7 @@ public abstract class Game
 	
 	private final Preferences PREFERENCES = Preferences.userNodeForPackage(this.getClass());
 
-	public abstract boolean executeTextConsoleCommand(String command);
+	public abstract boolean executeTextConsoleCommand(final String command);
 	public abstract int getPlayingFieldHeight();
 	public abstract int getPlayingFieldWidth();
 	public abstract String getDefaultFontName();
@@ -60,7 +61,7 @@ public abstract class Game
 	 * @param loadingDetails An ArrayList containing loading detail text
 	 * @param font The TextureFont used to handle drawing the detail text
 	 */
-	public final void drawLoadingScreen(java.util.ArrayList<String> loadingDetails, TextureFont font)
+	public final void drawLoadingScreen(final ArrayList<String> loadingDetails, final TextureFont font)
 	{
 		Graphics.clear();
 		
@@ -168,7 +169,7 @@ public abstract class Game
 		init(false);
 	}
 	
-	protected void init(int screenWidth, int screenHeight, boolean loadResources)
+	protected void init(final int screenWidth, final int screenHeight, final boolean loadResources)
 	{
 		this.screenHeight = screenHeight;
 		this.screenWidth = screenWidth;
@@ -177,7 +178,7 @@ public abstract class Game
 		
 	}
 	
-	protected void init(boolean loadResources)
+	protected void init(final boolean loadResources)
 	{
 		System.out.println(getGameTitle() + ", (c) S&F Software, 2020");
 		Graphics.setAppIcon(getResourcePath() + "graphics/icon16.png", getResourcePath() + "graphics/icon32.png");
@@ -226,9 +227,8 @@ public abstract class Game
 	 * @param height The height of the display required
 	 * @param fullscreen True if we want fullscreen mode
 	 */
-	public final static void setDisplayMode(int width, int height, boolean fullscreen) 
-	{
-
+	public final static void setDisplayMode(final int width, final int height, final boolean fullscreen) 
+	{		
 	    // return if requested DisplayMode is already set
 	    if ((Display.getDisplayMode().getWidth() == width) && 
 	        (Display.getDisplayMode().getHeight() == height) && 
@@ -285,7 +285,7 @@ public abstract class Game
 	 * Sets the state of the game based on the provided GameState
 	 * @param s
 	 */
-	public final void setGameState(GameState s)
+	public final void setGameState(final GameState s)
 	{
 		gameState = s;
 	}
@@ -294,7 +294,7 @@ public abstract class Game
 	 * Sets the game title
 	 * @param s
 	 */
-	protected final void setGameTitle(String s)
+	protected final void setGameTitle(final String s)
 	{
 		gameTitle = s;
 	}
@@ -303,7 +303,7 @@ public abstract class Game
 	 * Sets the game's InputDevice
 	 * @param device
 	 */
-	public final void setInputDevice(InputDevice device)
+	public final void setInputDevice(final InputDevice device)
 	{
 		this.inputDevice = device;
 	}
@@ -312,7 +312,7 @@ public abstract class Game
 	 * Sets the boolean indicating the game is running
 	 * @param arg0
 	 */
-	public final void setRunning(boolean arg0)
+	public final void setRunning(final boolean arg0)
 	{
 		running = arg0;
 	}		

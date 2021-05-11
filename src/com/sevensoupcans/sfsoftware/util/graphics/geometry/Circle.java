@@ -4,22 +4,26 @@ import org.lwjgl.opengl.GL11;
 
 import com.sevensoupcans.sfsoftware.util.graphics.RGBA;
 
-public class Circle {
+public class Circle implements Intersectable {
 	
-	public static void draw(float x, float y, float radius, float r, float g, float b, float a)
+	public static void draw(final float x, final float y, final float radius, final float r, 
+			final float g, final float b, final float a)
 	{
 		RGBA rgba = new RGBA(r, g, b, a);
 		draw(x, y, radius, rgba, rgba, 100);
 	}	
 	
-	public static void draw(float x, float y, float radius, float r1, float g1, float b1, float a1, float r2, float g2, float b2, float a2)
+	public static void draw(final float x, final float y, final float radius, final float r1, 
+			final float g1, final float b1, final float a1, final float r2, final float g2, 
+			final float b2, final float a2)
 	{
 		RGBA inner = new RGBA(r1, g1, b1, a1);
 		RGBA outer = new RGBA(r2, g2, b2, a2);
 		draw(x, y, radius, inner, outer, 100);
 	}
 	
-	public static void draw(float x, float y, float radius, RGBA innerRGBA, RGBA outerRGBA, int segments)
+	public static void draw(final float x, final float y, final float radius, final RGBA innerRGBA, 
+			final RGBA outerRGBA, final int segments)
 	{		
 		GL11.glDisable(GL11.GL_TEXTURE_2D);
 		GL11.glColor4f(innerRGBA.getRed(), innerRGBA.getGreen(), innerRGBA.getBlue(), innerRGBA.getAlpha());	
@@ -39,12 +43,14 @@ public class Circle {
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
 	}
 
-	public static void drawOutline(float x, float y, float radius, float r, float g, float b, float a)
+	public static void drawOutline(final float x, final float y, final float radius, final float r, 
+			final float g, final float b, final float a)
 	{
 		drawOutline(x, y, radius, r, g, b, a, 100, true);
 	}	
 	
-	public static void drawOutline(float x, float y, float radius, float r, float g, float b, float a, int segments, boolean smooth)
+	public static void drawOutline(final float x, final float y, final float radius, final float r, 
+			final float g, final float b, final float a, final int segments, final boolean smooth)
 	{
 		GL11.glDisable(GL11.GL_TEXTURE_2D);
 		GL11.glColor4f(r,g,b,a);	
@@ -102,7 +108,7 @@ public class Circle {
 		Circle.drawOutline(this.x, this.y, this.radius, this.red, this.green, this.blue, this.alpha);
 	}
 	
-	public int[] getXCoordinatesOnPath(int segments)
+	public int[] getXCoordinatesOnPath(final int segments)
 	{
 		int[] xCoordinates = new int[segments];
 		
@@ -115,12 +121,12 @@ public class Circle {
 	    return xCoordinates;
 	}
 	
-	public int getXOnPath(double angle)
+	public int getXOnPath(final double angle)
 	{
 		return (int) ((Math.cos(angle) * -1) * this.radius);
 	}
 
-	public int[] getYCoordinatesOnPath(int segments)
+	public int[] getYCoordinatesOnPath(final int segments)
 	{
 		int[] yCoordinates = new int[segments];
 		
@@ -133,9 +139,15 @@ public class Circle {
 	    return yCoordinates;
 	}	
 	
-	public int getYOnPath(double angle)
+	public int getYOnPath(final double angle)
 	{
 		return (int) ((Math.sin(angle)) * this.radius);		
+	}
+
+	@Override
+	public boolean intersectsWith(final float xPos, final float yPos) {
+		return ((xPos - this.x) * (xPos - this.x) +
+	            (yPos - this.y) * (yPos - this.y) <= this.radius * this.radius);
 	}
 
 }

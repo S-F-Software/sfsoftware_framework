@@ -26,23 +26,23 @@ public abstract class FileUtils
 		return File.separatorChar;
 	}		
 	
-	public static String readFile(String path, Charset encoding) throws IOException 
+	public static String readFile(final String path, final Charset encoding) throws IOException 
 	{
 		byte[] encoded = Files.readAllBytes(Paths.get(path));
 		return new String(encoded, encoding);
 	}
 	
-	public static String readFile(String path) throws IOException 
+	public static String readFile(final String path) throws IOException 
 	{
 		return readFile(path, StandardCharsets.UTF_8);
 	}	
 	
-	public static Reader getResourceAsStream(String filename) throws IOException
+	public static Reader getResourceAsStream(final String filename) throws IOException
 	{
 		return new InputStreamReader(new FileInputStream(filename));
 	}
 	
-    public static String[] fileToStringArray(String filename) throws IOException
+    public static String[] fileToStringArray(final String filename) throws IOException
     {
         //FileReader fileReader = new FileReader(filename);
         InputStreamReader fileReader = new InputStreamReader(new FileInputStream(filename)); 
@@ -58,12 +58,12 @@ public abstract class FileUtils
         return lines.toArray(new String[lines.size()]);
     }
     
-    public static String[] getResourceListing(String path, String type) throws IOException, URISyntaxException
+    public static String[] getResourceListing(final String path, final String type) throws IOException, URISyntaxException
     {
     	return getResourceListing(path, type, ClasspathHelper.getClasspath());
     }
     
-    public static String[] getResourceListing(String path, String type, List<URL> classpathList) throws IOException, URISyntaxException
+    public static String[] getResourceListing(String path, final String type, final List<URL> classpathList) throws IOException, URISyntaxException
     {
     	if(!(path.endsWith("/")))
     	{
@@ -88,7 +88,7 @@ public abstract class FileUtils
     	return resources.toArray(new String[resources.size()]);
     } 
     
-    public static void writeToFile(String file, String text)
+    public static void writeToFile(final String file, final String text)
     {
     	try(PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(file, true)))) 
     	{
