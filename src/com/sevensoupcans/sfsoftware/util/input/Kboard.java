@@ -75,7 +75,7 @@ public final class Kboard implements InputDevice {
 		else if(key == Keyboard.KEY_RCONTROL)
 		{
 			result = "R Ctrl";
-		}		
+		}
 		result = result.toUpperCase();
 		return result;
 	}
@@ -206,6 +206,46 @@ public final class Kboard implements InputDevice {
 	public void poll() {		
 	}
 
+	public String getAButtonKeyName()
+	{
+		return getKeyName(this.AButtonKey);
+	}
+	
+	public String getBButtonKeyName()
+	{
+		return getKeyName(this.BButtonKey);
+	}
+	
+	public String getXButtonKeyName()
+	{
+		return getKeyName(this.XButtonKey);
+	}
+	
+	public String getYButtonKeyName()
+	{
+		return getKeyName(this.YButtonKey);
+	}		
+	
+	public String getBackButtonKeyName()
+	{
+		return getKeyName(this.BackButtonKey);
+	}
+	
+	public String getStartButtonKeyName()
+	{		
+		return getKeyName(this.StartButtonKey);
+	}
+	
+	public String getLeftShoulerButtonKeyName()
+	{
+		return getKeyName(this.ShoulderLeftKey);
+	}
+	
+	public String getRightShoulerButtonKeyName()
+	{
+		return getKeyName(this.ShoulderRightKey);
+	}	
+	
 	public void mapKeyAsAButton(final int key)
 	{		
 		this.AButtonKey = key;
