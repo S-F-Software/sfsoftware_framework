@@ -3,6 +3,7 @@ package com.sevensoupcans.sfsoftware.util.tile;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Set;
 
+import com.sevensoupcans.sfsoftware.util.MathUtils;
 import com.sevensoupcans.sfsoftware.util.graphics.Sprite;
 import com.sevensoupcans.sfsoftware.util.graphics.Texture;
 
@@ -266,6 +267,32 @@ public class TileMap {
 	public final int getHeight()
 	{
 		return this.height;
+	}
+	
+	public final Tile getRandomEmptyTile()
+	{			
+		Tile tile;
+		// TODO Need to improve the way this tile count / increment stuff works - could check same tile twice/thrice/whatever
+		int i = 0;
+		do 
+		{
+			tile = this.getRandomTile();
+			i++;
+		} while(tile.getTexture() != null && i < this.getTileCount());
+		
+		return tile;
+	}
+	
+	public final Tile getRandomTile()
+	{
+		int randomXPoint = MathUtils.randomInt(this.tileSize * this.width);
+		int randomYPoint = MathUtils.randomInt(this.tileSize * this.height);		
+		return this.getTileAtCoordinate(randomXPoint, randomYPoint);
+	}
+	
+	public final int getTileCount()
+	{
+		return this.getWidth() * this.getHeight();
 	}
 	
 	/**
