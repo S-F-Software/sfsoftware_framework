@@ -5,7 +5,7 @@ import com.sevensoupcans.sfsoftware.util.graphics.RGBA;
 import com.sevensoupcans.sfsoftware.util.graphics.TextureFont;
 import com.sevensoupcans.sfsoftware.util.graphics.geometry.Quad;
 
-public class FillBar {
+public class FillBar implements GUIElement {
 	
 	private static final RGBA borderColor = new RGBA(1.0f, 1.0f, 1.0f, 1.0f);
 		
@@ -21,6 +21,12 @@ public class FillBar {
 	private final RGBA emptyColorBottom;	
 	private final TextureFont font;
 	
+	private int x;
+	private int y;
+	private int height;
+	private int width;
+	private String statusText;
+	
 	public FillBar(int maxValue, int initialValue, RGBA fillColorTop, RGBA fillColorBottom, 
 			RGBA emptyColorTop, RGBA emptyColorBottom, TextureFont font)
 	{
@@ -34,6 +40,11 @@ public class FillBar {
 		this.font = font;
 	}
 	
+	@Override
+	public void draw() {
+		this.draw(this.getX(), this.getY(), this.getWidth(), this.getHeight(), this.getStatusText());
+	}
+	
 	public void draw(final int x, final int y, final int width, final int height, final String statusText)
 	{
 		if(hasBorder)
@@ -42,14 +53,7 @@ public class FillBar {
 		Quad.draw(x + 2, y + 2, (width - 4), (height - 4), emptyColorTop, emptyColorTop, 
 				emptyColorBottom, emptyColorBottom);							
 		
-		if(displayValue < value)
-		{
-			displayValue++;
-		}
-		else if(displayValue > value)
-		{
-			displayValue--;
-		}
+		this.update();
 		
 		float displayWidth = (((float) displayValue) / maxValue) * (width - 4);
 		
@@ -60,29 +64,85 @@ public class FillBar {
 			font.drawString(x + (width / 2) - (font.getWidth(statusText) / 2), y + 2, statusText);
 	}
 	
+	@Override
+	public int getHeight() {
+		return height;
+	}
+	
 	public final int getMaxValue()
 	{
 		return this.maxValue;
+	}
+	
+	public String getStatusText() {
+		return statusText;
 	}
 	
 	public final int getValue()
 	{
 		return this.value;
 	}
-	
+
+	@Override
+	public int getWidth() {
+		return width;
+	}
+
+	public int getX() {
+		return x;
+	}
+
+	public int getY() {
+		return y;
+	}
+
 	public final void setBordered(final boolean hasBorder)
 	{
 		this.hasBorder = hasBorder;
 	}
-	
+
+	@Override
+	public void setHeight(int height) {
+		this.height = height;
+	}
+
 	public final void setMaxValue(final int maxValue)
 	{
 		this.maxValue = maxValue;
 	}
-	
+
+	public void setStatusText(String statusText) {
+		this.statusText = statusText;
+	}
+
 	public final void setValue(final int value)
 	{
 		this.value = value;
+	}
+
+	@Override
+	public void setWidth(int width) {
+		this.width = width;
+	}
+
+	public void setX(int x) {
+		this.x = x;
+	}
+
+	public void setY(int y) {
+		this.y = y;
+	}
+
+	@Override
+	public void update() {
+		if(displayValue < value)
+		{
+			displayValue++;
+		}
+		else if(displayValue > value)
+		{
+			displayValue--;
+		}
 	}
 	
 }

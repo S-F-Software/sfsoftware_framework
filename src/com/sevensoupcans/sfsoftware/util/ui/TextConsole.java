@@ -15,18 +15,19 @@ import com.sevensoupcans.sfsoftware.util.input.InputDevice;
 import com.sevensoupcans.sfsoftware.util.input.Kboard;
 import com.sevensoupcans.sfsoftware.util.input.UserInput;
 
-public class TextConsole implements UserInput
+public class TextConsole implements GUIElement, UserInput
 {
 	private boolean consoleOpen = false;
 	private boolean firstOpen = true;
 	private ByteArrayOutputStream baos = new ByteArrayOutputStream();
 	private PrintStream ps = new PrintStream(baos, true);
-	private StringBuffer userInputField = new StringBuffer();
-	private int yPos = -240;
+	private StringBuffer userInputField = new StringBuffer();	
 	private float r;
 	private float g;
 	private float b;
 	private int cursorY;
+	private int height = 240;
+	private int yPos = (0 - height);
 	private boolean blinkCursor = false;
 	private Clock blinkCursorClock = new Clock(250);
 	
@@ -148,36 +149,64 @@ public class TextConsole implements UserInput
 		return pressed;
 	}
 	
+	@Override
 	public void update()
 	{
 		if(!(consoleOpen))
 		{
-			yPos = yPos > -240 ? yPos - 20 : -240;
+			yPos = yPos > (0 - height) ? yPos - 20 : (0 - height);
 		}
 		else
 		{
 			yPos = yPos < 0 ? yPos + 20 : 0;			
 		}
 		
-		if(yPos > -240)
+		if(yPos > (0 - height))
 		{
-			float alpha = Math.min((((float) yPos + 240) / 240), 0.75f);
-			
-			Quad.draw(0, yPos, game.getScreenWidth(), 240, new RGBA(r, g, b, alpha));				 
-			Quad.draw((game.getScreenWidth() - 8), yPos + ((float) cursorY / (getLineCount() - 15)) * 226, 4, 12, new RGBA(1.0f, 1.0f, 1.0f, alpha));		
-			
-			
-			String[] lines = getLines(cursorY, getLines().length >= 15 ? 15 : getLines().length - 1);
-			int lineHeight = TextureFont.getDefaultFont().getHeight();
-			for(int i = 0; i < lines.length; i ++)
-			{
-				TextureFont.getDefaultFont().drawString(5, yPos + (lineHeight * i), lines[i]);
-			}
-			
-			if(blinkCursorClock.updateClock()) blinkCursor = !(blinkCursor);
-			
-			String userInputDisplayString = blinkCursor ? "> " + userInputField.toString() + "_" : "> " + userInputField.toString();
-			TextureFont.getDefaultFont().drawString(5, (yPos + 235) - TextureFont.getDefaultFont().getHeight(), userInputDisplayString);			
+			this.draw();
 		}
+	}
+
+	@Override
+	public void draw() 
+	{
+		float alpha = Math.min((((float) yPos + height) / height), 0.75f);
+		
+		Quad.draw(0, yPos, game.getScreenWidth(), height, new RGBA(r, g, b, alpha));				 
+		Quad.draw((game.getScreenWidth() - 8), yPos + ((float) cursorY / (getLineCount() - 15)) * 226, 4, 12, new RGBA(1.0f, 1.0f, 1.0f, alpha));		
+		
+		
+		String[] lines = getLines(cursorY, getLines().length >= 15 ? 15 : getLines().length - 1);
+		int lineHeight = TextureFont.getDefaultFont().getHeight();
+		for(int i = 0; i < lines.length; i ++)
+		{
+			TextureFont.getDefaultFont().drawString(5, yPos + (lineHeight * i), lines[i]);
+		}
+		
+		if(blinkCursorClock.updateClock()) blinkCursor = !(blinkCursor);
+		
+		String userInputDisplayString = blinkCursor ? "> " + userInputField.toString() + "_" : "> " + userInputField.toString();
+		TextureFont.getDefaultFont().drawString(5, (yPos + 235) - TextureFont.getDefaultFont().getHeight(), userInputDisplayString);			
+	}
+
+	@Override
+	public int getHeight() {
+		return height;
+	}
+
+	@Override
+	public int getWidth() {
+		return game.getScreenWidth();
+	}
+
+	@Override
+	public void setHeight(int height) {
+		this.height = height;
+	}
+
+	@Override
+	public void setWidth(int width) {
+		// TODO Auto-generated method stub
+		
 	}
 }
