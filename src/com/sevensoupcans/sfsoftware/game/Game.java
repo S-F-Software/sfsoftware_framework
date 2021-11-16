@@ -23,6 +23,7 @@ import com.sevensoupcans.sfsoftware.util.input.Mouse;
 import com.sevensoupcans.sfsoftware.util.resources.FileUtils;
 import com.sevensoupcans.sfsoftware.util.tile.Tile;
 import com.sevensoupcans.sfsoftware.util.tile.TileMap;
+import com.sevensoupcans.sfsoftware.util.ui.GUIElement;
 import com.sevensoupcans.sfsoftware.util.ui.LoggedList;
 import com.sevensoupcans.sfsoftware.util.ui.TextConsole;
 
@@ -36,6 +37,7 @@ public abstract class Game
 	private long gameCounter = 0;
 	private boolean running = true;
 	private String gameTitle;
+	private ArrayList<GUIElement> guiElements = new ArrayList<GUIElement>();
 	
 	protected boolean debugMode;	
 	
@@ -54,6 +56,11 @@ public abstract class Game
 	public abstract TextureFont getGameFont();
 	public abstract TileMap getTileMap();
 	protected abstract void start();	
+	
+	public final void addGUIElement(GUIElement e)
+	{
+		this.guiElements.add(e);
+	}
 	
 	/**
 	 * Handles drawing of the loading screen
@@ -111,6 +118,11 @@ public abstract class Game
 	public final GameState getGameState()
 	{
 		return gameState;
+	}
+	
+	protected final ArrayList<GUIElement> getGUIElements()
+	{
+		return this.guiElements;
 	}
 	
 	public final InputDevice getInputDevice()
@@ -316,6 +328,15 @@ public abstract class Game
 	{
 		running = arg0;
 	}		
+	
+	protected void updateAndDrawGUIElements()
+	{
+		for(GUIElement e : this.getGUIElements())
+		{
+			e.update();
+			e.draw();
+		}
+	}
 	
 	/**
 	 * Displays the S&F Software logo

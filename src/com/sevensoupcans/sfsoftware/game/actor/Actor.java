@@ -1,6 +1,8 @@
 package com.sevensoupcans.sfsoftware.game.actor;
 
+import java.util.List;
 import java.util.Vector;
+import java.util.stream.Collectors;
 
 import com.sevensoupcans.sfsoftware.game.Game;
 import com.sevensoupcans.sfsoftware.game.actor.attributes.Collidable;
@@ -20,7 +22,7 @@ public class Actor extends Sprite implements Collidable
 	protected static int playingFieldX;
 	protected static int playingFieldY;
 	
-	protected final static Vector<Actor> cast = new Vector<Actor>();
+	private final static Vector<Actor> cast = new Vector<Actor>();
 	
 	public final static double getAngle(final Actor a, final Actor b)
 	{
@@ -64,25 +66,21 @@ public class Actor extends Sprite implements Collidable
 	 */
 	public static void updateCast(final int z) 
 	{		
-		// Copy the Actor vector to an array to avoid concurrent modification issues
-		Actor[] c = new Actor[cast.size()];
-		cast.toArray(c);	
+		// Only update Actors with the specified z level.
+		List<Actor> actors = 
+				cast.stream().filter(actor -> actor.getZOrder() == z).collect(Collectors.toList());
 		
-		for(int i = 0; i < c.length; i++)		
-		{					
-			Actor a = c[i];
-			
-			// Only update Actors with the specified z level. There may be a better way to address this.
-			if(a.getZOrder() != z) continue;
-			
-			if(a instanceof Updatable)
+		for(Actor actor : actors)		
+		{
+			if(actor instanceof Updatable)
 			{
-				((Updatable) a).update();
+				((Updatable) actor).update();
 			}
 			
-			a.draw();
+			actor.draw();
 		}				
-	}	
+	}
+	
 	private final Game ASSOCIATED_GAME;	
 	
 	private final int TILE_SIZE;

@@ -53,7 +53,7 @@ public class FillBar implements GUIElement {
 		Quad.draw(x + 2, y + 2, (width - 4), (height - 4), emptyColorTop, emptyColorTop, 
 				emptyColorBottom, emptyColorBottom);							
 		
-		this.update();
+		//this.update();
 		
 		float displayWidth = (((float) displayValue) / maxValue) * (width - 4);
 		
@@ -88,10 +88,12 @@ public class FillBar implements GUIElement {
 		return width;
 	}
 
+	@Override
 	public int getX() {
 		return x;
 	}
 
+	@Override
 	public int getY() {
 		return y;
 	}
@@ -125,10 +127,12 @@ public class FillBar implements GUIElement {
 		this.width = width;
 	}
 
+	@Override
 	public void setX(int x) {
 		this.x = x;
 	}
 
+	@Override
 	public void setY(int y) {
 		this.y = y;
 	}

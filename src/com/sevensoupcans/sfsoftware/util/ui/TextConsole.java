@@ -209,4 +209,28 @@ public class TextConsole implements GUIElement, UserInput
 		// TODO Auto-generated method stub
 		
 	}
+
+	@Override
+	public int getX() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int getY() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public void setX(int X) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setY(int Y) {
+		// TODO Auto-generated method stub
+		
+	}
 }
