@@ -68,7 +68,7 @@ public class Actor extends Sprite implements Collidable
 	{		
 		// Only update Actors with the specified z level.
 		List<Actor> actors = 
-				cast.stream().filter(actor -> actor.getZOrder() == z).collect(Collectors.toList());
+				getCast().stream().filter(actor -> actor.getZOrder() == z).collect(Collectors.toList());
 		
 		for(Actor actor : actors)		
 		{
@@ -126,33 +126,28 @@ public class Actor extends Sprite implements Collidable
 	protected boolean collidingWithCast(final double dirX, final double dirY)
 	{				
 		boolean b = false;
-		// Copy the Actor vector to an array to avoid concurrent modification issues
-		Actor[] c = new Actor[cast.size()];
-		cast.toArray(c);	
 		
-		for(int i = 0; i < c.length; i++)
+		List<Actor> actors = getCast().stream()
+								.filter(a -> !(a.equals(this)) && !(a.isWalkable()))
+								.collect(Collectors.toList());
+		
+		for(Actor a : actors)
 		{
-			// The cast vector can only hold Actor objects so no need to use instanceof
-			Actor a  = c[i];			
-			// Only check for collision if the current Actor isn't walkable and isn't us!
-			if(!(a.equals(this)) && !(a.isWalkable()))
+			// Destination X and Y IF the Actor moves
+			int newX = (int) (getX() + Math.round(getSpeed() * dirX));
+			int newY = (int) (getY() + Math.round(getSpeed() * dirY));				
+			// Create a temporary Actor object representing where OUR actor WILL move
+			Actor temp = new Actor(newX, newY, "", 0, 0, getWidth(), getHeight(), getAssociatedGame());								
+			// Check using our collidingWith method if the two objects are colliding!
+			if(a.collidingWith(temp))
 			{
-				// Destination X and Y IF the Actor moves
-				int newX = (int) (getX() + Math.round(getSpeed() * dirX));
-				int newY = (int) (getY() + Math.round(getSpeed() * dirY));				
-				// Create a temporary Actor object representing where OUR actor WILL move
-				Actor temp = new Actor(newX, newY, "", 0, 0, getWidth(), getHeight(), getAssociatedGame());								
-				// Check using our collidingWith method if the two objects are colliding!
-				if(a.collidingWith(temp))
-				{
-					// Return true - this will prevent movement from happening.
-					b = true;
-					// Call the collisionResult method to trigger any expected behavior
-					a.collisionResult(this);
-				}
-				// VERY important! Remove the temp Actor or huge memory leak problems will occur!
-				temp.remove();
+				// Return true - this will prevent movement from happening.
+				b = true;
+				// Call the collisionResult method to trigger any expected behavior
+				a.collisionResult(this);
 			}
+			// VERY important! Remove the temp Actor or huge memory leak problems will occur!
+			temp.remove();
 		}
 		
 		return b;

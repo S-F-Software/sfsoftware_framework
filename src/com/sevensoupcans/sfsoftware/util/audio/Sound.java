@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import org.lwjgl.openal.AL;
@@ -24,8 +25,8 @@ public final class Sound
 	private static float musicVolume = 1.0f;
 	private static float soundEffectVolume = 1.0f;
 	private static Audio oggStream;	
-	private static HashMap<String, Audio> soundLib = new HashMap<String, Audio>();
-	private static HashMap<String, Audio> musicLib = new HashMap<String, Audio>();		
+	private static Map<String, Audio> soundLib = new HashMap<String, Audio>();
+	private static Map<String, Audio> musicLib = new HashMap<String, Audio>();		
 	
 	public static void destroy()
 	{
@@ -65,35 +66,26 @@ public final class Sound
 		loadWaves(audioResourcePath, invokingClass);
 	}
 	
-	public static HashMap<String, Audio> loadOggs(final String audioResourcePath, final Class<?> invokingClass)
+	public static Map<String, Audio> loadOggs(final String audioResourcePath, final Class<?> invokingClass)
 	{
 		try 
-		{			 	
-			   String files;
-			   
-			   /*File folder = new File(path);
-			   File[] listOfFiles = folder.listFiles();*/ 
-			  
-			   //String[] listOfFiles = FileUtils.getResourceListing(Graphics.class, AUDIO_PATH);
-			   String[] listOfFiles = FileUtils.getResourceListing(audioResourcePath, "ogg", ClasspathHelper.getClasspath(invokingClass));
-			   for (int i = 0; i < listOfFiles.length; i++) 
-			   {			  
-				    /*if (listOfFiles[i].isFile()) 
-				    {
-				    	files = listOfFiles[i].getName();*/
-				   		files = listOfFiles[i];
-				        if (files.endsWith(".ogg") || files.endsWith(".OGG"))
-				        {			           
-				        	//System.out.println("Loading sound res/audio/" + files);							        	
-				        	Audio temp = AudioLoader.getStreamingAudio("OGG", ResourceLoader.getResource("res/audio/" + files));
-				        	musicLib.put(files.substring(0, files.indexOf(".")), temp);
-				        	if(verbose)
-				        	{
-				        		System.out.println("Loaded music file '" + files.substring(0, files.indexOf(".")) + "'");
-				        	}
-				        }			        
-				     //}
-			   }				          
+		{
+		   Arrays.stream(FileUtils.getResourceListing(audioResourcePath, "ogg", ClasspathHelper.getClasspath(invokingClass)))
+			   .filter(f -> f.toLowerCase().endsWith(".ogg")).forEach(file -> {
+				   try 
+				   {
+					   Audio temp = AudioLoader.getStreamingAudio("OGG", ResourceLoader.getResource("res/audio/" + file));
+					   musicLib.put(file.substring(0, file.indexOf(".")), temp);
+					   if(verbose)
+					   {
+						   System.out.println("Loaded music file '" + file.substring(0, file.indexOf(".")) + "'");
+					   }					   
+				   }
+				   catch(IOException e)
+				   {
+					   System.out.println("Failed to load music file '" + file.substring(0, file.indexOf(".")) + "'");
+				   }
+			   });
 		} 
 		catch (IOException | URISyntaxException e) 
 		{
@@ -103,34 +95,26 @@ public final class Sound
 		return soundLib;
 	}
 	
-	public static HashMap<String, Audio> loadWaves(final String audioResourcePath, final Class<?> invokingClass)
+	public static Map<String, Audio> loadWaves(final String audioResourcePath, final Class<?> invokingClass)
 	{
 		try 
 		{			  	  
-			   String files;
-			   
-			   /*File folder = new File(path);
-			   File[] listOfFiles = folder.listFiles();*/ 
-			   //String[] listOfFiles = FileUtils.getResourceListing(Graphics.class, AUDIO_PATH);
-			   String[] listOfFiles = FileUtils.getResourceListing(audioResourcePath, "wav", ClasspathHelper.getClasspath(invokingClass));
-			   for (int i = 0; i < listOfFiles.length; i++) 
-			   {			  
-				    /*if (listOfFiles[i].isFile()) 
-				    {
-				    	files = listOfFiles[i].getName();*/
-				   		files = listOfFiles[i];
-				        if (files.endsWith(".wav") || files.endsWith(".WAV"))
-				        {			           
-				        	//System.out.println("Loading sound res/audio/" + files);			
-				        	Audio temp = AudioLoader.getAudio("WAV", ResourceLoader.getResourceAsStream("res/audio/" + files));
-				        	soundLib.put(files.substring(0, files.indexOf(".")), temp);
-				        	if(verbose)
-				        	{
-				        		System.out.println("Loaded sound '" + files.substring(0, files.indexOf(".")) + "'");
-				        	}
-				        }			        
-				     //}
-			   }				          
+		   Arrays.stream(FileUtils.getResourceListing(audioResourcePath, "wav", ClasspathHelper.getClasspath(invokingClass)))
+		   .filter(f -> f.toLowerCase().endsWith(".wav")).forEach(file -> {
+			   try
+			   {
+				   Audio temp = AudioLoader.getAudio("WAV", ResourceLoader.getResourceAsStream("res/audio/" + file));
+				   soundLib.put(file.substring(0, file.indexOf(".")), temp);
+				   if(verbose)
+				   {
+					   System.out.println("Loaded sound '" + file.substring(0, file.indexOf(".")) + "'");
+				   }
+			   }
+			   catch(IOException e)
+			   {
+				   System.out.println("Failed to load sound file '" + file.substring(0, file.indexOf(".")) + "'");
+			   }
+		   });				          
 		} 
 		catch (IOException | URISyntaxException e) 
 		{

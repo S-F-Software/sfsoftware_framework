@@ -18,6 +18,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 
 import javax.imageio.ImageIO;
 
@@ -104,7 +105,7 @@ public final class Texture
     	return loadedTextures.containsKey(textureName);
     }
 	
-	public static HashMap<String, Texture> getLoadedTextures()
+	public static Map<String, Texture> getLoadedTextures()
 	{
 		return loadedTextures;
 	}

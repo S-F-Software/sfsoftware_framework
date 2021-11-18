@@ -5,7 +5,7 @@ import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
-import java.util.HashMap;
+import java.util.Map;
 
 import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.Display;
@@ -247,48 +247,45 @@ public abstract class Graphics
 	    }
 	}	
 
-	public static HashMap<String, Texture> loadTextures(Class<?> invokingClass)
+	public static Map<String, Texture> loadTextures(Class<?> invokingClass)
 	{
 		return loadTextures(DEFAULT_GRAPHICS_FILE_PATH, invokingClass);
 	}
 
-	public static HashMap<String, Texture> loadTextures(String texturePath, Class<?> invokingClass)
+	public static Map<String, Texture> loadTextures(String texturePath, Class<?> invokingClass)
 	{	
 		return loadTextures(texturePath, "png", null, invokingClass);
 	}
 	
-	public static HashMap<String, Texture> loadTextures(String texturePath, String filetype, Class<?> invokingClass)
+	public static Map<String, Texture> loadTextures(String texturePath, String filetype, Class<?> invokingClass)
 	{
 		return loadTextures(texturePath, filetype, null, invokingClass);
 	}
 	
-	public static HashMap<String, Texture> loadTextures(String texturePath, String filetype, RGBA transparentColor, Class<?> invokingClass)
+	public static Map<String, Texture> loadTextures(String texturePath, String filetype, RGBA transparentColor, Class<?> invokingClass)
 	{
 		try 
-		{			 	 	 
-			   String files;			   			  
-			   String[] listOfFiles = FileUtils.getResourceListing(texturePath, filetype, ClasspathHelper.getClasspath(invokingClass));
-			   
-			   for (int i = 0; i < listOfFiles.length; i++) 
-			   {				   	
-					files = listOfFiles[i];
-					if (files.endsWith("." + filetype.toLowerCase()) || files.endsWith("." + filetype.toUpperCase()))
-					{							
-						String textureName = files.substring(0, files.lastIndexOf(".")).trim();
-						
+		{
+		   Arrays.stream(FileUtils.getResourceListing(texturePath, filetype, ClasspathHelper.getClasspath(invokingClass)))
+		   		.filter(f -> f.toLowerCase().endsWith("." + filetype.toLowerCase())).forEach(file -> {
+
+					String textureName = file.substring(0, file.lastIndexOf(".")).trim();
+					
+					try 
+					{
 						if(transparentColor != null)
 						{
-							new Texture(texturePath + "/" + files, transparentColor);
+							new Texture(texturePath + "/" + file, transparentColor);
 						}
 						else
 						{
-							new Texture(texturePath + "/" + files);
+							new Texture(texturePath + "/" + file);
 						}
 												
 						if(maskTextures.length > 0 && (Arrays.asList(maskTextures)).contains(textureName))
 						{							
 							String maskTextureName = "_" + textureName;							
-							new Texture(texturePath + "/" + files, transparentColor, RGBA.WHITE);							
+							new Texture(texturePath + "/" + file, transparentColor, RGBA.WHITE);							
 							
 							if(verbose)
 							{
@@ -300,8 +297,13 @@ public abstract class Graphics
 						{
 							System.out.println("Loaded texture '" + textureName + "'");
 						}
-					}			        
-			   }				          
+					}
+					catch(IOException e)
+					{
+						System.out.println("Failed to load texture '" + textureName + "': " + e.getMessage());
+					}
+		   			
+		   });			          
 		} 
 		catch (IOException | URISyntaxException e) 
 		{

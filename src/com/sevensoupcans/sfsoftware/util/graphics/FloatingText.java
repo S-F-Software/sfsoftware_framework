@@ -7,7 +7,7 @@ import com.sevensoupcans.sfsoftware.util.Clock;
 import com.sevensoupcans.sfsoftware.util.Updatable;
 
 public final class FloatingText implements Updatable {
-	private static Vector<FloatingText> floaters = new Vector<FloatingText>();
+	private static Vector<FloatingText> floatingTexts = new Vector<FloatingText>();
 	private static final TextureFont FLOATING_TEXT_FONT;
 	private Clock fadeClock = new Clock(10);
 	private double fadeOut;
@@ -15,7 +15,6 @@ public final class FloatingText implements Updatable {
 	private RGBA textColor;	
 	private int x;
 	private int y;
-	//private int initY;
 	private String text;
 	
 	private float red;
@@ -33,7 +32,6 @@ public final class FloatingText implements Updatable {
 	{
 		x = destX;
 		y = destY;
-		//initY = y;
 		text = destText;
 
 		red = r;
@@ -44,13 +42,12 @@ public final class FloatingText implements Updatable {
 		fadeOut = (Math.PI / 2);
 		textColor = new RGBA(red, green, blue, alpha);
 
-		floaters.add(this);		
+		floatingTexts.add(this);		
 	}
 	
 	public FloatingText(int destX, int destY, String destText) {
 		x = destX;
 		y = destY;
-		//initY = y;
 		text = destText;
 
 		red = 1;
@@ -61,7 +58,7 @@ public final class FloatingText implements Updatable {
 		fadeOut = (Math.PI / 2);
 		textColor = new RGBA(red, green, blue, alpha);
 
-		floaters.add(this);
+		floatingTexts.add(this);
 	}
 
 	/**
@@ -69,14 +66,7 @@ public final class FloatingText implements Updatable {
 	 */
 	public static void updateAll()
 	{
-		FloatingText[] c = new FloatingText[floaters.size()];
-		floaters.toArray(c);	
-		
-		for(int i = 0; i < c.length; i++)		
-		{
-			FloatingText p = (c[i]);
-			p.update();		
-		}
+		floatingTexts.forEach(floatingText -> floatingText.update());
 	}	
 	
 	@Override
@@ -96,7 +86,7 @@ public final class FloatingText implements Updatable {
 		
 		if(alpha <= 0)
 		{
-			floaters.remove(this);
+			floatingTexts.remove(this);
 		}
 		
 	}

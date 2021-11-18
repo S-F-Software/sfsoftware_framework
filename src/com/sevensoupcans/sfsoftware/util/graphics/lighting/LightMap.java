@@ -1,6 +1,8 @@
 package com.sevensoupcans.sfsoftware.util.graphics.lighting;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
@@ -142,15 +144,11 @@ public class LightMap {
 		
 	}
 	
-	public ArrayList<LightSource> getLightSourcesForActor(final Actor actor)
+	public List<LightSource> getLightSourcesForActor(final Actor actor)
 	{
-		ArrayList<LightSource> associatedLightSources = new ArrayList<LightSource>();
-		
-		for(LightSource ls : lights)		
-			if(ls.getAssociatedActor() != null && ls.getAssociatedActor().equals(actor))
-				associatedLightSources.add(ls);		
-		
-		return associatedLightSources;
+		return lights.stream()
+			.filter(ls -> ls.getAssociatedActor() != null && ls.getAssociatedActor().equals(actor))
+			.collect(Collectors.toList());
 	}
 	
 	public boolean removeLightSource(final LightSource ls)

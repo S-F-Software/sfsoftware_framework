@@ -35,14 +35,7 @@ public class Particle implements Updatable
 	 */
 	public static void updateAll()
 	{
-		Particle[] c = new Particle[particles.size()];
-		particles.toArray(c);	
-		
-		for(int i = 0; i < c.length; i++)		
-		{
-			Particle p = (c[i]);
-			p.update();		
-		}
+		particles.forEach(particle -> particle.update());
 	}
 
 	private boolean readyToDie = false;

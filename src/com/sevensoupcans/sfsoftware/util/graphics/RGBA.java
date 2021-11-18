@@ -49,6 +49,13 @@ public final class RGBA {
 		alpha = a;
 	}
 	
+	public RGBA(String hexColorValue)
+	{
+		this(Integer.valueOf(hexColorValue.substring( 1, 3 ), 16 ).intValue(),
+				Integer.valueOf(hexColorValue.substring( 3, 5 ), 16 ).intValue(),
+				Integer.valueOf(hexColorValue.substring( 5, 7 ), 16 ).intValue());
+	}
+	
 	public void bind()
 	{
 		GL11.glColor4f(red, green, blue, alpha);

@@ -331,11 +331,10 @@ public abstract class Game
 	
 	protected void updateAndDrawGUIElements()
 	{
-		for(GUIElement e : this.getGUIElements())
-		{
+		this.getGUIElements().forEach(e -> {
 			e.update();
 			e.draw();
-		}
+		});
 	}
 	
 	/**
