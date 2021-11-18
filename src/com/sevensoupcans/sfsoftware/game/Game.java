@@ -380,7 +380,10 @@ public abstract class Game
 					logoState++;
 				}				
 			}
-			Sprite.draw(192, 112, "sflogo", 256, 256, 0, 0, 256, 256, 1, 1, 1, logoAlpha);
+
+			// TODO Possibly want to allow more flexibility here - this is displaying the "classic" logo
+			Sprite.draw((this.getScreenWidth() / 2) - 44, (this.getScreenHeight() / 2) - 44, "sflogo", 
+					89, 89, 0, 0, 89, 89, 1, 1, 1, logoAlpha);
 			
 			SoundStore.get().poll(0);
 			Display.update();
