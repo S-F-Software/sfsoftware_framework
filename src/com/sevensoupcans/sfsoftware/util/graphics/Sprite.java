@@ -277,6 +277,14 @@ public class Sprite extends Quad {
 		this.setY(destY);
 	}		
 
+	public final void renderAsFrameBufferOverlay(final FrameBuffer targetFrameBuffer, final int x, final int y, 
+			final int width, final int height)
+	{
+		this.getTexture().renderAsFrameBufferOverlay(targetFrameBuffer, x, y, width, height, 
+				this.getSrcX(), this.getSrcY(), this.getWidth(), this.getHeight(), 
+				this.getRed(), this.getGreen(), this.getBlue(), this.getAlpha());
+	}
+	
 	public final float setRotationAngle(final float rotationAngle)
 	{
 		return (this.rotationAngle = rotationAngle);

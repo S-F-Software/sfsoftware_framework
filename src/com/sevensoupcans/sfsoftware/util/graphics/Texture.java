@@ -22,7 +22,9 @@ import java.util.Map;
 
 import javax.imageio.ImageIO;
 
+import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL14;
 
 import com.sevensoupcans.sfsoftware.util.BufferUtils;
 
@@ -280,6 +282,65 @@ public final class Texture
 	public int getID() 
 	{
 		return TEXTURE_ID;
+	}
+	
+	public final void renderAsFrameBufferOverlay(final FrameBuffer targetFrameBuffer, final int x, final int y, 
+			final int width, final int height, final int srcX, final int srcY, final int srcWidth, 
+			final int srcHeight, final float red, final float green, final float blue, final float alpha)
+	{
+		// Capture the current display buffer so we can revert back to it after rendering the lightmap.
+		FrameBuffer fbo = Graphics.getCurrentDisplayBuffer();						
+		// Switch to the target frame buffer
+		Graphics.setBuffer(targetFrameBuffer);
+		
+		GL11.glPushMatrix();		
+		GL11.glMatrixMode(GL11.GL_PROJECTION);
+		GL11.glLoadIdentity();
+		GL11.glOrtho(0, Display.getWidth(), Display.getHeight(), 0, 1, -1);
+		GL11.glViewport(0, 0, Display.getWidth(), Display.getHeight());
+		GL11.glMatrixMode(GL11.GL_MODELVIEW);
+		GL11.glLoadIdentity();				
+		
+		GL11.glPushAttrib(GL11.GL_DEPTH_BUFFER_BIT | GL11.GL_ENABLE_BIT | GL11.GL_COLOR_BUFFER_BIT);
+		GL14.glBlendFuncSeparate(GL11.GL_SRC_COLOR, GL11.GL_DST_COLOR, GL11.GL_ONE, GL11.GL_DST_COLOR);
+		
+		GL11.glEnable(GL11.GL_TEXTURE_2D);		
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.getID());
+		
+		float fSrcX = ((float)srcX / srcWidth);
+		float fSrcY = ((float)srcY / srcHeight);
+		float fSrcWidth = (((float)srcX + (float)srcWidth) / srcWidth);
+		float fSrcHeight = (((float)srcY + (float)srcHeight) / srcHeight);			
+		
+		GL11.glPushMatrix();		
+		
+		// Need to reset the color or else things get weird...
+		GL11.glColor4f(red, green, blue, alpha);
+		GL11.glBegin(GL11.GL_QUADS);					
+			// Top Left
+			//GL11.glTexCoord2f(0.0f, 1.0f); 
+			GL11.glTexCoord2f(fSrcX, 1 - fSrcY);
+			GL11.glVertex2i(x, y);  		
+			// Top Right
+			//GL11.glTexCoord2f(1.0f, 1.0f); 
+			GL11.glTexCoord2f(fSrcWidth, 1 - fSrcY);
+			GL11.glVertex2i(x + width,  y); 		
+			// Bottom Right
+			//GL11.glTexCoord2f(1.0f, 0.0f);
+			GL11.glTexCoord2f(fSrcWidth,1 - fSrcHeight);
+			GL11.glVertex2i(x + width, y + height);		
+			// Bottom Left		
+			//GL11.glTexCoord2f(0.0f, 0.0f); 		
+			GL11.glTexCoord2f(fSrcX, 1 - fSrcHeight);
+			GL11.glVertex2i(x, y + height);	
+		GL11.glEnd();
+		      
+		GL11.glPopMatrix();	
+		GL11.glPopAttrib();		
+		
+		// Set some things back to the way they were.
+		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);		
+		Graphics.setBuffer(fbo);		
 	}
 	
 	public void swapColors(final RGBA[] colorsToReplace, final RGBA[] replacementColors)
