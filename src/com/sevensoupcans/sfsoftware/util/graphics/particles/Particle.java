@@ -1,6 +1,7 @@
 package com.sevensoupcans.sfsoftware.util.graphics.particles;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.sevensoupcans.sfsoftware.util.Clock;
 import com.sevensoupcans.sfsoftware.util.Updatable;
@@ -10,7 +11,7 @@ import com.sevensoupcans.sfsoftware.util.graphics.geometry.Quad;
 
 public class Particle implements Updatable 
 {
-	private static Vector<Particle> particles = new Vector<Particle>();
+	private static List<Particle> particles = new ArrayList<Particle>();
 	
 	public static void generateParticles(final int originX, final int originY, final int originWidth, 
 			final int originHeight, final int particleCount, final float red, final float green, 
@@ -27,7 +28,7 @@ public class Particle implements Updatable
 	 */
 	public static void removeAll()
 	{
-		particles.removeAllElements();
+		particles.clear();
 	}
 	
 	/**

@@ -1,7 +1,7 @@
 package com.sevensoupcans.sfsoftware.game.actor;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 import java.util.stream.Collectors;
 
 import com.sevensoupcans.sfsoftware.game.Game;
@@ -22,7 +22,7 @@ public class Actor extends Sprite implements Collidable
 	protected static int playingFieldX;
 	protected static int playingFieldY;
 	
-	private final static Vector<Actor> cast = new Vector<Actor>();
+	private final static List<Actor> cast = new ArrayList<Actor>();
 	
 	public final static double getAngle(final Actor a, final Actor b)
 	{
@@ -42,9 +42,9 @@ public class Actor extends Sprite implements Collidable
 		
 		return inRads;
 	}
-	public final static Vector<Actor> getCast()
+	public final static List<Actor> getCast()
 	{
-		return cast;
+		return cast;		
 	}
 			
 	public final static void remove(final Actor a)

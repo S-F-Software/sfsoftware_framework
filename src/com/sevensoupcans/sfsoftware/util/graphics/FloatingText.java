@@ -1,13 +1,14 @@
 package com.sevensoupcans.sfsoftware.util.graphics;
 
 import java.awt.Font;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.sevensoupcans.sfsoftware.util.Clock;
 import com.sevensoupcans.sfsoftware.util.Updatable;
 
 public final class FloatingText implements Updatable {
-	private static Vector<FloatingText> floatingTexts = new Vector<FloatingText>();
+	private static List<FloatingText> floatingTexts = new ArrayList<FloatingText>();
 	private static final TextureFont FLOATING_TEXT_FONT;
 	private Clock fadeClock = new Clock(10);
 	private double fadeOut;

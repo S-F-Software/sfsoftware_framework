@@ -1,7 +1,7 @@
 package com.sevensoupcans.sfsoftware.util.input;
 
 import java.util.ArrayList;
-import java.util.Vector;
+import java.util.List;
 
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Controller;
@@ -68,7 +68,7 @@ public final class Gamepad implements InputDevice
 	private float lastYAxis = 0;
 	private float xDeadZone;
 	private float yDeadZone;
-	private Vector<Integer> lastGamepadState = new Vector<Integer>();
+	private List<Integer> lastGamepadState = new ArrayList<Integer>();
 	// These button mappings are specifically for the 360 type controller
 	public final int BUTTON_A;
 	public final int BUTTON_B;

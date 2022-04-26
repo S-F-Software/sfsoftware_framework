@@ -1,6 +1,7 @@
 package com.sevensoupcans.sfsoftware.util.input;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.lwjgl.input.Keyboard;
 
@@ -53,7 +54,7 @@ public final class Kboard implements InputDevice {
 	public static final int KEY_TAB = Keyboard.KEY_TAB;	
 	public static final int KEY_W = Keyboard.KEY_W;			
 	
-	private static final Vector<Integer> lastKeyState = new Vector<Integer>();
+	private static final List<Integer> lastKeyState = new ArrayList<Integer>();
 	
 	private int AButtonKey = Keyboard.KEY_SPACE;
 	private int BButtonKey = Keyboard.KEY_LCONTROL;
