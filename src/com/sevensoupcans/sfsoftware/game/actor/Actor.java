@@ -1,12 +1,10 @@
 package com.sevensoupcans.sfsoftware.game.actor;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import com.sevensoupcans.sfsoftware.game.Game;
 import com.sevensoupcans.sfsoftware.game.actor.attributes.Collidable;
-import com.sevensoupcans.sfsoftware.game.actor.attributes.Permanent;
 import com.sevensoupcans.sfsoftware.util.Updatable;
 import com.sevensoupcans.sfsoftware.util.graphics.Sprite;
 import com.sevensoupcans.sfsoftware.util.graphics.geometry.Quad;
@@ -20,9 +18,7 @@ import com.sevensoupcans.sfsoftware.util.tile.pathfinding.PathFinder;
 public class Actor extends Sprite implements Collidable 
 {
 	protected static int playingFieldX;
-	protected static int playingFieldY;
-	
-	private final static List<Actor> cast = new ArrayList<Actor>();
+	protected static int playingFieldY;	
 	
 	public final static double getAngle(final Actor a, final Actor b)
 	{
@@ -42,14 +38,16 @@ public class Actor extends Sprite implements Collidable
 		
 		return inRads;
 	}
-	public final static List<Actor> getCast()
+	
+	@Deprecated
+	public final static Cast getCast()
 	{
-		return cast;		
+		return Cast.getInstance();		
 	}
 			
 	public final static void remove(final Actor a)
 	{
-		cast.remove(a);
+		Cast.getInstance().remove(a);
 	}
 	public static void setPlayingField(final int x, final int y)
 	{
@@ -111,15 +109,14 @@ public class Actor extends Sprite implements Collidable
 		this.setWidth(destWidth);
 		
 		this.setSrcX(srcX);
-		this.setSrcY(srcY);
+		this.setSrcY(srcY);			
 		
-		// Do not add the Player to our cast vector as this vector is cleared with each new room
-		if(!(this instanceof Permanent))			
-			cast.add(this);
+		Cast.getInstance().add(this);
 	}
 	
 	@Override
-	public boolean collidingWith(final Collidable object) {		
+	public boolean collidingWith(final Collidable object) 
+	{		
 		return super.collidingWith(object);	
 	}
 	
@@ -379,7 +376,7 @@ public class Actor extends Sprite implements Collidable
 	
 	public void remove()
 	{
-		cast.remove(this);
+		Cast.getInstance().remove(this);
 	}
 	
 	public void setSpeed(final int newSpeed)
