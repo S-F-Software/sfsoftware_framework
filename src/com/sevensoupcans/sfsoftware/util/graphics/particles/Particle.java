@@ -37,6 +37,7 @@ public class Particle implements Updatable
 	public static void updateAll()
 	{
 		particles.forEach(particle -> particle.update());
+		particles.removeIf(p -> p.alpha <= 0);
 	}
 
 	private boolean readyToDie = false;
@@ -118,12 +119,8 @@ public class Particle implements Updatable
 		
 		if(deathClock.updateClock() && !(this.readyToDie)) this.readyToDie = true;		
 		if(this.readyToDie) this.alpha = this.alpha - this.decayRate;	
-		
-		if(this.alpha <= 0)
-		{
-			particles.remove(this);
-		}
-		else
+				
+		if(this.alpha > 0)
 		{
 			if(particleSize < 2)
 			{
