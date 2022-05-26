@@ -142,6 +142,14 @@ public class TextConsole implements GUIElement, UserInput
 			{
 				userInputField.append(' ');					
 			}
+			else if(Kboard.keyPressed(Keyboard.KEY_SEMICOLON))
+			{
+				userInputField.append(';');
+			}
+			else if(Kboard.keyPressed(Keyboard.KEY_APOSTROPHE))
+			{
+				userInputField.append('\'');
+			}
 		}
 		
 		inputDevice.storeState();
