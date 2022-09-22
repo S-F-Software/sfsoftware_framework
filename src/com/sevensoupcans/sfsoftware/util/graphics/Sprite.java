@@ -203,8 +203,8 @@ public class Sprite extends Quad {
 			final int srcY, final int srcWidth, final int srcHeight, final float red, final float green, 
 			final float blue, final float alpha)
 	{	
-		draw((int) this.getX(), (int) this.getY(), width, height, srcX, srcY, 
-				srcWidth, srcHeight, red, green, blue, alpha, this.getRotationAngle());
+		draw(x, y, width, height, srcX, srcY, srcWidth, srcHeight, 
+				red, green, blue, alpha, this.getRotationAngle());
 	}
 	
 	public void draw(final int x, final int y, final int width, final int height, final int srcX, 
