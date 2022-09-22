@@ -74,9 +74,21 @@ public abstract class MathUtils
 		return random.nextFloat();
 	}
 	
+	public static float randomFloat(long seed)
+	{
+		Random r = new Random(seed);
+		return r.nextFloat();
+	}	
+	
 	public static int randomInt(int bound) 
 	{	 		
 		return random.nextInt(bound);
+	}
+	
+	public static int randomInt(long seed, int bound)
+	{
+		Random r = new Random(seed);
+		return r.nextInt(bound);
 	}
 	
 	public static double random()
