@@ -10,5 +10,6 @@ public interface GUIElement {
 	void setWidth(int width);
 	void setX(int X);
 	void setY(int Y);
+	boolean shouldRemove();
 	void update();
 }

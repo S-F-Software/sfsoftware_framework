@@ -3,6 +3,7 @@ package com.sevensoupcans.sfsoftware.game;
 import java.awt.Font;
 import java.util.ArrayList;
 import java.util.prefs.Preferences;
+import java.util.stream.Collectors;
 
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Controllers;
@@ -232,6 +233,11 @@ public abstract class Game
 		setGameState(GameState.INGAME);
 	}
 	
+	public final void removeGUIElement(GUIElement e)
+	{
+		this.guiElements.remove(e);
+	}	
+	
 	/**
 	 * Set the display mode to be used 
 	 * 
@@ -335,6 +341,11 @@ public abstract class Game
 			e.update();
 			e.draw();
 		});
+		
+		this.getGUIElements().removeAll(this.getGUIElements()
+												.stream()
+												.filter(e -> e.shouldRemove())
+												.collect(Collectors.toList()));
 	}
 	
 	/**

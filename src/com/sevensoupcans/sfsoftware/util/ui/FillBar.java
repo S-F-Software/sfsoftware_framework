@@ -148,5 +148,11 @@ public class FillBar implements GUIElement {
 			displayValue--;
 		}
 	}
+
+	@Override
+	public boolean shouldRemove() {
+		// TODO Auto-generated method stub
+		return false;
+	}
 	
 }

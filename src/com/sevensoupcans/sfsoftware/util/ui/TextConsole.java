@@ -241,4 +241,10 @@ public class TextConsole implements GUIElement, UserInput
 		// TODO Auto-generated method stub
 		
 	}
+
+	@Override
+	public boolean shouldRemove() {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }
