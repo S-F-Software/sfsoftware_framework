@@ -5,7 +5,14 @@ import java.util.List;
 
 public enum Direction 
 {
-	UP("Up", 0, -1), DOWN("Down", 0, 1), LEFT("Left", -1, 0), RIGHT("Right", 1, 0);
+	UP("Up", 0, -1), 
+	DOWN("Down", 0, 1), 
+	LEFT("Left", -1, 0), 
+	RIGHT("Right", 1, 0),
+	LEFT_UP("LeftUp", -1, -1),
+	RIGHT_UP("RightUp", 1, -1),
+	LEFT_DOWN("LeftDown", 1, 1),
+	RIGHT_DOWN("RightDown", 1, 1);
 	
 	private final String directionDescription;
 	private final int xDifference;
