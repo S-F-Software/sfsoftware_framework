@@ -54,6 +54,21 @@ public abstract class MathUtils
 		return inRads;
 	}		
 	
+	/**
+	 * Returns a boolean array of "bits" created from the provided byte.
+	 * 
+	 * @param b
+	 * @return
+	 */
+	public static boolean[] getBooleanArrayFromByte(byte b)
+	{
+		boolean arr[] = new boolean[8];
+	    for (int i = 0; i < 8; i++) 
+	    	arr[i] = (b & (byte) (128 / Math.pow(2, i))) != 0;
+	    
+	    return arr;
+	}	
+	
 	public static int getNextEven(int value)
 	{
 		return value % 2 == 0 ? value : value + 1;
