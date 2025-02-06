@@ -19,7 +19,7 @@ public class Cast implements List<Actor> {
 	
 	private final List<Actor> actors;
 	
-	private Cast() 
+	protected Cast() 
 	{
 		actors = new ArrayList<Actor>();
 	}
