@@ -38,6 +38,11 @@ public final class Sound
 		return musicVolume;
 	}
 	
+	public static Audio getSoundEffect(final String soundName)
+	{
+		return soundLib.get(soundName);
+	}
+	
 	public static float getSoundEffectVolume()
 	{
 		return soundEffectVolume;

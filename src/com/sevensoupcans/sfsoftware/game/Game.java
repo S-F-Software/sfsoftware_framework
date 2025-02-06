@@ -33,8 +33,8 @@ public abstract class Game
 	protected final TextConsole console = new TextConsole(this);		
 	
 	private GameState gameState = GameState.TITLE_SCREEN;
-	private int screenHeight = 600;
-	private int screenWidth = 800;	
+	private int screenHeight = 864; //600;
+	private int screenWidth = 1152; //800;	
 	private long gameCounter = 0;
 	private boolean running = true;
 	private String gameTitle;
