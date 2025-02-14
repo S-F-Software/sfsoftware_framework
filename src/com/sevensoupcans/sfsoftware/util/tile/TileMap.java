@@ -10,7 +10,7 @@ import com.sevensoupcans.sfsoftware.util.graphics.Texture;
 /**
  * A class representing a 2D array of Tiles
  * 
- * @author S. Thompson
+ * @author S. Thompson <fuzmeister@sevensoupcans.com>
  *
  */
 public class TileMap {
