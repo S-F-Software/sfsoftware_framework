@@ -32,7 +32,8 @@ public final class Texture
 {
 	private static final RGBA DEFAULT_TRANSPARENT_COLOR = new RGBA(1.0f, 0.0f, 1.0f);
 	private static HashMap <String, Texture> loadedTextures = new HashMap<String, Texture>();
-		
+
+	private final BufferedImage BUFFERED_IMAGE;
 	private final int HEIGHT;
 	private final int[] PIXEL_DATA;
 	private final int[] INT_BUFFER_SRC;
@@ -149,6 +150,8 @@ public final class Texture
 		TRANSPARENT_COLOR = transparentColor;
 		MASK_COLOR = maskColor;
 		
+		BUFFERED_IMAGE = image;
+		
 		WIDTH = image.getWidth();
 		HEIGHT = image.getHeight();
 		
@@ -242,6 +245,11 @@ public final class Texture
 		}			
 		
 		return textureName;			
+	}
+	
+	public final BufferedImage getBufferedImage()
+	{
+		return BUFFERED_IMAGE;
 	}
 	
 	public int getColorCount()
