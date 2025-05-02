@@ -30,6 +30,16 @@ public class FillBar implements GUIElement {
 	public FillBar(int maxValue, int initialValue, RGBA fillColorTop, RGBA fillColorBottom, 
 			RGBA emptyColorTop, RGBA emptyColorBottom, TextureFont font)
 	{
+		this(0, 0, 64, 16, maxValue, initialValue, fillColorTop, fillColorBottom, emptyColorTop, emptyColorBottom, font);
+	}
+	
+	public FillBar(int x, int y, int width, int height, int maxValue, int initialValue, RGBA fillColorTop, RGBA fillColorBottom, 
+			RGBA emptyColorTop, RGBA emptyColorBottom, TextureFont font)
+	{
+		this.x = x;
+		this.y = y;
+		this.width = width;
+		this.height = height;
 		this.maxValue = maxValue;
 		this.displayValue = initialValue;
 		this.value = initialValue;		
@@ -38,10 +48,11 @@ public class FillBar implements GUIElement {
 		this.emptyColorTop = emptyColorTop;
 		this.emptyColorBottom = emptyColorBottom;
 		this.font = font;
-	}
+	}	
 	
 	@Override
-	public void draw() {
+	public void draw() 
+	{
 		this.draw(this.getX(), this.getY(), this.getWidth(), this.getHeight(), this.getStatusText());
 	}
 	
