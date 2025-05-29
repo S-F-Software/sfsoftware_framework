@@ -101,13 +101,16 @@ public class Actor extends Sprite
 	}
 	
 	protected boolean collidingWithCast(final float dirX, final float dirY)
-	{				
-		boolean b = false;
-		
+	{
 		List<Actor> actors = getCast().stream()
-								.filter(a -> !(a.equals(this)) && !(a.isWalkable()))
-								.collect(Collectors.toList());		
+				.filter(a -> !(a.equals(this)) && !(a.isWalkable()))
+				.collect(Collectors.toList());
 		
+		return collidingWithCast(dirX, dirY, actors);
+	}
+	
+	protected boolean collidingWithCast(final float dirX, final float dirY, List<Actor> actors)
+	{				
 		// Create a new Quad representing where we INTEND to move
 		Quad temp = new Quad(getX() + (getSpeed() * dirX), getY() + (getSpeed() * dirY), getWidth(), getHeight());
 		
@@ -115,14 +118,13 @@ public class Actor extends Sprite
 		{
 			if(a.collidingWith(temp))
 			{
-				// Return true - this will prevent movement from happening.
-				b = true;
 				// Call the collisionResult method to trigger any expected behavior
 				a.collisionResult(this);
+				// Return true - this will prevent movement from happening.
+				return true;				
 			}
 		}
-		
-		return b;
+		return false;
 	}
 
 	protected int distanceToActor(final Actor a)
