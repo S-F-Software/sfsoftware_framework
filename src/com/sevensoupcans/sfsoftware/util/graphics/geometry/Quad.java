@@ -2,7 +2,6 @@ package com.sevensoupcans.sfsoftware.util.graphics.geometry;
 
 import org.lwjgl.opengl.GL11;
 
-import com.sevensoupcans.sfsoftware.game.actor.attributes.Collidable;
 import com.sevensoupcans.sfsoftware.util.graphics.RGBA;
 
 public class Quad implements Collidable, Intersectable {
@@ -66,21 +65,6 @@ public class Quad implements Collidable, Intersectable {
 	{
 		// TODO Auto-generated method stub
 		return false;
-	}
-
-	@Override
-	public boolean collidingWith(final Collidable collidable)
-	{
-		if(collidable instanceof Quad)
-		{
-			Quad quad = (Quad) collidable;
-			return (this.getX() < quad.getX() + quad.getWidth() &&
-			        this.getX() + this.getWidth() > quad.getX() &&
-			        this.getY() < quad.getY() + quad.getHeight() &&
-			        this.getY() + this.getHeight() > quad.getY());
-		}
-		
-		return false;
 	}	
 	
 	public void draw()
@@ -119,6 +103,7 @@ public class Quad implements Collidable, Intersectable {
 		return this.green;
 	}
 	
+	@Override
 	public final float getHeight()
 	{
 		return height;
@@ -144,16 +129,19 @@ public class Quad implements Collidable, Intersectable {
 		return y;
 	}
 	
+	@Override
 	public final float getWidth()
 	{
 		return width;
 	}
 	
+	@Override
 	public float getX()
 	{
 		return x;
 	}
 	
+	@Override
 	public float getY()
 	{
 		return y;
@@ -203,13 +191,5 @@ public class Quad implements Collidable, Intersectable {
 	public void setY(float destY)
 	{
 		y = destY;
-	}
-
-	@Override
-	public boolean intersectsWith(final float xPos, final float yPos) {
-		return (xPos >= this.getX() && 
-				xPos <= (this.getX() + this.getWidth()) && 
-				yPos >= this.getY() && 
-				yPos <= (this.getY() + this.getHeight()));
 	}
 }

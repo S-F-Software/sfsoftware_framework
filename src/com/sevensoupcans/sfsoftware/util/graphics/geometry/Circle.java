@@ -150,4 +150,28 @@ public class Circle implements Intersectable {
 	            (yPos - this.y) * (yPos - this.y) <= this.radius * this.radius);
 	}
 
+	@Override
+	public float getHeight() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public float getX() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public float getY() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public float getWidth() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
 }
