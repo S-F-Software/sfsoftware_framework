@@ -14,13 +14,13 @@ public class LightSource {
 	private static float intensity = 0.0f;	
 	
 	private final Actor associatedActor;
-	private final int maximumIntensity;	
-	private final int radius;
+	private final float maximumIntensity;	
+	private final float radius;
 	private final RGBA coreColor;
 	private final RGBA outerColor;		
 	
-	private int x;
-	private int y;
+	private float x;
+	private float y;
 	
 	public static float updateIntensity()
 	{
@@ -35,22 +35,22 @@ public class LightSource {
 				associatedActor);
 	}
 	
-	public LightSource(int x, int y)
+	public LightSource(float x, float y)
 	{
 		this(x, y, Tile.getDefaultTileSize() * 2, DEFAULT_CORE_COLOR);
 	}
 	
-	public LightSource(int x, int y, int radius, RGBA coreColor)
+	public LightSource(float x, float y, int radius, RGBA coreColor)
 	{
 		this(x, y, radius, coreColor, DEFAULT_OUTER_COLOR);
 	}
 	
-	public LightSource(int x, int y, int radius, RGBA coreColor, RGBA outerColor)
+	public LightSource(float x, float y, int radius, RGBA coreColor, RGBA outerColor)
 	{
 		this(x, y, radius, coreColor, outerColor, Tile.getDefaultTileSize(), null);
 	}	
 	
-	public LightSource(int x, int y, int radius, RGBA coreColor, RGBA outerColor, int maximumIntensity, Actor associatedActor)
+	public LightSource(float x, float y, float radius, RGBA coreColor, RGBA outerColor, float maximumIntensity, Actor associatedActor)
 	{
 		this.x = x;
 		this.y = y;

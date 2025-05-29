@@ -107,13 +107,14 @@ public class Particle implements Updatable
 	/**
 	 * Handles rendering and location updates of a particle instance.
 	 */
-	public final void update() {
+	public final void update() 
+	{
 
-		double xDirection = Math.cos(directionAngle) * -1;
-		double yDirection = Math.sin(directionAngle);
+		float xDirection = (float) Math.cos(directionAngle);
+		float yDirection = (float) Math.sin(directionAngle);
 
-		x = (int) (x + Math.round(xDirection * 4));
-		y = (int) ((int) (y + Math.round(yDirection * 4)) + accel);
+		x = x + Math.round(xDirection * 4);
+		y = (int) (y + Math.round(yDirection * 4) + accel);
 
 		if(this.useGravity) this.accel = this.accel + this.gravity;		
 		

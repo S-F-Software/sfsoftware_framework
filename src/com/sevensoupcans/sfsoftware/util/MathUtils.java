@@ -29,30 +29,38 @@ public abstract class MathUtils
 	/**
 	 * Gets the angle between two points in radians. 
 	 *  
-	 * @param x1
-	 * @param y1
-	 * @param x2
-	 * @param y2
+	 * @param originX
+	 * @param originY
+	 * @param targetX
+	 * @param targetY
 	 * @return
 	 */
-	public static double getAngle(int x1, int y1, int x2, int y2)
+	@Deprecated
+	public static double getAngle(int originX, int originY, int targetX, int targetY)
+	{		
+		return getAngle((float) originX, (float) originY, (float) targetX, (float) targetY);
+	}
+
+	/**
+	 * Gets the angle between two points in radians. 
+	 *  
+	 * @param originX
+	 * @param originY
+	 * @param targetX
+	 * @param targetY
+	 * @return
+	 */
+	public static double getAngle(float originX, float originY, float targetX, float targetY) 
 	{
-		double dx = x1 - x2;
-		double dy = y1 - y2;
+		double dx = targetX - originX;
+		double dy = targetY - originY;
 		
-		double inRads = Math.atan2(dy,dx);
-		
-		if (inRads < 0)
-		{
-	        inRads = Math.abs(inRads);
-		}
-	    else
-	    {
-	        inRads = 2 * Math.PI - inRads;
-	    }			
+		double inRads = Math.atan2(dy, dx);
+	
+		if (inRads < 0) inRads += 2 * Math.PI;
 		
 		return inRads;
-	}		
+	}	
 	
 	/**
 	 * Returns a boolean array of "bits" created from the provided byte.

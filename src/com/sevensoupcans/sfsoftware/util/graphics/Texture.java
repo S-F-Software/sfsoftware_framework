@@ -50,8 +50,8 @@ public final class Texture
 	/**
 	 * Draw a quad with the image on it - accept float for rotation!
 	 */
-	public static void drawTexture(final float x, final float y, final Texture texture, final int width, 
-			final int height, final int srcX, final int srcY, final int srcWidth, final int srcHeight, 
+	public static void drawTexture(final float x, final float y, final Texture texture, final float width2, 
+			final float height2, final int srcX, final int srcY, final float srcWidth, final float srcHeight, 
 			final float red, final float green, final float blue, final float alpha, final float angle) 
 	{		
 		// If the provided texture string is null or empty, don't try to draw it. :)
@@ -65,17 +65,17 @@ public final class Texture
 			
 			float fSrcX = ((float)srcX / texture.getWidth());
 			float fSrcY = ((float)srcY / texture.getHeight());
-			float fSrcWidth = (((float)srcX + (float)srcWidth) / texture.getWidth());
-			float fSrcHeight = (((float)srcY + (float)srcHeight) / texture.getHeight());			
+			float fSrcWidth = ((srcX + srcWidth) / texture.getWidth());
+			float fSrcHeight = ((srcY + srcHeight) / texture.getHeight());			
 			
 			GL11.glPushMatrix();			
 							
 			// Rotation works! 1/4/14
 			if(angle != 0)
 			{
-				GL11.glTranslatef(x + (width / 2), y + (height / 2), 0); // move to the proper position
+				GL11.glTranslatef(x + (width2 / 2), y + (height2 / 2), 0); // move to the proper position
 				GL11.glRotatef(angle, 0, 0, 1); // now rotate
-				GL11.glTranslatef(-1 *(x+ (width / 2)), -1 * (y+(height  / 2)), 0);				
+				GL11.glTranslatef(-1 *(x+ (width2 / 2)), -1 * (y+(height2  / 2)), 0);				
 			}
 			
 			GL11.glColor4f(red, green, blue, alpha);
@@ -85,13 +85,13 @@ public final class Texture
 				GL11.glVertex2f(x,y);
 				// Top Right
 				GL11.glTexCoord2f(fSrcWidth, fSrcY);
-				GL11.glVertex2f(x + width, y);
+				GL11.glVertex2f(x + width2, y);
 				// Bottom Right
 				GL11.glTexCoord2f(fSrcWidth,fSrcHeight);
-				GL11.glVertex2f(x + width,y + height);
+				GL11.glVertex2f(x + width2,y + height2);
 				// Bottom Left
 				GL11.glTexCoord2f(fSrcX,fSrcHeight);
-				GL11.glVertex2f(x,y + height);
+				GL11.glVertex2f(x,y + height2);
 			GL11.glEnd();
 			
 			GL11.glPopMatrix();
@@ -292,9 +292,9 @@ public final class Texture
 		return TEXTURE_ID;
 	}
 	
-	public final void renderAsFrameBufferOverlay(final FrameBuffer targetFrameBuffer, final int x, final int y, 
-			final int width, final int height, final int srcX, final int srcY, final int srcWidth, 
-			final int srcHeight, final float red, final float green, final float blue, final float alpha)
+	public final void renderAsFrameBufferOverlay(final FrameBuffer targetFrameBuffer, final float x, final float y, 
+			final float width, final float height, final int srcX, final int srcY, final float srcWidth, 
+			final float srcHeight, final float red, final float green, final float blue, final float alpha)
 	{
 		// Capture the current display buffer so we can revert back to it after rendering the lightmap.
 		FrameBuffer fbo = Graphics.getCurrentDisplayBuffer();						
@@ -315,10 +315,10 @@ public final class Texture
 		GL11.glEnable(GL11.GL_TEXTURE_2D);		
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.getID());
 		
-		float fSrcX = ((float)srcX / srcWidth);
-		float fSrcY = ((float)srcY / srcHeight);
-		float fSrcWidth = (((float)srcX + (float)srcWidth) / srcWidth);
-		float fSrcHeight = (((float)srcY + (float)srcHeight) / srcHeight);			
+		float fSrcX = (srcX / srcWidth);
+		float fSrcY = (srcY / srcHeight);
+		float fSrcWidth = ((srcX + srcWidth) / srcWidth);
+		float fSrcHeight = ((srcY + srcHeight) / srcHeight);			
 		
 		GL11.glPushMatrix();		
 		
@@ -328,19 +328,19 @@ public final class Texture
 			// Top Left
 			//GL11.glTexCoord2f(0.0f, 1.0f); 
 			GL11.glTexCoord2f(fSrcX, 1 - fSrcY);
-			GL11.glVertex2i(x, y);  		
+			GL11.glVertex2f(x, y);  		
 			// Top Right
 			//GL11.glTexCoord2f(1.0f, 1.0f); 
 			GL11.glTexCoord2f(fSrcWidth, 1 - fSrcY);
-			GL11.glVertex2i(x + width,  y); 		
+			GL11.glVertex2f(x + width,  y); 		
 			// Bottom Right
 			//GL11.glTexCoord2f(1.0f, 0.0f);
 			GL11.glTexCoord2f(fSrcWidth,1 - fSrcHeight);
-			GL11.glVertex2i(x + width, y + height);		
+			GL11.glVertex2f(x + width, y + height);		
 			// Bottom Left		
 			//GL11.glTexCoord2f(0.0f, 0.0f); 		
 			GL11.glTexCoord2f(fSrcX, 1 - fSrcHeight);
-			GL11.glVertex2i(x, y + height);	
+			GL11.glVertex2f(x, y + height);	
 		GL11.glEnd();
 		      
 		GL11.glPopMatrix();	

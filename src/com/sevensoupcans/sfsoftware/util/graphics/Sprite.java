@@ -3,20 +3,19 @@ package com.sevensoupcans.sfsoftware.util.graphics;
 import org.lwjgl.opengl.GL11;
 
 import com.sevensoupcans.sfsoftware.game.Game;
-import com.sevensoupcans.sfsoftware.game.actor.attributes.Collidable;
 import com.sevensoupcans.sfsoftware.util.graphics.geometry.Quad;
 import com.sevensoupcans.sfsoftware.util.tile.TileMap;
 
 public class Sprite extends Quad {
 	
-	public static void draw(final float x, final float y, final String textureName, final int width, 
-			final int height, final int srcX, final int srcY, final int srcWidth, final int srcHeight)
+	public static void draw(final float x, final float y, final String textureName, final float width, 
+			final float height, final int srcX, final int srcY, final float srcWidth, final float srcHeight)
 	{
 		draw(x,y,textureName,width,height,srcX,srcY,srcWidth,srcHeight, 1, 1, 1, 1);
 	}
 	
-	public static void draw(final float x, final float y, final String textureName, final int width, 
-			final int height, final int srcX, final int srcY, final int srcWidth, final int srcHeight, 
+	public static void draw(final float x, final float y, final String textureName, final float width, 
+			final float height, final int srcX, final int srcY, final float srcWidth, final float srcHeight, 
 			final float red, final float green, final float blue, final float alpha) 
 	{
 		draw(x, y, textureName, width, height, srcX, srcY, srcWidth, srcHeight, 
@@ -26,8 +25,8 @@ public class Sprite extends Quad {
 	/**
 	 * draw a quad with the image on it - accept float for rotation!
 	 */
-	public static void draw(final float x, final float y, final String textureName, final int width, 
-			final int height, final int srcX, final int srcY, final int srcWidth, final int srcHeight, 
+	public static void draw(final float x, final float y, final String textureName, final float width, 
+			final float height, final int srcX, final int srcY, final float srcWidth, final float srcHeight, 
 			final float red, final float green, final float blue, final float alpha, final float angle) 
 	{		
 		// If the provided texture string is null or empty, don't try to draw it. :)
@@ -59,8 +58,8 @@ public class Sprite extends Quad {
 		}
 	}
 	
-	public static void draw(final float x, final float y, final Texture texture, final int width, final int height, 
-			final int srcX, final int srcY, final int srcWidth, final int srcHeight, final float red, final float green, 
+	public static void draw(final float x, final float y, final Texture texture, final float width, final float height, 
+			final int srcX, final int srcY, final float srcWidth, final float srcHeight, final float red, final float green, 
 			final float blue, final float alpha, final float angle)
 	{
 		Texture.drawTexture(x, y, texture, width, height, srcX, srcY, srcWidth, srcHeight, 
@@ -76,8 +75,8 @@ public class Sprite extends Quad {
 	{		
 		int x = (int) sprite.getX();
 		int y = (int) sprite.getY();
-		int width = sprite.getWidth();
-		int height = sprite.getHeight();
+		int width = (int) sprite.getWidth();
+		int height = (int) sprite.getHeight();
 		
 		return (x < (0 - width) || x > ((game.getPlayingFieldWidth() * game.getTileSize()) + width) 
 				|| y < (0 - height) || y > ((game.getPlayingFieldHeight() * game.getTileSize()) + height));
@@ -99,17 +98,17 @@ public class Sprite extends Quad {
 		this(0, 0, textureName, srcX, srcY);
 	}
 	
-	public Sprite(int destX, int destY, String textureName)
+	public Sprite(float destX, float destY, String textureName)
 	{		
 		this(destX, destY, textureName, 0, 0);
 	}
 	
-	public Sprite(int destX, int destY, String textureName, int srcX, int srcY)
+	public Sprite(float destX, float destY, String textureName, int srcX, int srcY)
 	{
 		this(destX, destY, textureName, 0, 0, srcX, srcY);
 	}
 	
-	public Sprite(int destX, int destY, String textureName, int width, int height, int srcX, int srcY)
+	public Sprite(float destX, float destY, String textureName, float width, float height, int srcX, int srcY)
 	{
 		super(destX, destY, width, height);		
 		
@@ -131,7 +130,7 @@ public class Sprite extends Quad {
 	{
 		this(destX, destY, texture.getName());
 	}
-	
+
 	public final boolean areCornersOnTexture(final TileMap tileMap, final String textureName)
 	{
 		if(tileMap.getTextureAtPoint(this.getLeft(), this.getTop()).getName().equals(textureName)) return true;
@@ -147,25 +146,13 @@ public class Sprite extends Quad {
 		return this.areCornersOnTexture(tileMap, texture.getName());
 	}
 	
+	/*@Deprecated
 	public boolean collidingWith(final Collidable object) 
-	{		
-		boolean isColliding = false;
-		if(object instanceof Sprite)
-		{
-			Sprite a = (Sprite) object;
-			Sprite b = this; //(Actor) objB;
-			
-			// Calculate distance from center points of sprites - hence the extra math
-			int xDistance = (int) ((b.getX() + (b.getWidth() / 2)) - (a.getX() + (a.getWidth() / 2)));
-			int yDistance = (int) ((b.getY() + (b.getHeight() / 2)) - (a.getY() + (a.getHeight() / 2)));
+	{	
+		if (object instanceof Quad) return this.collidingWith((Quad) object);
 
-			if (Math.sqrt((xDistance * xDistance) + (yDistance * yDistance)) < (b.getWidth() / 2) + (a.getWidth() / 2)) {
-				isColliding = true;
-			}
-			
-		}
-		return isColliding;		
-	}
+		return false;		
+	}*/
 	
 	@Override
 	public void draw()
@@ -173,42 +160,42 @@ public class Sprite extends Quad {
 		draw(this.getWidth(), this.getHeight());
 	}
 	
-	public void draw(final int width, final int height)
+	public void draw(final float width, final float height)
 	{
 		draw(width, height, this.getSrcX(), this.getSrcY(), width, height);
 	}
 	
 	// Only use this for non-scaled sprites. Assumes the source dimensions are the same as the destination ones.
-	public void draw(final int width, final int height, final int srcX, final int srcY)
+	public void draw(final float width, final float height, final int srcX, final int srcY)
 	{
 		draw(width, height, srcX, srcY, width, height);
 	}
 	
-	public void draw(final int width, final int height, final int srcX, final int srcY, 
-			final int srcWidth, final int srcHeight)
+	public void draw(final float width, final float height, final int srcX, final int srcY, 
+			final float srcWidth, final float srcHeight)
 	{	
 		draw(width, height, srcX, srcY, srcWidth, srcHeight, 
 				this.getRed(), this.getGreen(), this.getBlue(), this.getAlpha());
 	}
 	
-	public void draw(final int width, final int height, final int srcX, final int srcY, 
-			final int srcWidth, final int srcHeight, final float red, final float green, 
+	public void draw(final float width, final float height, final int srcX, final int srcY, 
+			final float srcWidth, final float srcHeight, final float red, final float green, 
 			final float blue, final float alpha)
 	{
 		draw((int) this.getX(), (int) this.getY(), width, height, srcX, srcY, 
 				srcWidth, srcHeight, red, green, blue, alpha);								
 	}
 	
-	public void draw(final int x, final int y, final int width, final int height, final int srcX, 
-			final int srcY, final int srcWidth, final int srcHeight, final float red, final float green, 
+	public void draw(final float x, final float y, final float width, final float height, final int srcX, 
+			final int srcY, final float srcWidth, final float srcHeight, final float red, final float green, 
 			final float blue, final float alpha)
 	{	
 		draw(x, y, width, height, srcX, srcY, srcWidth, srcHeight, 
 				red, green, blue, alpha, this.getRotationAngle());
 	}
 	
-	public void draw(final int x, final int y, final int width, final int height, final int srcX, 
-			final int srcY, final int srcWidth, final int srcHeight, final float red, final float green, 
+	public void draw(final float x, final float y, final float width, final float height, final int srcX, 
+			final int srcY, final float srcWidth, final float srcHeight, final float red, final float green, 
 			final float blue, final float alpha, final float rotationAngle)
 	{	
 		if(!(this.visible)) return;
@@ -268,17 +255,18 @@ public class Sprite extends Quad {
 	
 	public void move(final float destX, final float destY)
 	{
-		move(Math.round(destX), Math.round(destY));
-	}	
-	
-	public void move(final int destX, final int destY)
-	{
 		this.setX(destX);
 		this.setY(destY);
+	}	
+	
+	@Deprecated
+	public void move(final int destX, final int destY)
+	{
+		move((float) destX, (float) destY);
 	}		
 
-	public final void renderAsFrameBufferOverlay(final FrameBuffer targetFrameBuffer, final int x, final int y, 
-			final int width, final int height)
+	public final void renderAsFrameBufferOverlay(final FrameBuffer targetFrameBuffer, final float x, final float y, 
+			final float width, final float height)
 	{
 		this.getTexture().renderAsFrameBufferOverlay(targetFrameBuffer, x, y, width, height, 
 				this.getSrcX(), this.getSrcY(), this.getWidth(), this.getHeight(), 

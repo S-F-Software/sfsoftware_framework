@@ -34,7 +34,7 @@ public class TileMap {
 		
 		this.width = map.length;
 		this.height = map[0].length;
-		this.tileSize = (map[0][0].getWidth() <= 0 ? Tile.getDefaultTileSize() : map[0][0].getWidth());		
+		this.tileSize = (int) (map[0][0].getWidth() <= 0 ? Tile.getDefaultTileSize() : map[0][0].getWidth());		
 		this.setAllTilesSrcFromBitMaskId(4); 
 	}
 	
@@ -339,12 +339,12 @@ public class TileMap {
 		return tile;		
 	}
 	
-	public final int getTileMapXIndexFromXCoordinate(final int x)
+	public final int getTileMapXIndexFromXCoordinate(final float x)
 	{
 		return (int) Math.floor(x / this.getTileSize());
 	}		
 	
-	public final int getTileMapYIndexFromYCoordinate(final int y)
+	public final int getTileMapYIndexFromYCoordinate(final float y)
 	{		
 		return (int) Math.floor(y / this.getTileSize());
 	}
@@ -356,7 +356,7 @@ public class TileMap {
 	 * @param y The y coordinate
 	 * @return Texture located in the tile map at the specified point
 	 */
-	public final Texture getTextureAtPoint(final int x, final int y)
+	public final Texture getTextureAtPoint(final float x, final float y)
 	{		
 		return this.getMap()[this.getTileMapXIndexFromXCoordinate(x)][this.getTileMapYIndexFromYCoordinate(y)].getTexture();
 	}

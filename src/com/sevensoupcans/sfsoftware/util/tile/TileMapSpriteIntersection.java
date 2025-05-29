@@ -10,12 +10,12 @@ public final class TileMapSpriteIntersection {
 	private final boolean topLeft;
 	private final boolean topRight;
 	
-	public TileMapSpriteIntersection(Sprite sprite, TileMap tileMap, int destX, int destY) 
+	public TileMapSpriteIntersection(Sprite sprite, TileMap tileMap, float destX, float destY) 
 	{
 		this(sprite, tileMap.getMap(), tileMap.getTileSize(), destX, destY);				
 	}
 	
-	public TileMapSpriteIntersection(Sprite sprite, Tile[][] tiles, int tileSize, int destX, int destY)
+	public TileMapSpriteIntersection(Sprite sprite, Tile[][] tiles, int tileSize, float destX, float destY)
 	{
 		int upY = MathUtils.ensureRange((int) Math.floor((destY - (sprite.getHeight() / 2)) / tileSize), 
 				0, 	tiles[0].length - 1);

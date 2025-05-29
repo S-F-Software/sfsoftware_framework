@@ -2,9 +2,10 @@ package com.sevensoupcans.sfsoftware.util.graphics.geometry;
 
 import org.lwjgl.opengl.GL11;
 
+import com.sevensoupcans.sfsoftware.game.actor.attributes.Collidable;
 import com.sevensoupcans.sfsoftware.util.graphics.RGBA;
 
-public class Quad implements Intersectable {
+public class Quad implements Collidable, Intersectable {
 
 	public static void draw(final float x, final float y, final float width, final float height, 
 			final RGBA rgba)
@@ -47,18 +48,40 @@ public class Quad implements Intersectable {
 	private float blue = 1.0f;
 	private float alpha = 1.0f;
 	
-	private int height;	
-	private int width;
-	private int x;	
-	private int y;	
+	private float height;	
+	private float width;
+	private float x;	
+	private float y;	
 	
-	public Quad(int x, int y, int width, int height) 
+	public Quad(float x, float y, float width, float height) 
 	{
 		this.x = x;
 		this.y = y;
 		this.width = width;
 		this.height = height;
 	}
+
+	@Override
+	public boolean collisionResult(final Collidable object) 
+	{
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean collidingWith(final Collidable collidable)
+	{
+		if(collidable instanceof Quad)
+		{
+			Quad quad = (Quad) collidable;
+			return (this.getX() < quad.getX() + quad.getWidth() &&
+			        this.getX() + this.getWidth() > quad.getX() &&
+			        this.getY() < quad.getY() + quad.getHeight() &&
+			        this.getY() + this.getHeight() > quad.getY());
+		}
+		
+		return false;
+	}	
 	
 	public void draw()
 	{
@@ -76,19 +99,19 @@ public class Quad implements Intersectable {
 		return this.blue;
 	}
 	
-	public final int getBottom()
+	public final float getBottom()
 	{
 		return (y + height);
 	}
 
-	public final int getCenterX()
+	public final float getCenterX()
 	{
-		return (x + (width / 2));
+		return (x + (width / 2.0f));
 	}
 	
-	public final int getCenterY()
+	public final float getCenterY()
 	{
-		return (y + (height / 2));
+		return (y + (height / 2.0f));
 	}
 	
 	public final float getGreen()
@@ -96,12 +119,12 @@ public class Quad implements Intersectable {
 		return this.green;
 	}
 	
-	public final int getHeight()
+	public final float getHeight()
 	{
 		return height;
 	}
 	
-	public final int getLeft()
+	public final float getLeft()
 	{
 		return x;
 	}
@@ -111,17 +134,17 @@ public class Quad implements Intersectable {
 		return this.red;
 	}
 	
-	public final int getRight()
+	public final float getRight()
 	{
 		return (x + width);
 	}	
 	
-	public final int getTop()
+	public final float getTop()
 	{
 		return y;
 	}
 	
-	public final int getWidth()
+	public final float getWidth()
 	{
 		return width;
 	}
@@ -151,7 +174,7 @@ public class Quad implements Intersectable {
 		return (this.green = green);
 	}	
 	
-	public final void setHeight(int newHeight)
+	public final void setHeight(float newHeight)
 	{
 		height = newHeight;
 	}
@@ -161,23 +184,23 @@ public class Quad implements Intersectable {
 		return (this.red = red);
 	}
 	
-	public final void setSize(int newWidth, int newHeight)
+	public final void setSize(float newWidth, float newHeight)
 	{
 		this.setWidth(newWidth);
 		this.setHeight(newHeight);
 	}	
 	
-	public final void setWidth(int newWidth)
+	public final void setWidth(float newWidth)
 	{
 		width = newWidth;
 	}
 	
-	public void setX(int destX)
+	public void setX(float destX)
 	{
 		x = destX;
 	}
 	
-	public void setY(int destY)
+	public void setY(float destY)
 	{
 		y = destY;
 	}
@@ -189,5 +212,4 @@ public class Quad implements Intersectable {
 				yPos >= this.getY() && 
 				yPos <= (this.getY() + this.getHeight()));
 	}
-
 }

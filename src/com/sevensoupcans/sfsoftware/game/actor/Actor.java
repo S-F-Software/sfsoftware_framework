@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.sevensoupcans.sfsoftware.game.Game;
-import com.sevensoupcans.sfsoftware.game.actor.attributes.Collidable;
+import com.sevensoupcans.sfsoftware.util.MathUtils;
 import com.sevensoupcans.sfsoftware.util.Updatable;
 import com.sevensoupcans.sfsoftware.util.graphics.Sprite;
 import com.sevensoupcans.sfsoftware.util.graphics.geometry.Quad;
@@ -15,28 +15,14 @@ import com.sevensoupcans.sfsoftware.util.tile.pathfinding.AStarPathFinder;
 import com.sevensoupcans.sfsoftware.util.tile.pathfinding.Path;
 import com.sevensoupcans.sfsoftware.util.tile.pathfinding.PathFinder;
 
-public class Actor extends Sprite implements Collidable 
+public class Actor extends Sprite 
 {
 	protected static int playingFieldX;
 	protected static int playingFieldY;	
 	
 	public final static double getAngle(final Actor a, final Actor b)
 	{
-		double dx = a.getCenterX() - b.getCenterX(); // (a.getX() + (a.getWidth() / 2)) - (b.getX() + (b.getWidth() / 2));
-		double dy = a.getCenterY() - b.getCenterY(); // (a.getY() + (a.getHeight() / 2)) - (b.getY() + (b.getHeight() / 2));
-		
-		double inRads = Math.atan2(dy,dx);
-		
-		if (inRads < 0)
-		{
-	        inRads = Math.abs(inRads);
-		}
-	    else
-	    {
-	        inRads = 2 * Math.PI - inRads;
-	    }			
-		
-		return inRads;
+		return MathUtils.getAngle(a.getCenterX(), a.getCenterY(), b.getCenterX(), b.getCenterY());
 	}
 	
 	@Deprecated
@@ -83,9 +69,9 @@ public class Actor extends Sprite implements Collidable
 	
 	private final int TILE_SIZE;
 	
-	protected double xDirection = 0;	
+	protected float xDirection = 0;	
 	
-	protected double yDirection = 0;
+	protected float yDirection = 0;
 
 	protected int speed = 4;
 	
@@ -93,12 +79,12 @@ public class Actor extends Sprite implements Collidable
 	
 	private int zOrder = 0;
 	
-	public Actor(int destX, int destY, String texture, int destWidth, int destHeight, Game associatedGame) 
+	public Actor(float destX, float destY, String texture, float destWidth, float destHeight, Game associatedGame) 
 	{
 		this(destX, destY, texture, 0, 0, destWidth, destHeight, associatedGame);
 	}	
 	
-	public Actor(int destX, int destY, String texture, int srcX, int srcY, int destWidth, int destHeight, Game associatedGame) 
+	public Actor(float destX, float destY, String texture, int srcX, int srcY, float destWidth, float destHeight, Game associatedGame) 
 	{
 		super(destX, destY, texture);		
 		
@@ -114,28 +100,19 @@ public class Actor extends Sprite implements Collidable
 		Cast.getInstance().add(this);
 	}
 	
-	@Override
-	public boolean collidingWith(final Collidable object) 
-	{		
-		return super.collidingWith(object);	
-	}
-	
-	protected boolean collidingWithCast(final double dirX, final double dirY)
+	protected boolean collidingWithCast(final float dirX, final float dirY)
 	{				
 		boolean b = false;
 		
 		List<Actor> actors = getCast().stream()
 								.filter(a -> !(a.equals(this)) && !(a.isWalkable()))
-								.collect(Collectors.toList());
+								.collect(Collectors.toList());		
+		
+		// Create a new Quad representing where we INTEND to move
+		Quad temp = new Quad(getX() + (getSpeed() * dirX), getY() + (getSpeed() * dirY), getWidth(), getHeight());
 		
 		for(Actor a : actors)
 		{
-			// Destination X and Y IF the Actor moves
-			int newX = (int) (getX() + Math.round(getSpeed() * dirX));
-			int newY = (int) (getY() + Math.round(getSpeed() * dirY));				
-			// Create a temporary Actor object representing where OUR actor WILL move
-			Actor temp = new Actor(newX, newY, "", 0, 0, getWidth(), getHeight(), getAssociatedGame());								
-			// Check using our collidingWith method if the two objects are colliding!
 			if(a.collidingWith(temp))
 			{
 				// Return true - this will prevent movement from happening.
@@ -143,30 +120,22 @@ public class Actor extends Sprite implements Collidable
 				// Call the collisionResult method to trigger any expected behavior
 				a.collisionResult(this);
 			}
-			// VERY important! Remove the temp Actor or huge memory leak problems will occur!
-			temp.remove();
 		}
 		
 		return b;
-	}	
-	
-	@Override
-	public boolean collisionResult(final Collidable object) {
-		// TODO Auto-generated method stub
-		return false;
 	}
 
 	protected int distanceToActor(final Actor a)
 	{
-		int x1 = a.getCenterX(); // (a.getX() + (a.getWidth() / 2));
-		int x2 = getCenterX(); // (getX() + (getWidth() / 2));
-		int y1 = a.getCenterY(); // (a.getY() + (a.getHeight() / 2));
-		int y2 = getCenterY(); //(getY() + (getHeight() / 2));
+		float x1 = a.getCenterX(); // (a.getX() + (a.getWidth() / 2));
+		float x2 = getCenterX(); // (getX() + (getWidth() / 2));
+		float y1 = a.getCenterY(); // (a.getY() + (a.getHeight() / 2));
+		float y2 = getCenterY(); //(getY() + (getHeight() / 2));
 		
 		return (int) Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
 	}
 	
-	protected final int distanceToPoint(final int x, final int y)
+	protected final int distanceToPoint(final float x, final float y)
 	{
 		return (int) Math.sqrt((x - getCenterX()) * (x - getCenterX()) + (y - getCenterY()) * (y - getCenterY()));		
 	}	
@@ -198,23 +167,9 @@ public class Actor extends Sprite implements Collidable
 		return getAngle(a, this);
 	}	
 	
-	protected final double getAngleFromPoint(final double x, final double y)
+	protected final double getAngleFromPoint(final float x, final float y)
 	{
-		double dx = x - getCenterX(); // (getX() + (getWidth() / 2)) - x;
-		double dy = y - getCenterY(); // (getY() + (getHeight() / 2)) - y;
-		
-		double inRads = Math.atan2(dy,dx);
-		
-		if (inRads < 0)
-		{
-	        inRads = Math.abs(inRads);
-		}
-	    else
-	    {
-	        inRads = 2 * Math.PI - inRads;
-	    }			
-		
-		return inRads;
+		return MathUtils.getAngle(x, y, this.getCenterX(), this.getCenterY());
 	}
 	
 	protected final double getAngleToActor(final Actor b)
@@ -222,23 +177,9 @@ public class Actor extends Sprite implements Collidable
 		return getAngle(this, b);
 	}
 	
-	protected final double getAngleToPoint(final double x, final double y)
+	protected final double getAngleToPoint(final float x, final float y)
 	{
-		double dx = getCenterX() - x;
-		double dy = getCenterY() - y;
-		
-		double inRads = Math.atan2(dy,dx);
-		
-		if (inRads < 0)
-		{
-	        inRads = Math.abs(inRads);
-		}
-	    else
-	    {
-	        inRads = 2 * Math.PI - inRads;
-	    }			
-		
-		return inRads;
+		return MathUtils.getAngle(this.getCenterX(), this.getCenterY(), x, y);
 	}		
 	
 	public Game getAssociatedGame()
@@ -297,12 +238,12 @@ public class Actor extends Sprite implements Collidable
 		return speed;
 	}	
 	
-	public double getXDirection()
+	public float getXDirection()
 	{
 		return this.xDirection;
 	}
 	
-	public double getYDirection()
+	public float getYDirection()
 	{
 		return this.yDirection;
 	}
@@ -319,8 +260,8 @@ public class Actor extends Sprite implements Collidable
 	
 		for(int i=1; i < distanceToActor(a); i++)
 		{
-			double xDirection = Math.cos(directionAngle) * -1;
-			double yDirection = Math.sin(directionAngle);	
+			float xDirection = (float) Math.cos(directionAngle);
+			float yDirection = (float) Math.sin(directionAngle);	
 			
 			int xPoint = (int) (getCenterX() + (xDirection * i));
 			int yPoint = (int) (getCenterY() + (yDirection * i));					
@@ -368,9 +309,9 @@ public class Actor extends Sprite implements Collidable
 	 * @param dirX
 	 * @param dirY
 	 */
-	protected boolean moveWithoutCheckingCollision(final double dirX, final double dirY)
+	protected boolean moveWithoutCheckingCollision(final float dirX, final float dirY)
 	{
-		super.move((float) (this.getX() + (dirX * speed)), (float) (this.getY() + (dirY * speed)));
+		super.move(this.getX() + (dirX * speed), this.getY() + (dirY * speed));
 		return true;
 	}	
 	
@@ -417,6 +358,5 @@ public class Actor extends Sprite implements Collidable
 	public String toString()
 	{
 		return "Actor \"" + this.getTextureName() + "\" @ " + (int) getX() + ", " + (int) getY();		
-	}	
-
+	}
 }

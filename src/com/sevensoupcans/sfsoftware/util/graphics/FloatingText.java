@@ -14,8 +14,8 @@ public final class FloatingText implements Updatable {
 	private double fadeOut;
 	
 	private RGBA textColor;	
-	private int x;
-	private int y;
+	private float x;
+	private float y;
 	private String text;
 	
 	private float red;
@@ -29,7 +29,7 @@ public final class FloatingText implements Updatable {
 		FLOATING_TEXT_FONT = new TextureFont(awtFont, true);		
 	}
 	
-	public FloatingText(int destX, int destY, String destText, float r, float g, float b, float a)
+	public FloatingText(float destX, float destY, String destText, float r, float g, float b, float a)
 	{
 		x = destX;
 		y = destY;
@@ -46,7 +46,7 @@ public final class FloatingText implements Updatable {
 		floatingTexts.add(this);		
 	}
 	
-	public FloatingText(int destX, int destY, String destText) {
+	public FloatingText(float destX, float destY, String destText) {
 		x = destX;
 		y = destY;
 		text = destText;
