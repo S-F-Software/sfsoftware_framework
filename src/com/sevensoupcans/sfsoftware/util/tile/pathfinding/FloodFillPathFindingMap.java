@@ -4,12 +4,16 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
+import java.util.function.BiPredicate;
 
 import com.sevensoupcans.sfsoftware.game.actor.Actor;
 import com.sevensoupcans.sfsoftware.game.actor.attributes.Direction;
 
-public class FloodFillPathFindingMap {
-
+public class FloodFillPathFindingMap 
+{
+	private static final BiPredicate<Integer, Integer> CLOSER_TO_ACTOR = (neighbor, current) -> neighbor > current;
+	private static final BiPredicate<Integer, Integer> FARTHER_FROM_ACTOR = (neighbor, current) -> neighbor < current;	
+	
 	final private int[][] distanceValue;
 	final private int actorTileValue;
 	final private int actorTileX;
@@ -31,21 +35,6 @@ public class FloodFillPathFindingMap {
 		actorTileY = actor.getCurrentTileY();
 		
 		populateMapValues(actorTileX, actorTileY, this.getActorLocationValue());
-		
-		/*for(int y = 0; y < distanceValue[0].length; y++)
-		{	
-			for(int x = 0; x < distanceValue.length; x++)
-			{	
-				if(distanceValue[x][y] < 10) {
-					System.out.print("0" + distanceValue[x][y]);					
-				}
-				else 
-				{
-					System.out.print(distanceValue[x][y]);
-				}
-			}
-			System.out.print("\n");
-		}*/
 	}
 	
 	private void populateMapValues(int startX, int startY, int startValue) {
@@ -53,6 +42,8 @@ public class FloodFillPathFindingMap {
 	    Queue<int[]> queue = new LinkedList<>();
 	    queue.add(new int[]{startX, startY, startValue});
 
+	    boolean[][] walkabilityMap = this.actor.getAssociatedGame().getTileMap().getWalkabilityMap(true);
+	    
 	    while (!queue.isEmpty()) {
 	        int[] current = queue.poll();
 	        int x = current[0], y = current[1], value = current[2];
@@ -61,8 +52,7 @@ public class FloodFillPathFindingMap {
 	        if (x < 0 || x >= distanceValue.length || y < 0 || y >= distanceValue[0].length) continue;
 
 	        // Skip tiles that are unwalkable or already have a higher value
-	        if (!(this.actor.getAssociatedGame().getTileMap().getMap()[x][y].isWalkable()) 
-	        		|| distanceValue[x][y] >= value) continue;
+	        if (!(walkabilityMap[x][y]) || distanceValue[x][y] >= value) continue;
 
 	        // Assign the value to the current tile
 	        distanceValue[x][y] = value;
@@ -77,29 +67,41 @@ public class FloodFillPathFindingMap {
 	        queue.add(new int[]{x, y + 1, value - 1}); // Down
 	    }
 	}
+
+	private List<Direction> getDirectionalTilesMatching(int currentX, int currentY, BiPredicate<Integer, Integer> condition) 
+	{
+	    int currentValue = distanceValue[currentX][currentY];
+	    List<Direction> directions = new ArrayList<>();
+
+	    if (currentValue <= 0 || currentValue >= this.getActorLocationValue()) return directions;
+
+	    for (Direction dir : Direction.getCardinals()) {
+	        int neighborX = currentX + dir.getXDifference();
+	        int neighborY = currentY + dir.getYDifference();
+
+	        if (isInBounds(neighborX, neighborY)) {
+	            int neighborValue = distanceValue[neighborX][neighborY];
+	            if (condition.test(neighborValue, currentValue)) {
+	                directions.add(dir);
+	            }
+	        }
+	    }
+
+	    return directions;
+	}
 	
-	public List<Direction> getDirectionsOfNextTile(final int currentX, final int currentY)
-	{	
-		int currentValue = distanceValue[currentX][currentY];
-		
-		ArrayList<Direction> al = new ArrayList<Direction>();
-		if(currentValue <= 0 || currentValue >= this.getActorLocationValue()) return al;
-		
-		for(int y = 0; y < distanceValue[0].length; y++)
-		{	
-			for(int x = 0; x < distanceValue.length; x++)
-			{
-				if(distanceValue[x][y] == (currentValue + 1))
-				{
-					if(y > currentY) al.add(Direction.DOWN);
-					if(y < currentY) al.add(Direction.UP);
-					if(x > currentX) al.add(Direction.RIGHT);
-					if(x < currentX) al.add(Direction.LEFT);
-				}
-			}
-		}
-		
-		return al;
+	public List<Direction> getDirectionsOfNextClosestTile(int x, int y) 
+	{
+	    return getDirectionalTilesMatching(x, y, CLOSER_TO_ACTOR);
+	}
+
+	public List<Direction> getDirectionsOfNextFarthestTile(int x, int y) 
+	{
+	    return getDirectionalTilesMatching(x, y, FARTHER_FROM_ACTOR);
+	}
+	
+	private boolean isInBounds(int x, int y) {
+	    return x >= 0 && y >= 0 && x < distanceValue.length && y < distanceValue[0].length;
 	}
 	
 	public int getValueAtTile(final int x, final int y)

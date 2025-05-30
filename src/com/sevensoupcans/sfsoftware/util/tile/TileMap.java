@@ -1,8 +1,12 @@
 package com.sevensoupcans.sfsoftware.util.tile;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
+import com.sevensoupcans.sfsoftware.game.actor.Actor;
+import com.sevensoupcans.sfsoftware.game.actor.Cast;
 import com.sevensoupcans.sfsoftware.util.MathUtils;
 import com.sevensoupcans.sfsoftware.util.graphics.Sprite;
 import com.sevensoupcans.sfsoftware.util.graphics.Texture;
@@ -359,6 +363,43 @@ public class TileMap {
 	public final Texture getTextureAtPoint(final float x, final float y)
 	{		
 		return this.getMap()[this.getTileMapXIndexFromXCoordinate(x)][this.getTileMapYIndexFromYCoordinate(y)].getTexture();
+	}
+	
+	/**
+	 * @return An array of booleans containing information on whether a tile is walkable or not.
+	 */
+	public final boolean[][] getWalkabilityMap()
+	{
+		return getWalkabilityMap(false);
+	}
+	
+	/**
+	 * Returns a walkability map factoring in inclusion of Actors
+	 * 
+	 * @param includeUnwalkableActors
+	 * @return An array of booleans containing information on whether a tile is walkable or not.
+	 */
+	public final boolean[][] getWalkabilityMap(boolean includeUnwalkableActors)
+	{
+		boolean[][] walkabilityMap = new boolean[width][height];
+		for(int xTile = 0; xTile < map.length; xTile++)
+		{
+			for(int yTile = 0; yTile < map[0].length; yTile++)
+			{
+				walkabilityMap[xTile][yTile] = map[xTile][yTile].isWalkable();
+			}
+		}
+		
+		if(includeUnwalkableActors)
+		{
+			List<Actor> unwalkableActors = Cast.getInstance().stream()
+															.filter(a -> !(a.isWalkable()))
+															.collect(Collectors.toList());
+			for(Actor a : unwalkableActors)
+				walkabilityMap[a.getCurrentTileX()][a.getCurrentTileY()] = false;
+		}
+		
+		return walkabilityMap;
 	}
 	
 	public final int getWidth()

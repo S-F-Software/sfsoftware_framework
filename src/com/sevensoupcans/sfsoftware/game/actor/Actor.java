@@ -313,7 +313,7 @@ public class Actor extends Sprite
 	 */
 	protected boolean moveWithoutCheckingCollision(final float dirX, final float dirY)
 	{
-		super.move(this.getX() + (dirX * speed), this.getY() + (dirY * speed));
+		super.setPosition(this.getX() + (dirX * speed), this.getY() + (dirY * speed));
 		return true;
 	}	
 	

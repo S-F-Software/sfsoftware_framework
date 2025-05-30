@@ -252,18 +252,6 @@ public class Sprite extends Quad {
 	{
 		return this.visible;
 	}
-	
-	public void move(final float destX, final float destY)
-	{
-		this.setX(destX);
-		this.setY(destY);
-	}	
-	
-	@Deprecated
-	public void move(final int destX, final int destY)
-	{
-		move((float) destX, (float) destY);
-	}		
 
 	public final void renderAsFrameBufferOverlay(final FrameBuffer targetFrameBuffer, final float x, final float y, 
 			final float width, final float height)
@@ -271,6 +259,18 @@ public class Sprite extends Quad {
 		this.getTexture().renderAsFrameBufferOverlay(targetFrameBuffer, x, y, width, height, 
 				this.getSrcX(), this.getSrcY(), this.getWidth(), this.getHeight(), 
 				this.getRed(), this.getGreen(), this.getBlue(), this.getAlpha());
+	}
+	
+	public void setPosition(final float destX, final float destY)
+	{
+		this.setX(destX);
+		this.setY(destY);
+	}	
+	
+	@Deprecated
+	public void setPosition(final int destX, final int destY)
+	{
+		setPosition((float) destX, (float) destY);
 	}
 	
 	public final float setRotationAngle(final float rotationAngle)
