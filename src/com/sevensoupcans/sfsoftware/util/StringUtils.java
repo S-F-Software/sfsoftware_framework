@@ -11,43 +11,14 @@ public abstract class StringUtils
 	private static final String DEFAULT_DELIMITER = ",";
 	
 	/**
-	 * Converts a provided comma delimited String to a byte array
-	 * 
-	 * @param delimitedString
-	 * @return
-	 */	
-	public static byte[] getByteArrayFromString(String delimitedString)
-	{
-		return getByteArrayFromString(delimitedString, DEFAULT_DELIMITER);
-	}
-	
-	/**
-	 * Converts a provided delimited String to a byte array
-	 * 
-	 * @param delimitedString
-	 * @param delimiter
-	 * @return
-	 */	
-	public static byte[] getByteArrayFromString(String delimitedString, String delimiter)
-	{
-		String[] stringArray = delimitedString.split(delimiter);
-		byte[] byteArray = new byte[stringArray.length];
-        
-		for (int i = 0; i < stringArray.length; i++)
-			byteArray[i] = Byte.parseByte(stringArray[i].trim());
-		
-        return byteArray;
-	}
-	
-	/**
 	 * Converts a provided byte array to a comma delimited String
 	 * 
 	 * @param byteArray
 	 * @return
 	 */	
-	public static String getStringFromByteArray(byte[] byteArray)
+	public static String buildDelimitedStringFromByteArray(byte[] byteArray)
 	{
-		return getStringFromByteArray(byteArray, DEFAULT_DELIMITER);
+		return buildDelimitedStringFromByteArray(byteArray, DEFAULT_DELIMITER);
 	}
 	
 	/**
@@ -57,7 +28,7 @@ public abstract class StringUtils
 	 * @param delimiter
 	 * @return
 	 */
-	public static String getStringFromByteArray(byte[] byteArray, String delimiter)
+	public static String buildDelimitedStringFromByteArray(byte[] byteArray, String delimiter)
 	{
 		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < byteArray.length; i++) 
@@ -70,14 +41,16 @@ public abstract class StringUtils
 		return sb.toString();
 	}
 	
-	public static int parseInt(final String str)
+	/**
+	 * Creates a String from the contents of a provided byte array.
+	 * 
+	 * @param byteArray
+	 * @return
+	 */
+	public static String buildStringFromByteArray(byte[] byteArray) 
 	{
-		return Optional.ofNullable(str)
-				.map(String::trim)
-				.filter(val -> !val.isEmpty())
-				.map(Integer::parseInt)
-				.orElse(0);
-	}
+	    return new String(byteArray, java.nio.charset.StandardCharsets.US_ASCII).trim();
+	}	
 	
 	/**
 	 * Changes the first character of each word to uppercase.
@@ -99,6 +72,90 @@ public abstract class StringUtils
 	    }
 
 	    return res.toString().trim();
+	}
+	
+	/**
+	 * Converts a provided comma delimited String to a byte array
+	 * 
+	 * @param delimitedString
+	 * @return
+	 */	
+	public static byte[] getByteArrayFromDelimitedString(String delimitedString)
+	{
+		return getByteArrayFromDelimitedString(delimitedString, DEFAULT_DELIMITER);
+	}
+	
+	/**
+	 * Converts a provided delimited String to a byte array
+	 * 
+	 * @param delimitedString
+	 * @param delimiter
+	 * @return
+	 */	
+	public static byte[] getByteArrayFromDelimitedString(String delimitedString, String delimiter)
+	{
+		String[] stringArray = delimitedString.split(delimiter);
+		byte[] byteArray = new byte[stringArray.length];
+        
+		for (int i = 0; i < stringArray.length; i++)
+			byteArray[i] = Byte.parseByte(stringArray[i].trim());
+		
+        return byteArray;
+	}
+	
+	/**
+	 * Creates an array of bytes representing the provided String
+	 * 
+	 * @param name
+	 * @return
+	 */
+	public static byte[] getByteArrayFromString(String string)
+	{
+		return getByteArrayFromString(string, string.length());
+	}
+
+	/**
+	 * Creates an array of bytes representing the provided String and pads with spaces if needed
+	 * 
+	 * @param string
+	 * @param maxLength
+	 * @return
+	 */
+	public static byte[] getByteArrayFromString(String string, int maxLength) 
+	{
+		return getByteArrayFromString(string, maxLength, (byte) 32);
+	}	
+	
+	/**
+	 * Creates an array of bytes representing the provided String and padding with spaces if needed
+	 * 
+	 * @param string
+	 * @param maxLength
+	 * @return
+	 */
+	public static byte[] getByteArrayFromString(String string, int maxLength, byte paddingCharacter) 
+	{
+	    byte[] byteArray = new byte[maxLength];
+	    byte[] encoded = string.getBytes(java.nio.charset.StandardCharsets.US_ASCII);
+	    
+	    int length = Math.min(encoded.length, maxLength);
+	    System.arraycopy(encoded, 0, byteArray, 0, length);
+
+	    // Remaining bytes are already 0 by default in Java, but we will pad with the provided character
+	    for (int i = length; i < maxLength; i++)
+	        byteArray[i] = paddingCharacter;
+
+	    return byteArray;
+	}
+	
+	
+	public static int parseInt(final String str)
+	{
+		return Optional.ofNullable(str)
+				.map(String::trim)
+				.filter(val -> !val.isEmpty())
+				.map(Integer::parseInt)
+				.orElse(0);
 	}
 
 }
