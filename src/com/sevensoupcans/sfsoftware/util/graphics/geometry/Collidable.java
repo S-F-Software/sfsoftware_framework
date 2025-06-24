@@ -6,10 +6,17 @@ public interface Collidable
 	
 	default public boolean collidingWith(final Collidable collidable)
 	{
-		return (this.getX() < collidable.getX() + collidable.getWidth() &&
-		        this.getX() + this.getWidth() > collidable.getX() &&
-		        this.getY() < collidable.getY() + collidable.getHeight() &&
-		        this.getY() + this.getHeight() > collidable.getY());
+		Quad collisionBox = this.getCollisionBox();
+		
+		return (collisionBox.getX() < collidable.getX() + collidable.getWidth() &&
+				collisionBox.getX() + collisionBox.getWidth() > collidable.getX() &&
+				collisionBox.getY() < collidable.getY() + collidable.getHeight() &&
+				collisionBox.getY() + collisionBox.getHeight() > collidable.getY());
+	}
+	
+	default public Quad getCollisionBox()
+	{
+		return new Quad(this.getX(), this.getY(), this.getWidth(), this.getHeight());
 	}
 	
 	public float getHeight();
