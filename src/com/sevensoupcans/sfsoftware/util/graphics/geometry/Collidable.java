@@ -19,6 +19,26 @@ public interface Collidable
 		return new Quad(this.getX(), this.getY(), this.getWidth(), this.getHeight());
 	}
 	
+	default public float getCollisionBoxBottomOffset()
+	{
+		return getCollisionBoxTopOffset() + getCollisionBox().getHeight();
+	}
+	
+	default public float getCollisionBoxLeftOffset()
+	{
+		return getCollisionBox().getX() - getX();
+	}
+
+	default public float getCollisionBoxRightOffset()
+	{
+		return getCollisionBoxLeftOffset() + getCollisionBox().getWidth();
+	}
+	
+	default public float getCollisionBoxTopOffset()
+	{
+		return getCollisionBox().getY() - getY();
+	}	
+	
 	public float getHeight();
 	public float getX();
 	public float getY();

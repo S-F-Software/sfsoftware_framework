@@ -261,7 +261,7 @@ public class Sprite extends Quad {
 				this.getRed(), this.getGreen(), this.getBlue(), this.getAlpha());
 	}
 	
-	public void setPosition(final float destX, final float destY)
+	public final void setPosition(final float destX, final float destY)
 	{
 		this.setX(destX);
 		this.setY(destY);

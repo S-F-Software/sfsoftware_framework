@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.sevensoupcans.sfsoftware.game.Game;
+import com.sevensoupcans.sfsoftware.game.actor.attributes.Direction;
 import com.sevensoupcans.sfsoftware.util.MathUtils;
 import com.sevensoupcans.sfsoftware.util.Updatable;
 import com.sevensoupcans.sfsoftware.util.graphics.Sprite;
@@ -11,14 +12,14 @@ import com.sevensoupcans.sfsoftware.util.graphics.geometry.Quad;
 import com.sevensoupcans.sfsoftware.util.graphics.particles.Particle;
 import com.sevensoupcans.sfsoftware.util.tile.Tile;
 import com.sevensoupcans.sfsoftware.util.tile.TileMap;
+import com.sevensoupcans.sfsoftware.util.tile.TileMapSpriteIntersection;
 import com.sevensoupcans.sfsoftware.util.tile.pathfinding.AStarPathFinder;
 import com.sevensoupcans.sfsoftware.util.tile.pathfinding.Path;
 import com.sevensoupcans.sfsoftware.util.tile.pathfinding.PathFinder;
 
 public class Actor extends Sprite 
 {
-	protected static int playingFieldX;
-	protected static int playingFieldY;	
+	private static final float DEFAULT_FRICTION = 0.35f;
 	
 	public final static double getAngle(final Actor a, final Actor b)
 	{
@@ -30,16 +31,17 @@ public class Actor extends Sprite
 	{
 		return Cast.getInstance();		
 	}
+	
+	public final static float getDefaultFriction()
+	{
+		return DEFAULT_FRICTION;
+	}
 			
 	public final static void remove(final Actor a)
 	{
 		Cast.getInstance().remove(a);
 	}
-	public static void setPlayingField(final int x, final int y)
-	{
-		playingFieldX = x;
-		playingFieldY = y;
-	}	
+	
 	public static void updateCast()
 	{
 		updateCast(0);
@@ -69,12 +71,14 @@ public class Actor extends Sprite
 	
 	private final int TILE_SIZE;
 	
-	protected float xDirection = 0;	
+	private float acceleration = 0;	
 	
-	protected float yDirection = 0;
-
-	protected int speed = 4;
+	private float friction = DEFAULT_FRICTION;	
 	
+	private float xDirection;	
+	private float yDirection;
+	private int currentSpeed = 4;
+	private int maximumSpeed = 4;	
 	private boolean isWalkable = true;	
 	
 	private int zOrder = 0;
@@ -99,6 +103,19 @@ public class Actor extends Sprite
 		
 		Cast.getInstance().add(this);
 	}
+
+	public void accelerate()
+	{
+		float acceleration = this.getAcceleration();
+		float friction = this.getFriction();
+
+		move(getXDirection(), getYDirection(), getAssociatedGame().getTileMap().getMap());
+
+		acceleration *= friction;
+		if(Math.abs(acceleration) < 0.01f) acceleration = 0;
+		
+		this.setAcceleration(acceleration);	
+	}	
 	
 	protected boolean collidingWithCast(final float dirX, final float dirY)
 	{
@@ -112,7 +129,7 @@ public class Actor extends Sprite
 	protected boolean collidingWithCast(final float dirX, final float dirY, List<Actor> actors)
 	{				
 		// Create a new Quad representing where we INTEND to move
-		Quad temp = new Quad(getX() + (getSpeed() * dirX), getY() + (getSpeed() * dirY), getWidth(), getHeight());
+		Quad temp = new Quad(getX() + (getCurrentSpeed() * dirX), getY() + (getCurrentSpeed() * dirY), getWidth(), getHeight());
 		
 		for(Actor a : actors)
 		{
@@ -184,6 +201,11 @@ public class Actor extends Sprite
 		return MathUtils.getAngle(this.getCenterX(), this.getCenterY(), x, y);
 	}		
 	
+	public final float getAcceleration()
+	{
+		return acceleration;
+	}	
+	
 	public Game getAssociatedGame()
 	{
 		return ASSOCIATED_GAME;
@@ -201,15 +223,20 @@ public class Actor extends Sprite
 	
 	public final int getCurrentTileX()
 	{
-		int xTile = (int) Math.floor((getCenterX() - playingFieldX) / TILE_SIZE);
+		int xTile = (int) Math.floor((getCollisionBox().getCenterX()) / TILE_SIZE);
 		return xTile;
 	}
 	
 	public final int getCurrentTileY()
 	{		
-		int yTile = (int) Math.floor((getCenterY() - playingFieldY) / TILE_SIZE);
+		int yTile = (int) Math.floor((getCollisionBox().getCenterY()) / TILE_SIZE);
 		return yTile;
 	}
+	
+	protected final float getFriction() 
+	{
+		return friction;
+	}	
 
 	protected final Path getPathToActor(final Actor a)
 	{
@@ -235,10 +262,15 @@ public class Actor extends Sprite
 		return pathFinder.getPath(this, xTile, yTile, actorXTile, actorYTile);
 	}	
 	
-	public int getSpeed() 
+	public int getCurrentSpeed() 
 	{
-		return speed;
+		return currentSpeed;
 	}	
+	
+	public int getMaximumSpeed()
+	{
+		return maximumSpeed;
+	}
 	
 	public float getXDirection()
 	{
@@ -267,8 +299,8 @@ public class Actor extends Sprite
 			
 			int xPoint = (int) (getCenterX() + (xDirection * i));
 			int yPoint = (int) (getCenterY() + (yDirection * i));					
-			int xTile = (int) Math.floor((xPoint - playingFieldX) / TILE_SIZE);
-			int yTile = (int) Math.floor((yPoint - playingFieldY) / TILE_SIZE);	
+			int xTile = (int) Math.floor(xPoint / TILE_SIZE);
+			int yTile = (int) Math.floor(yPoint / TILE_SIZE);	
 			
 			if(getAssociatedGame().inDebugMode())
 			{
@@ -306,6 +338,138 @@ public class Actor extends Sprite
 	}	
 	
 	/**
+	 * Tries to move an Actor - checks for collision with a supplied tile map
+	 * 
+	 * @param 	direction
+	 * @param 	tileMap
+	 */	
+	protected boolean move(Direction direction, Tile[][] tileMap)
+	{
+		return move(direction.getXDifference(), direction.getYDifference(), tileMap);
+	}
+	
+	/**
+	 * Tries to move an Actor - checks for collision with a supplied tile map
+	 * 
+	 * @param 	dirX
+	 * @param 	dirY
+	 * @param 	tileMap
+	 */
+	protected boolean move(float dirX, float dirY, Tile[][] tileMap)
+	{			
+		boolean successfulMove = false;
+		
+		// Set the Actor's x and y directions to the provided ones - acceleration contingent on this?
+		this.setDirection(dirX, dirY);		
+		
+		// Speed? Is this the key to all of it?
+		if(this.getAcceleration() != 0) currentSpeed = (Math.round(this.getAcceleration()));
+		
+		// The following prevents moving at faster speeds when moving diagonally
+		double magnitude = Math.sqrt((dirX * dirX) + (dirY * dirY));
+		if(magnitude > 0)
+			this.setDirection(Math.round(dirX / magnitude), Math.round(dirY / magnitude));
+		
+		// Get the center coordinates of the Actor's collision box
+		float x = this.getCollisionBox().getCenterX();
+		float y = this.getCollisionBox().getCenterY();
+		
+		// Determine what tile the Actor is currently on
+		int tileSize = this.getAssociatedGame().getTileSize();			
+		int xTile = (int) Math.floor(x / tileSize);
+		int yTile = (int) Math.floor(y / tileSize);					
+		
+		// If we are not colliding with other Actors, check for tile map collision
+		if(!(collidingWithCast(dirX, dirY)))
+		{
+			// If the Actor is moving vertically, check those tiles as needed.
+			if(dirY != 0)
+			{
+				TileMapSpriteIntersection verticalIntersection = 
+						new TileMapSpriteIntersection(this, tileMap, tileSize, x, (int) (y + Math.round((currentSpeed * dirY))));
+				
+				if(dirY < 0)
+				{
+					if(verticalIntersection.isTopLeftCornerWalkable() 
+							&& verticalIntersection.isTopRightCornerWalkable())
+					{
+						// Actually reposition the Actor						
+						this.setPosition(this.getX(), this.getY() + (dirY * currentSpeed));
+						successfulMove = true;
+					}
+					else
+					{
+						this.snapToTileEdge(xTile, yTile, Direction.UP);
+					}
+				}
+				if(dirY > 0)
+				{
+					if(verticalIntersection.isBottomLeftCornerWalkable() 
+							&& verticalIntersection.isBottomRightCornerWalkable())
+					{
+						// Actually reposition the Actor						
+						this.setPosition(this.getX(), this.getY() + (dirY * currentSpeed));
+						successfulMove = true;
+					}
+					else
+					{						
+						this.snapToTileEdge(xTile, yTile, Direction.DOWN);
+					}
+				}
+			}
+			
+			// If the Actor is moving horizontally, check those tiles as needed.
+			if(dirX != 0)
+			{
+				TileMapSpriteIntersection horizontalIntersection = 
+						new TileMapSpriteIntersection(this, tileMap, tileSize, (int) (x + Math.round((currentSpeed * dirX))), y);					
+						 
+				if(dirX < 0)
+				{
+					if(horizontalIntersection.isTopLeftCornerWalkable() 
+							&& horizontalIntersection.isBottomLeftCornerWalkable())
+					{
+						// Actually reposition the Actor
+						this.setPosition(this.getX() + (dirX * currentSpeed), this.getY());
+						successfulMove = true;
+					}
+					else
+					{						
+						this.snapToTileEdge(xTile, yTile, Direction.LEFT);
+					}
+				}
+				if(dirX > 0)
+				{
+					if(horizontalIntersection.isTopRightCornerWalkable() 
+							&& horizontalIntersection.isBottomRightCornerWalkable())
+					{
+						// Actually reposition the Actor						
+						this.setPosition(this.getX() + (dirX * currentSpeed), this.getY());
+						successfulMove = true;
+					}
+					else
+					{	
+						this.snapToTileEdge(xTile, yTile, Direction.RIGHT);
+					}			
+				}
+			}
+		}
+		
+		if(successfulMove) 
+		{
+			/* 
+			 * Any Actor currently using this method immediately reaches their maximum speed below.
+			 * 
+			 * We may want to consider adding some flexibility for Actors that need to "ramp up" their
+			 * speed with each frame instead of starting at their maximum.
+			 */
+			this.setAcceleration(this.getMaximumSpeed());
+		}		
+		
+		return successfulMove;
+	}	
+	
+	/**
 	 * Moves an Actor without checking any collision
 	 * 
 	 * @param dirX
@@ -313,7 +477,7 @@ public class Actor extends Sprite
 	 */
 	protected boolean moveWithoutCheckingCollision(final float dirX, final float dirY)
 	{
-		super.setPosition(this.getX() + (dirX * speed), this.getY() + (dirY * speed));
+		super.setPosition(this.getX() + (dirX * currentSpeed), this.getY() + (dirY * currentSpeed));
 		return true;
 	}	
 	
@@ -322,9 +486,37 @@ public class Actor extends Sprite
 		Cast.getInstance().remove(this);
 	}
 	
-	public void setSpeed(final int newSpeed)
+	public final void setAcceleration(float a)
+	{		
+		acceleration = a;
+	}	
+	
+	public final void setAcceleration(float a, int x, int y)
 	{
-		speed = newSpeed;
+		acceleration = a;
+		xDirection = x;
+		yDirection = y;
+	}	
+	
+	public void setDirection(Direction direction)
+	{
+		setDirection(direction.getXDifference(), direction.getYDifference());
+	}
+	
+	public void setDirection(final float xDirection, final float yDirection)
+	{
+		this.xDirection = xDirection;
+		this.yDirection = yDirection;
+	}
+	
+	protected final void setFriction(float f)
+	{
+		friction = f;
+	}	
+	
+	public void setMaximumSpeed(final int newSpeed)
+	{
+		maximumSpeed = newSpeed;
 	}	
 	
 	public final void setWalkable(final boolean b)
@@ -344,7 +536,47 @@ public class Actor extends Sprite
 	{
 		snapX();
 		snapY();
-	}	
+	}
+	
+	public final void snapToTileEdge(int tileX, int tileY, Direction direction) 
+	{
+	    int tileSize = this.getAssociatedGame().getTileSize();
+	    
+	    int tileXPos = tileX * tileSize;
+	    int tileYPos = tileY * tileSize;
+	    
+	    switch (direction) 
+	    {
+	    	case UP:
+	        {
+	            float newYPos = tileYPos - (this.getHeight() - this.getCollisionBox().getHeight()); //getCollisionBoxTopOffset();
+	            super.setPosition(getX(), newYPos);
+	            break;
+	        }
+	        case DOWN:
+	        {
+	        	// This assumes that the collision box is always flush with the bottom of the sprite.
+	            float newYPos = tileYPos;
+	            super.setPosition(getX(), newYPos);
+	            break;
+	        }
+	        case LEFT:
+	        {
+	            float newXPos = tileXPos - getCollisionBoxLeftOffset();
+	            super.setPosition(newXPos, getY());
+	            break;
+	        }
+	        case RIGHT:
+	        {
+	            float tileRightX = (tileX + 1) * tileSize;
+	            float newXPos = tileRightX - getCollisionBoxRightOffset();
+	            super.setPosition(newXPos, getY());
+	            break;
+	        }
+	        default:
+	            break;
+	    }
+	}
 	
 	protected final void snapX()
 	{
