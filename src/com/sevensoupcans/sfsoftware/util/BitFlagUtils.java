@@ -3,7 +3,7 @@ package com.sevensoupcans.sfsoftware.util;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BitFlagUtils 
+public abstract class BitFlagUtils 
 {
     public static int toInt(List<Boolean> flags) 
     {
