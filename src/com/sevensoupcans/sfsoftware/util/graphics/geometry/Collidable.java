@@ -43,4 +43,6 @@ public interface Collidable
 	public float getX();
 	public float getY();
 	public float getWidth();
+	public void setCollisionBox(Quad collisionBox);
+	public void setCollisionBox(float x, float y, float width, float height);
 }

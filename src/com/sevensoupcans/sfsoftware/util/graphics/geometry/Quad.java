@@ -2,6 +2,7 @@ package com.sevensoupcans.sfsoftware.util.graphics.geometry;
 
 import org.lwjgl.opengl.GL11;
 
+import com.sevensoupcans.sfsoftware.util.graphics.Graphics;
 import com.sevensoupcans.sfsoftware.util.graphics.RGBA;
 
 public class Quad implements Collidable, Intersectable {
@@ -50,7 +51,7 @@ public class Quad implements Collidable, Intersectable {
 	private float height;	
 	private float width;
 	private float x;	
-	private float y;	
+	private float y;
 	
 	public Quad(float x, float y, float width, float height) 
 	{
@@ -71,6 +72,17 @@ public class Quad implements Collidable, Intersectable {
 	{
 		Quad.draw(this.getX(), this.getY(), this.getWidth(), this.getHeight(), 
 				this.getRed(), this.getGreen(), this.getBlue(), this.getAlpha());
+	}
+	
+	public final void drawOutline()
+	{
+		this.drawOutline(2);
+	}
+	
+	public final void drawOutline(int thickness)
+	{
+		Graphics.drawRect(this.getX(), this.getY(), this.getWidth(), this.getHeight(), 
+				this.getRed(), this.getGreen(), this.getBlue(), this.getAlpha(), thickness);
 	}
 	
 	public final float getAlpha()
@@ -157,6 +169,18 @@ public class Quad implements Collidable, Intersectable {
 		return (this.blue = blue);
 	}
 	
+	@Override
+	public void setCollisionBox(Quad collisionBox) 
+	{
+		// TODO Auto-generated method stub	
+	}
+
+	@Override
+	public void setCollisionBox(float x, float y, float width, float height)
+	{
+		// TODO Auto-generated method stub	
+	}
+	
 	public final float setGreen(float green)
 	{
 		return (this.green = green);
@@ -191,5 +215,16 @@ public class Quad implements Collidable, Intersectable {
 	public void setY(float destY)
 	{
 		y = destY;
+	}
+	
+	@Override
+	public String toString()
+	{
+		return "Quad{" + 
+				"x=" + this.getX() +
+				", y=" + this.getY() +
+				", width=" + this.getWidth() +
+				", height=" + this.getHeight() +
+				'}';
 	}
 }

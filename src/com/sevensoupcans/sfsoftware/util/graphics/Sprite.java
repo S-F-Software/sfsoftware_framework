@@ -91,7 +91,8 @@ public class Sprite extends Quad {
 	
 	// Used in the event the associatedTexture is null
 	private String targetTextureName;
-	private Texture associatedTexture;	
+	private Texture associatedTexture;
+	private Quad collisionBox;
 
 	public Sprite(String textureName, int srcX, int srcY)
 	{
@@ -146,14 +147,6 @@ public class Sprite extends Quad {
 		return this.areCornersOnTexture(tileMap, texture.getName());
 	}
 	
-	/*@Deprecated
-	public boolean collidingWith(final Collidable object) 
-	{	
-		if (object instanceof Quad) return this.collidingWith((Quad) object);
-
-		return false;		
-	}*/
-	
 	@Override
 	public void draw()
 	{
@@ -202,11 +195,25 @@ public class Sprite extends Quad {
 		
 		Sprite.draw(x, y, this.getTextureName(), width, height, srcX, srcY, srcWidth, srcHeight, 
 				red, green, blue, alpha, rotationAngle);
-	}	
+	}
 	
 	public final float getRotationAngle()
 	{
 		return this.rotationAngle;
+	}
+	
+	@Override
+	public Quad getCollisionBox()
+	{
+		return collisionBox != null ?
+				new Quad(collisionBox.getX() + this.getX(), 
+						collisionBox.getY() + this.getY(), 
+						collisionBox.getWidth(), 
+						collisionBox.getHeight()) : 
+				new Quad(this.getX(),
+						this.getY(),
+						this.getWidth(),
+						this.getHeight());
 	}
 	
 	public final int getSrcX()
@@ -259,6 +266,28 @@ public class Sprite extends Quad {
 		this.getTexture().renderAsFrameBufferOverlay(targetFrameBuffer, x, y, width, height, 
 				this.getSrcX(), this.getSrcY(), this.getWidth(), this.getHeight(), 
 				this.getRed(), this.getGreen(), this.getBlue(), this.getAlpha());
+	}
+	
+	/**
+	 * Collision box x, y, width, and height values are relative to the over-arching
+	 * Quad object rather than reflective of real world positioning.
+	 * 
+	 * @param collisionBox
+	 */
+	@Override
+	public final void setCollisionBox(Quad collisionBox)
+	{
+		this.collisionBox = collisionBox;
+	}
+	
+	/**
+	 * Collision box x, y, width, and height values are relative to the over-arching
+	 * Quad object rather than reflective of real world positioning.
+	 */
+	@Override
+	public void setCollisionBox(float x, float y, float width, float height)
+	{
+		this.collisionBox = new Quad(x, y, width, height);	
 	}
 	
 	public final void setPosition(final float destX, final float destY)

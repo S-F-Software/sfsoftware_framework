@@ -129,7 +129,11 @@ public class Actor extends Sprite
 	protected boolean collidingWithCast(final float dirX, final float dirY, List<Actor> actors)
 	{				
 		// Create a new Quad representing where we INTEND to move
-		Quad temp = new Quad(getX() + (getCurrentSpeed() * dirX), getY() + (getCurrentSpeed() * dirY), getWidth(), getHeight());
+		Quad collisionBox = this.getCollisionBox();
+		Quad temp = new Quad(collisionBox.getX() + (getCurrentSpeed() * dirX), 
+				collisionBox.getY() + (getCurrentSpeed() * dirY), 
+				collisionBox.getWidth(), 
+				collisionBox.getHeight());
 		
 		for(Actor a : actors)
 		{
@@ -399,7 +403,7 @@ public class Actor extends Sprite
 					}
 					else
 					{
-						this.snapToTileEdge(xTile, yTile, Direction.UP);
+						this.snapToTileEdge(xTile, yTile - 1, Direction.UP);
 					}
 				}
 				if(dirY > 0)
@@ -413,7 +417,7 @@ public class Actor extends Sprite
 					}
 					else
 					{						
-						this.snapToTileEdge(xTile, yTile, Direction.DOWN);
+						this.snapToTileEdge(xTile, yTile + 1, Direction.DOWN);
 					}
 				}
 			}
@@ -435,7 +439,7 @@ public class Actor extends Sprite
 					}
 					else
 					{						
-						this.snapToTileEdge(xTile, yTile, Direction.LEFT);
+						this.snapToTileEdge(xTile - 1, yTile, Direction.LEFT);
 					}
 				}
 				if(dirX > 0)
@@ -449,7 +453,7 @@ public class Actor extends Sprite
 					}
 					else
 					{	
-						this.snapToTileEdge(xTile, yTile, Direction.RIGHT);
+						this.snapToTileEdge(xTile + 1, yTile, Direction.RIGHT);
 					}			
 				}
 			}
@@ -538,41 +542,75 @@ public class Actor extends Sprite
 		snapY();
 	}
 	
-	public final void snapToTileEdge(int tileX, int tileY, Direction direction) 
+	public final void snapToTileEdge(int tileX, int tileY, Direction direction)
 	{
 	    int tileSize = this.getAssociatedGame().getTileSize();
-	    
-	    int tileXPos = tileX * tileSize;
-	    int tileYPos = tileY * tileSize;
-	    
-	    switch (direction) 
+
+	    float tileLeft   = tileX * tileSize;
+	    float tileTop    = tileY * tileSize;
+	    float tileRight  = tileLeft + tileSize;
+	    float tileBottom = tileTop + tileSize;
+
+	    Quad collisionBox = getCollisionBox();
+
+	    switch(direction)
 	    {
-	    	case UP:
-	        {
-	            float newYPos = tileYPos - (this.getHeight() - this.getCollisionBox().getHeight()); //getCollisionBoxTopOffset();
-	            super.setPosition(getX(), newYPos);
-	            break;
-	        }
-	        case DOWN:
-	        {
-	        	// This assumes that the collision box is always flush with the bottom of the sprite.
-	            float newYPos = tileYPos;
-	            super.setPosition(getX(), newYPos);
-	            break;
-	        }
 	        case LEFT:
 	        {
-	            float newXPos = tileXPos - getCollisionBoxLeftOffset();
-	            super.setPosition(newXPos, getY());
+	            // Our LEFT edge hit the tile RIGHT edge.
+
+	            float correction =
+	                    tileRight - collisionBox.getX();
+
+	            super.setPosition(
+	                    getX() + correction,
+	                    getY());
+
 	            break;
 	        }
+
 	        case RIGHT:
 	        {
-	            float tileRightX = (tileX + 1) * tileSize;
-	            float newXPos = tileRightX - getCollisionBoxRightOffset();
-	            super.setPosition(newXPos, getY());
+	            // Our RIGHT edge hit the tile LEFT edge.
+
+	            float correction =
+	                    tileLeft - collisionBox.getRight();
+
+	            super.setPosition(
+	                    getX() + correction,
+	                    getY());
+
 	            break;
 	        }
+
+	        case UP:
+	        {
+	            // Our TOP edge hit the tile BOTTOM edge.
+
+	            float correction =
+	                    tileBottom - collisionBox.getY();
+
+	            super.setPosition(
+	                    getX(),
+	                    getY() + correction);
+
+	            break;
+	        }
+
+	        case DOWN:
+	        {
+	            // Our BOTTOM edge hit the tile TOP edge.
+
+	            float correction =
+	                    tileTop - collisionBox.getBottom();
+
+	            super.setPosition(
+	                    getX(),
+	                    getY() + correction);
+
+	            break;
+	        }
+
 	        default:
 	            break;
 	    }

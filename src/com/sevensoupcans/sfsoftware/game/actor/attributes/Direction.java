@@ -17,6 +17,20 @@ public enum Direction
 	
 	private static final Direction[] VALUES = values();
 	
+	public static Direction fromVector(int x, int y)
+	{
+	    for (Direction direction : VALUES)
+	    {
+	        if (direction.getXDifference() == x
+	                && direction.getYDifference() == y)
+	        {
+	            return direction;
+	        }
+	    }
+
+	    return null;
+	}
+	
 	public static List<Direction> getAll()
 	{
 		return Arrays.asList(Direction.values());
