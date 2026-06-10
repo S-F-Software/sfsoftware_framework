@@ -1,31 +1,16 @@
 package com.sevensoupcans.sfsoftware.util;
 
-import java.util.ArrayList;
-
 import com.sevensoupcans.sfsoftware.game.Game;
 
 public final class Clock 
 {
 	private final static char SEPARATOR = ':';
-	private final static ArrayList<Clock> clocks = new ArrayList<Clock>();	
 	private static long lastTick;
-	
-	private int clockInterval;
-	private long clockLastTick;
-	private boolean paused = false;
 	
 	static
 	{
 		lastTick = getTime();
 	}
-	
-	public Clock(int interval) 
-	{
-		setInterval(interval);
-		clockLastTick = getTime();
-		clocks.add(this);
-	}
-	
 	public static String getFormattedHoursMinutes(final long time)
 	{		
 		String minutes = Integer.toString((int)((time % 3600) / 60));
@@ -41,7 +26,6 @@ public final class Clock
 		
 		return hours + SEPARATOR + minutes;			
 	}
-	
 	public static String getFormattedTime(final long time)
 	{				
 		String seconds = Integer.toString((int)(time % 60));
@@ -62,6 +46,11 @@ public final class Clock
 		return hours + SEPARATOR + minutes + SEPARATOR + seconds;				
 	}
 	
+	public static double getSinOfTime()
+	{
+		return Math.abs(Math.sin(getTime()));
+	}
+	
 	/**
 	 * Get the time in milliseconds
 	 * 
@@ -70,62 +59,7 @@ public final class Clock
 	public static long getTime() 
 	{
 	    return (org.lwjgl.Sys.getTime() * 1000) / org.lwjgl.Sys.getTimerResolution();
-	}	
-	
-	public static double getSinOfTime()
-	{
-		return Math.abs(Math.sin(getTime()));
 	}
-	
-	public static void togglePausedAll()
-	{
-		for(Clock c: clocks)
-		{
-			if(!(c.togglePaused()))
-			{
-				// If clock was just un-paused, update the last tick.
-				c.clockLastTick = getTime();
-			}
-		}
-	}
-
-	public static void updateAll(final Game g)
-	{
-		for(Clock c: clocks)
-		{
-			c.updateClock(g);
-		}
-	}	
-	
-	public boolean togglePaused()
-	{
-		paused = !(paused);
-		return paused;
-	}
-	
-	public boolean updateClock()
-	{
-		return updateClock(null);
-	}
-	
-	public boolean updateClock(final Game g) 
-	{
-		boolean triggerEvent = false;		
-	    if (getTime() - clockLastTick > getInterval()) 
-	    {	    		    		    		    	
-	    	if(g == null)
-	    	{
-	    		triggerEvent = true;
-	    	}
-	    	else if (!(g.isPaused))
-	    	{
-	    		triggerEvent = true;
-	    	}	
-	    	clockLastTick += getInterval();
-	    }
-	    
-	    return triggerEvent;
-	}	
 	
 	public static void update(final Game g) {
 	    if (getTime() - lastTick > 1000) {
@@ -136,7 +70,24 @@ public final class Clock
 	    	lastTick += 1000; //add one millisecond
 	    }
 	}
-
+	
+	private int clockInterval;
+	
+	private long clockLastTick;	
+	
+	private boolean paused = false;
+	
+	/**
+	 * Creates a new Clock objects
+	 * 
+	 * @param intervalInMilliseconds
+	 */
+	public Clock(int intervalInMilliseconds) 
+	{
+		setInterval(intervalInMilliseconds);
+		reset();
+	}
+	
 	/**
 	 * @return the clockInterval
 	 */
@@ -144,13 +95,51 @@ public final class Clock
 	{
 		return clockInterval;
 	}
-
+	
+	public void reset()
+	{
+	    clockLastTick = getTime();
+	}
+	
 	/**
 	 * @param clockInterval the clockInterval to set
 	 */
 	public void setInterval(final int i) 
 	{
 		clockInterval = i;
+	}	
+	
+	public boolean togglePaused()
+	{
+		paused = !(paused);
+		return paused;
+	}
+
+	public boolean updateClock()
+	{
+		return updateClock(null);
+	}
+
+	public boolean updateClock(final Game g) 
+	{	
+		long now = getTime();
+		
+		if(paused)
+		{
+			clockLastTick = now;
+			return false;
+		}
+		
+	    if (now - clockLastTick >= getInterval()) 
+	    {	    		    		    		    	
+	    	if(g == null || (!(g.isPaused)))
+	    	{
+	    		clockLastTick = now;
+	    		return true;
+	    	}
+	    }
+	    
+	    return false;
 	}	
 	
 	

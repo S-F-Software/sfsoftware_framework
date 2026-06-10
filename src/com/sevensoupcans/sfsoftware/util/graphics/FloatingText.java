@@ -2,6 +2,7 @@ package com.sevensoupcans.sfsoftware.util.graphics;
 
 import java.awt.Font;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import com.sevensoupcans.sfsoftware.util.Clock;
@@ -63,11 +64,23 @@ public final class FloatingText implements Updatable {
 	}
 
 	/**
-	 * Static method to update all of the particles currently in existence.
+	 * Static method to update all floating text currently in existence.
 	 */
 	public static void updateAll()
 	{
-		floatingTexts.forEach(floatingText -> floatingText.update());
+		Iterator<FloatingText> floatingTextIterator = floatingTexts.iterator();
+
+		while(floatingTextIterator.hasNext())
+		{
+			FloatingText floatingText = floatingTextIterator.next();
+
+			floatingText.update();
+
+			if(floatingText.alpha <= 0)
+			{
+				floatingTextIterator.remove();
+			}
+		}
 	}	
 	
 	@Override
@@ -84,12 +97,6 @@ public final class FloatingText implements Updatable {
 		textColor = new RGBA(red, green, blue, alpha);
 		
 		y = y - 1;
-		
-		if(alpha <= 0)
-		{
-			floatingTexts.remove(this);
-		}
-		
 	}
 
 }

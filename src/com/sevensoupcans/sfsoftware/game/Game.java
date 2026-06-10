@@ -1,6 +1,7 @@
 package com.sevensoupcans.sfsoftware.game;
 
 import java.awt.Font;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.prefs.Preferences;
 import java.util.stream.Collectors;
@@ -30,7 +31,8 @@ import com.sevensoupcans.sfsoftware.util.ui.TextConsole;
 
 public abstract class Game 
 {
-	protected final TextConsole console = new TextConsole(this);		
+	private final TextConsole CONSOLE = new TextConsole(this);	
+	private final PrintStream DEFAULT_SYSTEM_OUT = System.out;
 	
 	private GameState gameState = GameState.TITLE_SCREEN;
 	private int screenHeight = 864; //600;
@@ -40,7 +42,7 @@ public abstract class Game
 	private String gameTitle;
 	private ArrayList<GUIElement> guiElements = new ArrayList<GUIElement>();
 	
-	protected boolean debugMode;	
+	private boolean debugMode;	
 	
 	// Default input device will always be keyboard.
 	protected InputDevice inputDevice = new Kboard();
@@ -151,6 +153,11 @@ public abstract class Game
 		return screenWidth;
 	}		
 	
+	public TextConsole getTextConsole()
+	{
+		return CONSOLE;
+	}
+	
 	public int getTileSize()
 	{
 		return Tile.getDefaultTileSize();
@@ -237,6 +244,12 @@ public abstract class Game
 	{
 		this.guiElements.remove(e);
 	}	
+	
+	public final void setDebugMode(boolean debugMode)
+	{
+		this.debugMode = debugMode;
+		System.setOut(debugMode ? DEFAULT_SYSTEM_OUT : CONSOLE.getPrintStream());		
+	}
 	
 	/**
 	 * Set the display mode to be used 

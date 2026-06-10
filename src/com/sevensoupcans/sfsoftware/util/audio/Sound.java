@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Random;
 
 import org.lwjgl.openal.AL;
@@ -24,7 +25,7 @@ public final class Sound
 	private static boolean verbose = false;
 	private static float musicVolume = 1.0f;
 	private static float soundEffectVolume = 1.0f;
-	private static Audio oggStream;	
+	private static Optional<Audio> oggStream = Optional.ofNullable(null);	
 	private static Map<String, Audio> soundLib = new HashMap<String, Audio>();
 	private static Map<String, Audio> musicLib = new HashMap<String, Audio>();		
 	
@@ -50,14 +51,7 @@ public final class Sound
 	
 	public static boolean isMusicPlaying()
 	{
-		if(oggStream != null)
-		{
-			return oggStream.isPlaying();
-		}
-		else
-		{
-			return false;
-		}
+		return oggStream.isPresent() ? oggStream.get().isPlaying() : false;
 	}
 	
 	public static void loadAudio(final Class<?> invokingClass)
@@ -140,12 +134,11 @@ public final class Sound
 		playMusic(songName, false);
 	}
 	public static void playMusic(final String songName, final boolean loopSong)
-	{		
-		oggStream = musicLib.get(songName);
-		if(oggStream != null)
+	{	oggStream = Optional.ofNullable(musicLib.get(songName));
+		if(oggStream.isPresent())
 		{
-			// Gain parameter doesn't seem to work...
-			oggStream.playAsMusic(1.0f, musicVolume, loopSong);
+			// TODO Gain parameter doesn't seem to work...
+			oggStream.get().playAsMusic(1.0f, musicVolume, loopSong);
 		}
 	}
 	
@@ -205,9 +198,7 @@ public final class Sound
 	
 	public static void stopMusic()
 	{
-		if(oggStream != null) {
-			oggStream.stop();
-		}
+		if(oggStream.isPresent()) oggStream.get().stop();
 	}
 	
 	private Audio associatedAudio;

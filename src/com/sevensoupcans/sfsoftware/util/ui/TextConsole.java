@@ -40,8 +40,6 @@ public class TextConsole implements GUIElement, UserInput
 		b = blue;
 		
 		this.game = game;
-		
-		System.setOut(ps);
 	}
 	
 	public TextConsole(Game game)
@@ -202,6 +200,11 @@ public class TextConsole implements GUIElement, UserInput
 		return height;
 	}
 
+	public PrintStream getPrintStream()
+	{
+		return this.ps;
+	}
+	
 	@Override
 	public int getWidth() {
 		return game.getScreenWidth();
