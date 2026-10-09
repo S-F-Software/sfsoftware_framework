@@ -4,19 +4,19 @@ import java.awt.Font;
 import java.util.ArrayList;
 
 import com.sevensoupcans.sfsoftware.game.Game;
-import com.sevensoupcans.sfsoftware.util.graphics.TextureFont;
+import com.sevensoupcans.sfsoftware.util.graphics.font.BitmapFont;
 
 public final class LoadingTextList<E> extends LoggedList<E> 
 {	
 	private static final long serialVersionUID = 1L;
 
 	private Game game;
-	private TextureFont loadingFont;
+	private BitmapFont loadingFont;
 	
 	public LoadingTextList(Game game)
 	{
 		this.game = game;
-		this.loadingFont = new TextureFont(game.getDefaultFontName(), Font.BOLD, 20);
+		this.loadingFont = new BitmapFont(game.getDefaultFontName(), Font.BOLD, 20);
 	}
 	
 	@Override

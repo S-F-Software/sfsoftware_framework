@@ -1,4 +1,4 @@
-package com.sevensoupcans.sfsoftware.util.graphics;
+package com.sevensoupcans.sfsoftware.util.graphics.font;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -9,6 +9,9 @@ import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.sevensoupcans.sfsoftware.util.graphics.RGBA;
+import com.sevensoupcans.sfsoftware.util.graphics.Texture;
+
 /**
  * Original TrueType font implementation for Slick by
  * 
@@ -17,29 +20,25 @@ import java.util.Map;
  * @author Kevin Glass (kevglass)
  * @author Peter Korzuszek (genail)
  */
-public class TextureFont 
+public class BitmapFont 
 {
-	
-	private final static TextureFont DEFAULT_FONT;
+	private final static BitmapFont DEFAULT_FONT;
 	
 	static
 	{
-		DEFAULT_FONT = new TextureFont("Arial", Font.PLAIN, 12);
+		DEFAULT_FONT = new BitmapFont("Arial", Font.PLAIN, 12);
 	}
 	
-	public static TextureFont getDefaultFont()
+	public static BitmapFont getDefaultFont()
 	{
 		return DEFAULT_FONT;
 	}
 	
-	/** The renderer to use for all GL operations */
-	//private static final SGL GL = Renderer.get();
-
 	/** Array that holds necessary information about the font characters */
-	private IntObject[] charArray = new IntObject[256];
+	private Glyph[] charArray = new Glyph[256];
 	
 	/** Map of user defined font characters (Character <-> IntObject) */
-	private Map<Character, IntObject> customChars = new HashMap<Character, IntObject>();
+	private Map<Character, Glyph> customChars = new HashMap<Character, Glyph>();
 
 	/** Boolean flag on whether AntiAliasing is enabled or not */
 	private boolean antiAlias;
@@ -52,12 +51,6 @@ public class TextureFont
 
 	/** Texture used to cache the font 0-255 characters */
 	private Texture fontTexture;
-	
-	/** Default font texture width */
-	private int textureWidth = 512;
-
-	/** Default font texture height */
-	private int textureHeight = 512;
 
 	/** A reference to Java's AWT Font that we create our font texture from */
 	private java.awt.Font font;
@@ -65,25 +58,8 @@ public class TextureFont
 	/** The font metrics for our Java AWT font */
 	private FontMetrics fontMetrics;
 	
-	/**
-	 * This is a special internal class that holds our necessary information for
-	 * the font characters. This includes width, height, and where the character
-	 * is stored on the font texture.
-	 */
-	private class IntObject 
-	{
-		/** Character's width */
-		public int width;
-
-		/** Character's height */
-		public int height;
-
-		/** Character's stored x position */
-		public int storedX;
-
-		/** Character's stored y position */
-		public int storedY;
-	}
+	private int textureWidth = 512;
+	private int textureHeight = 512;
 	
 	/**
 	 * Constructor for the TrueTypeFont class Pass in the preloaded standard
@@ -97,7 +73,7 @@ public class TextureFont
 	 * @param additionalChars
 	 *            Characters of font that will be used in addition of first 256 (by unicode).
 	 */
-	public TextureFont(java.awt.Font font, boolean antiAlias, char[] additionalChars) 
+	public BitmapFont(java.awt.Font font, boolean antiAlias, char[] additionalChars) 
 	{
 		
 		this.font = font;
@@ -107,18 +83,95 @@ public class TextureFont
 		createSet( additionalChars );
 	}
 	
-	public TextureFont(String name, int style, int size)
+	public BitmapFont(String name, int style, int size)
 	{
 		this(new Font(name, style, size), true);
 	}	
 	
-	public TextureFont(String name, int style, int size, boolean antiAlias)
+	public BitmapFont(String name, int style, int size, boolean antiAlias)
 	{
 		this(new Font(name, style, size), antiAlias);
 	}		
 	
-	public TextureFont(Font font, boolean antiAlias) {
+	public BitmapFont(Font font, boolean antiAlias) {
 		this(font, antiAlias, null);
+	}
+	
+	/**
+	 * Create and store the font
+	 * 
+	 * @param customCharsArray Characters that should be also added to the cache.
+	 */
+	private void createSet(final char[] customCharsArray ) {
+		// If there are custom chars then I expand the font texture twice		
+		if	(customCharsArray != null && customCharsArray.length > 0) {
+			textureWidth *= 2;
+		}
+		
+		// In any case this should be done in other way. Texture with size 512x512
+		// can maintain only 256 characters with resolution of 32x32. The texture
+		// size should be calculated dynamicaly by looking at character sizes. 
+		
+		//try {
+			
+			BufferedImage imgTemp = new BufferedImage(textureWidth, textureHeight, BufferedImage.TYPE_INT_ARGB);
+			Graphics2D g = (Graphics2D) imgTemp.getGraphics();
+
+			g.setColor(new Color(255,255,255,1));
+			g.fillRect(0,0,textureWidth,textureHeight);
+			
+			int rowHeight = 0;
+			int positionX = 0;
+			int positionY = 0;
+			
+			int customCharsLength = ( customCharsArray != null ) ? customCharsArray.length : 0; 
+
+			for (int i = 0; i < 256 + customCharsLength; i++) {
+				
+				// get 0-255 characters and then custom characters
+				char ch = ( i < 256 ) ? (char) i : customCharsArray[i-256];
+				
+				BufferedImage fontImage = getFontImage(ch);
+
+				int width = fontImage.getWidth();
+				int height = fontImage.getHeight();
+
+				if (positionX + width >= textureWidth) {
+					positionX = 0;
+					positionY += rowHeight;
+					rowHeight = 0;
+				}
+				
+				Glyph newIntObject = new Glyph(width, height, positionX, positionY);
+
+				if (newIntObject.getHeight() > fontHeight) {
+					fontHeight = newIntObject.getHeight();
+				}
+
+				if (newIntObject.getHeight() > rowHeight) {
+					rowHeight = newIntObject.getHeight();
+				}
+
+				// Draw it here
+				g.drawImage(fontImage, positionX, positionY, null);
+
+				positionX += newIntObject.getWidth();
+
+				if( i < 256 ) { // standard characters
+					charArray[i] = newIntObject;
+				} else { // custom characters
+					customChars.put( Character.valueOf(ch), newIntObject );
+				}
+
+				fontImage = null;
+			}
+
+			fontTexture = new Texture(imgTemp);			
+
+		/*} catch (IOException e) {
+			System.err.println("Failed to create font.");
+			e.printStackTrace();
+		}*/
 	}
 	
 	/**
@@ -171,85 +224,7 @@ public class TextureFont
 
 	}
 
-	/**
-	 * Create and store the font
-	 * 
-	 * @param customCharsArray Characters that should be also added to the cache.
-	 */
-	private void createSet(final char[] customCharsArray ) {
-		// If there are custom chars then I expand the font texture twice		
-		if	(customCharsArray != null && customCharsArray.length > 0) {
-			textureWidth *= 2;
-		}
-		
-		// In any case this should be done in other way. Texture with size 512x512
-		// can maintain only 256 characters with resolution of 32x32. The texture
-		// size should be calculated dynamicaly by looking at character sizes. 
-		
-		//try {
-			
-			BufferedImage imgTemp = new BufferedImage(textureWidth, textureHeight, BufferedImage.TYPE_INT_ARGB);
-			Graphics2D g = (Graphics2D) imgTemp.getGraphics();
 
-			g.setColor(new Color(255,255,255,1));
-			g.fillRect(0,0,textureWidth,textureHeight);
-			
-			int rowHeight = 0;
-			int positionX = 0;
-			int positionY = 0;
-			
-			int customCharsLength = ( customCharsArray != null ) ? customCharsArray.length : 0; 
-
-			for (int i = 0; i < 256 + customCharsLength; i++) {
-				
-				// get 0-255 characters and then custom characters
-				char ch = ( i < 256 ) ? (char) i : customCharsArray[i-256];
-				
-				BufferedImage fontImage = getFontImage(ch);
-
-				IntObject newIntObject = new IntObject();
-
-				newIntObject.width = fontImage.getWidth();
-				newIntObject.height = fontImage.getHeight();
-
-				if (positionX + newIntObject.width >= textureWidth) {
-					positionX = 0;
-					positionY += rowHeight;
-					rowHeight = 0;
-				}
-
-				newIntObject.storedX = positionX;
-				newIntObject.storedY = positionY;
-
-				if (newIntObject.height > fontHeight) {
-					fontHeight = newIntObject.height;
-				}
-
-				if (newIntObject.height > rowHeight) {
-					rowHeight = newIntObject.height;
-				}
-
-				// Draw it here
-				g.drawImage(fontImage, positionX, positionY, null);
-
-				positionX += newIntObject.width;
-
-				if( i < 256 ) { // standard characters
-					charArray[i] = newIntObject;
-				} else { // custom characters
-					customChars.put( new Character( ch ), newIntObject );
-				}
-
-				fontImage = null;
-			}
-
-			fontTexture = new Texture(imgTemp);			
-
-		/*} catch (IOException e) {
-			System.err.println("Failed to create font.");
-			e.printStackTrace();
-		}*/
-	}
 	
 	/**
 	 * Get the width of a given String
@@ -262,18 +237,18 @@ public class TextureFont
 	public int getWidth(final String whatchars) 
 	{
 		int totalwidth = 0;
-		IntObject intObject = null;
+		Glyph intObject = null;
 		int currentChar = 0;
 		for (int i = 0; i < whatchars.length(); i++) {
 			currentChar = whatchars.charAt(i);
 			if (currentChar < 256) {
 				intObject = charArray[currentChar];
 			} else {
-				intObject = customChars.get( new Character( (char) currentChar ) );
+				intObject = customChars.get( Character.valueOf( (char) currentChar ) );
 			}
 			
 			if( intObject != null )
-				totalwidth += intObject.width;
+				totalwidth += intObject.getWidth();
 		}
 		return totalwidth;
 	}
@@ -331,26 +306,30 @@ public class TextureFont
 	public void drawString(final float x, final float y, final String whatchars, final RGBA color, 
 			final int startIndex, final int endIndex) {
 
-		IntObject intObject = null;
+		Glyph intObject = null;
 		int charCurrent;
 
 		int totalwidth = 0;
-		for (int i = 0; i < whatchars.length(); i++) {
+		for (int i = 0; i < whatchars.length(); i++) 
+		{
 			charCurrent = whatchars.charAt(i);
-			if (charCurrent < 256) {
+			if (charCurrent < 256) 
+			{
 				intObject = charArray[charCurrent];
-			} else {
-				intObject = customChars.get( new Character( (char) charCurrent ) );
+			} 
+			else 
+			{
+				intObject = customChars.get( Character.valueOf( (char) charCurrent ) );
 			} 
 			
 			if( intObject != null ) {
 				if ((i >= startIndex) || (i <= endIndex)) 
 				{
-					Texture.drawTexture((x + totalwidth), y, fontTexture, intObject.width, intObject.height, 
-							intObject.storedX, intObject.storedY, intObject.width, intObject.height, 
+					Texture.drawTexture((x + totalwidth), y, fontTexture, intObject.getWidth(), intObject.getHeight(), 
+							intObject.getStoredX(), intObject.getStoredY(), intObject.getWidth(), intObject.getHeight(), 
 							color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha(), 0);
 				}
-				totalwidth += intObject.width;
+				totalwidth += intObject.getWidth();
 			}
 		}
 

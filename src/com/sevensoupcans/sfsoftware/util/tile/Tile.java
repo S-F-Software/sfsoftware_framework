@@ -51,6 +51,27 @@ public class Tile extends Sprite {
 		return false;
 	}
 	
+	/**
+	 * Based on a tile's position, returns the assumed x index.
+	 * 
+	 * @return
+	 */
+	public final int getTileMapXPos()
+	{
+		return (int) Math.floor((getCollisionBox().getCenterX()) / getWidth());
+	}
+
+	
+	/**
+	 * Based on a tile's position, returns the assumed y index.
+	 * 
+	 * @return
+	 */
+	public final int getTileMapYPos()
+	{		
+		return (int) Math.floor((getCollisionBox().getCenterY()) / getHeight());
+	}
+	
 	public final boolean isWalkable()
 	{
 		return walkable;

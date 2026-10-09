@@ -263,6 +263,26 @@ public class TileMap {
 		return id;
 	}	
 	
+	public final Tile[] getFlattenedMap()
+	{
+		int width = this.map.length;
+		int height = this.map[0].length;
+
+		Tile[] flattenedMap = new Tile[width * height];
+
+		int index = 0;
+
+		for(int y = 0; y < height; y++)
+		{
+			for(int x = 0; x < width; x++)
+			{
+				flattenedMap[index++] = this.map[x][y];
+			}
+		}
+
+		return flattenedMap;
+	}
+	
 	public final Tile[][] getMap()
 	{
 		return this.map;

@@ -1,5 +1,6 @@
 package com.sevensoupcans.sfsoftware.util;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
 public abstract class StringUtils 
@@ -136,7 +137,7 @@ public abstract class StringUtils
 	public static byte[] getByteArrayFromString(String string, int maxLength, byte paddingCharacter) 
 	{
 	    byte[] byteArray = new byte[maxLength];
-	    byte[] encoded = string.getBytes(java.nio.charset.StandardCharsets.US_ASCII);
+	    byte[] encoded = string.getBytes(StandardCharsets.UTF_8);
 	    
 	    int length = Math.min(encoded.length, maxLength);
 	    System.arraycopy(encoded, 0, byteArray, 0, length);
@@ -147,7 +148,17 @@ public abstract class StringUtils
 
 	    return byteArray;
 	}
-	
+
+	/**
+	 * Determines if the provided String is a numerical value
+	 * 
+	 * @param s
+	 * @return A boolean indicating if s is numeric
+	 */
+	public static boolean isNumeric(String s)
+	{  
+	    return s.matches("[-+]?\\d*\\.?\\d+");  
+	}
 	
 	public static int parseInt(final String str)
 	{

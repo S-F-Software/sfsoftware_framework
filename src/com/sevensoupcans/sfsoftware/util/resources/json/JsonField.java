@@ -2,9 +2,14 @@ package com.sevensoupcans.sfsoftware.util.resources.json;
 
 public final class JsonField 
 {
-
 	private final Object value;
 	private final JsonFieldType type;
+	
+	public JsonField(Boolean value)
+	{
+		this.value = value;
+		this.type = JsonFieldType.BOOLEAN;
+	}
 	
 	public JsonField(String value) 
 	{
@@ -16,6 +21,11 @@ public final class JsonField
 	{
 		this.value = value;
 		this.type = JsonFieldType.INTEGER;
+	}
+	
+	public boolean asBoolean()
+	{
+		return (Boolean) this.value;
 	}
 	
 	public String asString()

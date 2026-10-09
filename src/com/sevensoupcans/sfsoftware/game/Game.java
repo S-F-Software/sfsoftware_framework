@@ -17,7 +17,7 @@ import com.sevensoupcans.sfsoftware.util.audio.Sound;
 import com.sevensoupcans.sfsoftware.util.graphics.Graphics;
 import com.sevensoupcans.sfsoftware.util.graphics.RGBA;
 import com.sevensoupcans.sfsoftware.util.graphics.Sprite;
-import com.sevensoupcans.sfsoftware.util.graphics.TextureFont;
+import com.sevensoupcans.sfsoftware.util.graphics.font.BitmapFont;
 import com.sevensoupcans.sfsoftware.util.graphics.geometry.Quad;
 import com.sevensoupcans.sfsoftware.util.input.InputDevice;
 import com.sevensoupcans.sfsoftware.util.input.Kboard;
@@ -56,7 +56,7 @@ public abstract class Game
 	public abstract int getPlayingFieldHeight();
 	public abstract int getPlayingFieldWidth();
 	public abstract String getDefaultFontName();
-	public abstract TextureFont getGameFont();
+	public abstract BitmapFont getGameFont();
 	public abstract TileMap getTileMap();
 	protected abstract void start();	
 	
@@ -71,7 +71,7 @@ public abstract class Game
 	 * @param loadingDetails An ArrayList containing loading detail text
 	 * @param font The TextureFont used to handle drawing the detail text
 	 */
-	public final void drawLoadingScreen(final ArrayList<String> loadingDetails, final TextureFont font)
+	public final void drawLoadingScreen(final ArrayList<String> loadingDetails, final BitmapFont font)
 	{
 		Graphics.clear();
 		
@@ -212,7 +212,7 @@ public abstract class Game
 		
 		if(loadResources)
 		{
-			TextureFont loadingFont = new TextureFont("Verdana", Font.BOLD, 20);	
+			BitmapFont loadingFont = new BitmapFont("Verdana", Font.BOLD, 20);	
 			LoggedList<String> loadingText = new LoggedList<String>();
 			
 			loadingText.add("Loading " + getGameTitle() + "...");

@@ -24,16 +24,21 @@ public class FormattedJsonObject
 
             try
             {
-                switch(type)
-                {
-                    case STRING:
-                        values.put(key, json.getString(key));
-                        break;
-
-                    case INTEGER:
-                        values.put(key, json.getInt(key));
-                        break;
-                }
+            	if(json.keySet().contains(key))
+            	{
+	                switch(type)
+	                {
+	                	case BOOLEAN:
+	                		values.put(key, json.getBoolean(key));
+	                		break;
+	                    case STRING:
+	                        values.put(key, json.getString(key));
+	                        break;
+	                    case INTEGER:
+	                        values.put(key, json.getInt(key));
+	                        break;
+	                }
+            	}
             }
             catch(Exception e)
             {
@@ -47,6 +52,16 @@ public class FormattedJsonObject
         return values.get(key);
     }
 
+    public boolean getBoolean(String key)
+    {
+    	return getBoolean(key, false);
+    }
+    
+    public boolean getBoolean(String key, boolean defaultValue)
+    {
+    	return values.get(key) != null ? (Boolean) values.get(key) : defaultValue;
+    }
+    
     public int getInteger(String key)
     {
         return getInteger(key, 0);

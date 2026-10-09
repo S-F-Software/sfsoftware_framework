@@ -7,10 +7,11 @@ import java.util.List;
 
 import com.sevensoupcans.sfsoftware.util.Clock;
 import com.sevensoupcans.sfsoftware.util.Updatable;
+import com.sevensoupcans.sfsoftware.util.graphics.font.BitmapFont;
 
 public final class FloatingText implements Updatable {
 	private static List<FloatingText> floatingTexts = new ArrayList<FloatingText>();
-	private static final TextureFont FLOATING_TEXT_FONT;
+	private static final BitmapFont FLOATING_TEXT_FONT;
 	private Clock fadeClock = new Clock(10);
 	private double fadeOut;
 	
@@ -27,7 +28,7 @@ public final class FloatingText implements Updatable {
 	static
 	{
 		Font awtFont = new Font("Verdana", Font.BOLD, 11);
-		FLOATING_TEXT_FONT = new TextureFont(awtFont, true);		
+		FLOATING_TEXT_FONT = new BitmapFont(awtFont, true);		
 	}
 	
 	public FloatingText(float destX, float destY, String destText, float r, float g, float b, float a)

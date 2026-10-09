@@ -93,7 +93,7 @@ public class Actor extends Sprite
 		super(destX, destY, texture);		
 		
 		this.ASSOCIATED_GAME = associatedGame;
-		this.TILE_SIZE = associatedGame.getTileMap().getTileSize();
+		this.TILE_SIZE = associatedGame.getTileSize();
 		
 		this.setHeight(destHeight);
 		this.setWidth(destWidth);

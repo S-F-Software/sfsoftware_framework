@@ -2,7 +2,7 @@ package com.sevensoupcans.sfsoftware.util.ui;
 
 import com.sevensoupcans.sfsoftware.util.graphics.Graphics;
 import com.sevensoupcans.sfsoftware.util.graphics.RGBA;
-import com.sevensoupcans.sfsoftware.util.graphics.TextureFont;
+import com.sevensoupcans.sfsoftware.util.graphics.font.BitmapFont;
 import com.sevensoupcans.sfsoftware.util.graphics.geometry.Quad;
 
 public class FillBar implements GUIElement {
@@ -19,7 +19,7 @@ public class FillBar implements GUIElement {
 	private final RGBA fillColorBottom;
 	private final RGBA emptyColorTop;
 	private final RGBA emptyColorBottom;	
-	private final TextureFont font;
+	private final BitmapFont font;
 	
 	private int x;
 	private int y;
@@ -28,13 +28,13 @@ public class FillBar implements GUIElement {
 	private String statusText;
 	
 	public FillBar(int maxValue, int initialValue, RGBA fillColorTop, RGBA fillColorBottom, 
-			RGBA emptyColorTop, RGBA emptyColorBottom, TextureFont font)
+			RGBA emptyColorTop, RGBA emptyColorBottom, BitmapFont font)
 	{
 		this(0, 0, 64, 16, maxValue, initialValue, fillColorTop, fillColorBottom, emptyColorTop, emptyColorBottom, font);
 	}
 	
 	public FillBar(int x, int y, int width, int height, int maxValue, int initialValue, RGBA fillColorTop, RGBA fillColorBottom, 
-			RGBA emptyColorTop, RGBA emptyColorBottom, TextureFont font)
+			RGBA emptyColorTop, RGBA emptyColorBottom, BitmapFont font)
 	{
 		this.x = x;
 		this.y = y;

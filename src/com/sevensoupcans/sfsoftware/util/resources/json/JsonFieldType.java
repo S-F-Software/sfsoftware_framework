@@ -2,6 +2,7 @@ package com.sevensoupcans.sfsoftware.util.resources.json;
 
 public enum JsonFieldType 
 {
-	STRING,
-	INTEGER;
+	BOOLEAN,	
+	INTEGER,
+	STRING;
 }

@@ -9,7 +9,7 @@ import org.lwjgl.input.Keyboard;
 import com.sevensoupcans.sfsoftware.game.Game;
 import com.sevensoupcans.sfsoftware.util.Clock;
 import com.sevensoupcans.sfsoftware.util.graphics.RGBA;
-import com.sevensoupcans.sfsoftware.util.graphics.TextureFont;
+import com.sevensoupcans.sfsoftware.util.graphics.font.BitmapFont;
 import com.sevensoupcans.sfsoftware.util.graphics.geometry.Quad;
 import com.sevensoupcans.sfsoftware.util.input.InputDevice;
 import com.sevensoupcans.sfsoftware.util.input.Kboard;
@@ -183,16 +183,16 @@ public class TextConsole implements GUIElement, UserInput
 		
 		
 		String[] lines = getLines(cursorY, getLines().length >= 15 ? 15 : getLines().length - 1);
-		int lineHeight = TextureFont.getDefaultFont().getHeight();
+		int lineHeight = BitmapFont.getDefaultFont().getHeight();
 		for(int i = 0; i < lines.length; i ++)
 		{
-			TextureFont.getDefaultFont().drawString(5, yPos + (lineHeight * i), lines[i]);
+			BitmapFont.getDefaultFont().drawString(5, yPos + (lineHeight * i), lines[i]);
 		}
 		
 		if(blinkCursorClock.updateClock()) blinkCursor = !(blinkCursor);
 		
 		String userInputDisplayString = blinkCursor ? "> " + userInputField.toString() + "_" : "> " + userInputField.toString();
-		TextureFont.getDefaultFont().drawString(5, (yPos + 235) - TextureFont.getDefaultFont().getHeight(), userInputDisplayString);			
+		BitmapFont.getDefaultFont().drawString(5, (yPos + 235) - BitmapFont.getDefaultFont().getHeight(), userInputDisplayString);			
 	}
 
 	@Override
