@@ -125,29 +125,40 @@ public class Actor extends Sprite
 		
 		return collidingWithCast(dirX, dirY, actors);
 	}
-	
+
 	protected boolean collidingWithCast(final float dirX, final float dirY, List<Actor> actors)
-	{				
-		// Create a new Quad representing where we INTEND to move
-		Quad collisionBox = this.getCollisionBox();
-		Quad temp = new Quad(collisionBox.getX() + (getCurrentSpeed() * dirX), 
-				collisionBox.getY() + (getCurrentSpeed() * dirY), 
-				collisionBox.getWidth(), 
-				collisionBox.getHeight());
-		
+	{
+		Quad currentBox = this.getCollisionBox();
+
+		Quad proposedBox = new Quad(
+			currentBox.getX() + (getCurrentSpeed() * dirX),
+			currentBox.getY() + (getCurrentSpeed() * dirY),
+			currentBox.getWidth(),
+			currentBox.getHeight());
+
 		for(Actor a : actors)
 		{
-			if(a.collidingWith(temp))
-			{
-				// Call the collisionResult method to trigger any expected behavior
-				a.collisionResult(this);
-				// Return true - this will prevent movement from happening.
-				return true;				
-			}
+			Quad otherBox = a.getCollisionBox();
+
+			float currentOverlap = currentBox.getOverlapArea(otherBox);
+			float proposedOverlap = proposedBox.getOverlapArea(otherBox);
+
+			// No overlap at the proposed position: movement is permitted.
+			if(proposedOverlap == 0)
+				continue;
+
+			// If already overlapping, permit movement that reduces the overlap.
+			if(currentOverlap > 0 && proposedOverlap < currentOverlap)
+				continue;
+
+			// Otherwise, reject the movement and notify the other Actor.
+			a.collisionResult(this);
+			return true;
 		}
+
 		return false;
 	}
-
+	
 	protected int distanceToActor(final Actor a)
 	{
 		float x1 = a.getCenterX(); // (a.getX() + (a.getWidth() / 2));

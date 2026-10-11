@@ -126,6 +126,13 @@ public class Quad implements Collidable, Intersectable {
 		return x;
 	}
 	
+	public final float getOverlapArea(final Quad other)
+	{
+		float overlapWidth = Math.max(0, Math.min(this.getRight(), other.getRight()) - Math.max(this.getLeft(), other.getLeft()));
+		float overlapHeight = Math.max(0, Math.min(this.getBottom(), other.getBottom()) - Math.max(this.getTop(), other.getTop()));
+		return overlapWidth * overlapHeight;
+	}
+	
 	public final float getRed()
 	{
 		return this.red;
