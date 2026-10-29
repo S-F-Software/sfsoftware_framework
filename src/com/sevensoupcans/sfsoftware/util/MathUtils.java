@@ -90,7 +90,12 @@ public abstract class MathUtils
 	public static boolean inRange(int value, int min, int max) 
 	{
 		return (value>= min) && (value<= max);
-	}		
+	}
+	
+	public static boolean isOutsideRange(int value, int min, int max, boolean inclusive)
+	{
+		return inclusive ? value < min || value > max : value <= min || value >= max;
+	}
 	
 	public static float randomFloat()
 	{

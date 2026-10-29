@@ -1,5 +1,6 @@
 package com.sevensoupcans.sfsoftware.util.tile;
 
+import com.sevensoupcans.sfsoftware.game.actor.Actor;
 import com.sevensoupcans.sfsoftware.util.MathUtils;
 import com.sevensoupcans.sfsoftware.util.graphics.Sprite;
 import com.sevensoupcans.sfsoftware.util.graphics.geometry.Quad;
@@ -40,6 +41,42 @@ public final class TileMapSpriteIntersection
 		this.bottomLeft = tiles[leftX][downY].isWalkable();
 		this.topRight = tiles[rightX][upY].isWalkable();
 		this.bottomRight = tiles[rightX][downY].isWalkable();
+	}
+	
+	/**
+	 * A constructor that accepts an Actor instead of just a Sprite. This allows the
+	 * intersection to take into consideration the isWalkable(Actor) overload which
+	 * can be overridden to check against a target Tile using specific Actor considerations.
+	 * 	
+	 * @param actor
+	 * @param tiles
+	 * @param tileSize
+	 * @param collisionBoxDestCenterX
+	 * @param collisionBoxDestCenterY
+	 */
+	public TileMapSpriteIntersection(Actor actor, Tile[][] tiles, int tileSize, 
+			float collisionBoxDestCenterX, float collisionBoxDestCenterY) 
+	{
+		Quad box = actor.getCollisionBox();
+		
+		float halfWidth = box.getWidth() / 2f;
+		float halfHeight = box.getHeight() / 2f;
+
+		// These are the actual bounds of the moved collision box
+		float left = collisionBoxDestCenterX - halfWidth;
+		float right = collisionBoxDestCenterX + halfWidth - 1; // "-1" for inclusive bound
+		float top = collisionBoxDestCenterY - halfHeight;
+		float bottom = collisionBoxDestCenterY + halfHeight - 1;
+
+		int leftX = MathUtils.ensureRange((int) Math.floor(left / tileSize), 0, tiles.length - 1);
+		int rightX = MathUtils.ensureRange((int) Math.floor(right / tileSize), 0, tiles.length - 1);
+		int upY = MathUtils.ensureRange((int) Math.floor(top / tileSize), 0, tiles[0].length - 1);
+		int downY = MathUtils.ensureRange((int) Math.floor(bottom / tileSize), 0, tiles[0].length - 1);
+
+		this.topLeft = tiles[leftX][upY].isWalkable(actor);
+		this.bottomLeft = tiles[leftX][downY].isWalkable(actor);
+		this.topRight = tiles[rightX][upY].isWalkable();
+		this.bottomRight = tiles[rightX][downY].isWalkable(actor);
 	}
 		
 	public boolean isBottomLeftCornerWalkable()

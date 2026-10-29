@@ -30,13 +30,13 @@ public class Quad implements Collidable, Intersectable {
 	    GL11.glBegin(GL11.GL_QUADS);
 	    
 		GL11.glColor4f(topLeft.getRed(), topLeft.getGreen(), topLeft.getBlue(), topLeft.getAlpha());
-	    GL11.glVertex2f(x,y);
+	    GL11.glVertex2f(x, y);
 		GL11.glColor4f(topRight.getRed(), topRight.getGreen(), topRight.getBlue(), topRight.getAlpha());
-		GL11.glVertex2f(x+width,y);
+		GL11.glVertex2f(x + width, y);
 		GL11.glColor4f(bottomRight.getRed(), bottomRight.getGreen(), bottomRight.getBlue(), bottomRight.getAlpha());
-		GL11.glVertex2f(x+width,y+height);
+		GL11.glVertex2f(x + width, y + height);
 		GL11.glColor4f(bottomLeft.getRed(), bottomLeft.getGreen(), bottomLeft.getBlue(), bottomLeft.getAlpha());
-		GL11.glVertex2f(x,y+height);
+		GL11.glVertex2f(x, y + height);
 	    
 		GL11.glEnd();
 		

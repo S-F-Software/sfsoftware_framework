@@ -1,9 +1,11 @@
 package com.sevensoupcans.sfsoftware.util.tile;
 
+import com.sevensoupcans.sfsoftware.game.actor.Actor;
 import com.sevensoupcans.sfsoftware.util.graphics.Sprite;
 import com.sevensoupcans.sfsoftware.util.graphics.Texture;
 
-public class Tile extends Sprite {
+public class Tile extends Sprite 
+{
 
 	private static final int DEFAULT_TILE_SIZE = 40;
 	
@@ -75,7 +77,20 @@ public class Tile extends Sprite {
 	public final boolean isWalkable()
 	{
 		return walkable;
-	}	
+	}
+	
+	/**
+	 * A method that can be overridden to take into consideration the Actor instance
+	 * attempting to move into a specific tile (E.G. some actors can move through
+	 * tiles other actors could not).
+	 * 
+	 * @param actor
+	 * @return
+	 */
+	public boolean isWalkable(Actor actor)
+	{
+		return this.isWalkable();
+	}
 	
 	@Override
 	public final Texture setTexture(final String newTex)

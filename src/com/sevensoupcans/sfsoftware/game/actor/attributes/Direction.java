@@ -13,7 +13,8 @@ public enum Direction
 	LEFT_UP("LeftUp", -1, -1, 99),
 	RIGHT_UP("RightUp", 1, -1, 99),
 	LEFT_DOWN("LeftDown", 1, 1, 99),
-	RIGHT_DOWN("RightDown", 1, 1, 99);
+	RIGHT_DOWN("RightDown", 1, 1, 99),
+	NULL("NullDirection", 0, 0, 99);
 	
 	private static final Direction[] VALUES = values();
 	
@@ -27,8 +28,8 @@ public enum Direction
 	            return direction;
 	        }
 	    }
-
-	    return null;
+	    // Added a literal NULL value to the enum to prevent exceptions.
+	    return NULL;
 	}
 	
 	public static List<Direction> getAll()

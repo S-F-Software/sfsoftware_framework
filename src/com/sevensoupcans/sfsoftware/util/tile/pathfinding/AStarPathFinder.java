@@ -81,7 +81,8 @@ public class AStarPathFinder implements PathFinder {
 		boolean invalid = (x < 0) || (y < 0) || (x >= tileMap.getWidth()) || (y >= tileMap.getHeight());		
 		if ((!invalid) && ((sx != x) || (sy != y))) 
 		{
-			invalid = !(tileMap.getMap()[x][y].isWalkable());
+			// TODO Need to verify this behaves as expected - passing the actor to isWalkable.
+			invalid = !(tileMap.getMap()[x][y].isWalkable(actor));
 		}
 		return !invalid;
 	}	

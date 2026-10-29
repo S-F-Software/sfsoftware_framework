@@ -1,12 +1,11 @@
 package com.sevensoupcans.sfsoftware.util.graphics;
 
-import org.lwjgl.opengl.GL11;
-
 import com.sevensoupcans.sfsoftware.game.Game;
 import com.sevensoupcans.sfsoftware.util.graphics.geometry.Quad;
 import com.sevensoupcans.sfsoftware.util.tile.TileMap;
 
-public class Sprite extends Quad {
+public class Sprite extends Quad 
+{
 	
 	public static void draw(final float x, final float y, final String textureName, final float width, 
 			final float height, final int srcX, final int srcY, final float srcWidth, final float srcHeight)
@@ -19,7 +18,7 @@ public class Sprite extends Quad {
 			final float red, final float green, final float blue, final float alpha) 
 	{
 		draw(x, y, textureName, width, height, srcX, srcY, srcWidth, srcHeight, 
-				red, green, blue, alpha, 0);
+				red, green, blue, alpha, 0, null);
 	}
 	
 	/**
@@ -27,43 +26,45 @@ public class Sprite extends Quad {
 	 */
 	public static void draw(final float x, final float y, final String textureName, final float width, 
 			final float height, final int srcX, final int srcY, final float srcWidth, final float srcHeight, 
-			final float red, final float green, final float blue, final float alpha, final float angle) 
+			final float red, final float green, final float blue, final float alpha, final float angle, 
+			final ColorPalette colorPalette) 
 	{		
 		// If the provided texture string is null or empty, don't try to draw it. :)
 		if(textureName != null && !(textureName.equals("")))
 		{			
-			Texture temp = Texture.getTexture(textureName);
-			if(temp == null)
-			{				
-		        // enable alpha blending
-		        GL11.glEnable(GL11.GL_BLEND);
-		        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-				
-				GL11.glColor4f(red, green, blue, alpha);
-				GL11.glBegin(GL11.GL_QUADS);
-					// Top Left
-					GL11.glVertex2f(x,y);
-					// Top Right					
-					GL11.glVertex2f(x + width, y);
-					// Bottom Right
-					GL11.glVertex2f(x + width,y + height);
-					// Bottom Left
-					GL11.glVertex2f(x,y + height);
-				GL11.glEnd();
-			}
-			else
+			Texture texture = Texture.getTexture(textureName);
+			if(texture == null)
 			{
-				draw(x, y, temp, width, height, srcX, srcY, srcWidth, srcHeight, red, green, blue, alpha, angle);
-			}			
+				// The requested Texture existed, but was null - draw a colored quad in its place.
+				Quad.draw(x, y, width, height, red, green, blue, alpha);
+				return;
+			}
+
+			draw(x, y, texture, width, height, srcX, srcY, srcWidth, srcHeight, red, green, blue, alpha, angle, colorPalette);
 		}
 	}
 	
 	public static void draw(final float x, final float y, final Texture texture, final float width, final float height, 
 			final int srcX, final int srcY, final float srcWidth, final float srcHeight, final float red, final float green, 
-			final float blue, final float alpha, final float angle)
+			final float blue, final float alpha, final float angle, final ColorPalette colorPalette)
 	{
-		Texture.drawTexture(x, y, texture, width, height, srcX, srcY, srcWidth, srcHeight, 
-				red, green, blue, alpha, angle);
+		// Check if the provided palette matches the Texture's default color palette
+		if(colorPalette == null || colorPalette.equals(texture.getColorPalette()))
+		{
+			// It does match - just draw the Texture as-is.
+			Texture.drawTexture(x, y, texture, width, height, srcX, srcY, srcWidth, srcHeight, 
+					red, green, blue, alpha, angle);
+		}
+		else
+		{
+			String textureName = texture.getName() + "_" + colorPalette.hashCode();
+			Texture recolored = Texture.getTexture(textureName);
+			if(recolored == null)
+				recolored = new Texture(texture, textureName, texture.getColorPalette().getOverrides(colorPalette));
+
+			Texture.drawTexture(x, y, recolored, width, height, srcX, srcY, srcWidth, srcHeight, 
+					red, green, blue, alpha, angle);
+		}
 	}	
 	
 	public static String getTextureName(final Sprite sprite)
@@ -93,6 +94,8 @@ public class Sprite extends Quad {
 	private String targetTextureName;
 	private Texture associatedTexture;
 	private Quad collisionBox;
+	
+	private ColorPalette colorPalette;
 
 	public Sprite(String textureName, int srcX, int srcY)
 	{
@@ -115,7 +118,8 @@ public class Sprite extends Quad {
 		
 		if(Texture.isTextureLoaded(textureName))
 		{
-			this.associatedTexture = Texture.getTexture(textureName);	
+			this.associatedTexture = Texture.getTexture(textureName);
+			this.colorPalette = new ColorPalette(this.associatedTexture.getColorPalette());
 		}
 		else if(!(textureName.equals("")))
 		{
@@ -193,8 +197,21 @@ public class Sprite extends Quad {
 	{	
 		if(!(this.visible)) return;
 		
-		Sprite.draw(x, y, this.getTextureName(), width, height, srcX, srcY, srcWidth, srcHeight, 
-				red, green, blue, alpha, rotationAngle);
+		String textureName = this.getTextureName();
+		if(textureName != null && !(textureName.equals("")))
+		{			
+			Texture temp = Texture.getTexture(textureName);
+			if(temp == null)
+			{
+				// The requested Texture existed, but was null - draw a colored quad in its place.
+				Quad.draw(x, y, width, height, red, green, blue, alpha);
+			}
+			else
+			{
+				Sprite.draw(x, y, temp, width, height, srcX, srcY, srcWidth, srcHeight, 
+						red, green, blue, alpha, rotationAngle, colorPalette);
+			}			
+		}
 	}
 	
 	public final float getRotationAngle()
@@ -214,6 +231,11 @@ public class Sprite extends Quad {
 						this.getY(),
 						this.getWidth(),
 						this.getHeight());
+	}
+	
+	public final ColorPalette getColorPalette()
+	{
+		return colorPalette;
 	}
 	
 	public final int getSrcX()
@@ -266,6 +288,21 @@ public class Sprite extends Quad {
 		this.getTexture().renderAsFrameBufferOverlay(targetFrameBuffer, x, y, width, height, 
 				this.getSrcX(), this.getSrcY(), this.getWidth(), this.getHeight(), 
 				this.getRed(), this.getGreen(), this.getBlue(), this.getAlpha());
+	}
+	
+	/**
+	 * Resets the Sprite's color palette to the default texture color palette.
+	 */
+	public final void resetColorPaletteFromAssociatedTexture()
+	{
+		if(associatedTexture == null) return;
+		
+		// Manually destroy any palette-swap Textures created; a bit nasty, but necessary.
+		String textureName = associatedTexture.getName() + "_" + colorPalette.hashCode();
+		if(Texture.getTexture(textureName) != null)
+			Texture.getTexture(textureName).destroy();		
+		
+		colorPalette = new ColorPalette(associatedTexture.getColorPalette());
 	}
 	
 	/**

@@ -34,7 +34,10 @@ public abstract class StringUtils
 		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < byteArray.length; i++) 
 		{
-		    sb.append(byteArray[i]);
+			// Required to correctly show values > 127.
+			int unsignedValue = byteArray[i] & 0xFF;
+		    sb.append(unsignedValue);
+		    
 		    if (i < byteArray.length - 1) {
 		        sb.append(delimiter);
 		    }
@@ -99,8 +102,13 @@ public abstract class StringUtils
 		byte[] byteArray = new byte[stringArray.length];
         
 		for (int i = 0; i < stringArray.length; i++)
-			byteArray[i] = Byte.parseByte(stringArray[i].trim());
-		
+		{
+			int value = Integer.parseInt(stringArray[i].trim());
+			if(MathUtils.isOutsideRange(value, 0, 255, true))
+				throw new IllegalArgumentException("Provided byte value out of range: " + value);
+
+			byteArray[i] = (byte) value;
+		}
         return byteArray;
 	}
 	

@@ -17,7 +17,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 
 import javax.imageio.ImageIO;
@@ -45,7 +45,7 @@ public final class Texture
 	private final RGBA TRANSPARENT_COLOR;
 	private final RGBA MASK_COLOR;
 	
-	private final HashSet<RGBA> colorPalette = new HashSet<RGBA>();
+	private final ColorPalette colorPalette = new ColorPalette();
 	
 	/**
 	 * Draw a quad with the image on it - accept float for rotation!
@@ -143,6 +143,44 @@ public final class Texture
 		this(image, null, null, path);
 	}	
 	
+	/**
+	 * Creates a new Texture that is a variant of an existing Texture with a
+	 * list to handle a modified color palette.
+	 * 
+	 * @param texture The base Texture to use
+	 * @param textureName An explicit name for the new Texture
+	 * @param colorPaletteOverrides A List of color palette overrides
+	 */
+	public Texture(Texture texture, String textureName, List<ColorPaletteOverride> colorPaletteOverrides)
+	{		
+		BUFFERED_IMAGE = texture.BUFFERED_IMAGE;
+		MASK_COLOR = texture.MASK_COLOR;
+		TRANSPARENT_COLOR = texture.TRANSPARENT_COLOR;
+		PIXEL_DATA = texture.PIXEL_DATA;
+		INT_BUFFER_SRC = texture.INT_BUFFER_SRC;
+		ORIGIN_PATH = texture.ORIGIN_PATH;
+		TEXTURE_NAME = textureName;
+		WIDTH = texture.WIDTH;
+		HEIGHT = texture.HEIGHT;		
+		TEXTURE_ID = glGenTextures();
+		
+		glBindTexture(GL_TEXTURE_2D, TEXTURE_ID);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);		
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, WIDTH, HEIGHT, 0, GL_RGBA, 
+				GL_UNSIGNED_BYTE, BufferUtils.createIntBuffer(INT_BUFFER_SRC));
+		glBindTexture(GL_TEXTURE_2D, 0);
+		
+		RGBA[] originalColors = colorPaletteOverrides.stream()
+				.map(ColorPaletteOverride::getOriginalColor).toArray(RGBA[]::new);
+		RGBA[] replacementColors = colorPaletteOverrides.stream()
+				.map(ColorPaletteOverride::getReplacementColor).toArray(RGBA[]::new);
+
+		this.swapColors(originalColors, replacementColors);
+		
+		loadedTextures.put(TEXTURE_NAME, this);
+	}
+	
 	public Texture(BufferedImage image, RGBA transparentColor, RGBA maskColor, String path)
 	{
 		ORIGIN_PATH = path;
@@ -167,7 +205,10 @@ public final class Texture
 			int b = (PIXEL_DATA[i] & 0xff);
 			
 			// If a "transparent color" is being used, we check the current pixel to determine if it matches and set alpha to 0.
-			if(TRANSPARENT_COLOR != null && r == TRANSPARENT_COLOR.getRedInt() && g == TRANSPARENT_COLOR.getGreenInt() && b == TRANSPARENT_COLOR.getBlueInt())
+			if(TRANSPARENT_COLOR != null 
+					&& r == TRANSPARENT_COLOR.getRedInt() 
+					&& g == TRANSPARENT_COLOR.getGreenInt() 
+					&& b == TRANSPARENT_COLOR.getBlueInt())
 			{
 				a = 0;				
 			}
@@ -181,7 +222,7 @@ public final class Texture
 			INT_BUFFER_SRC[i] = a << 24 | b << 16 | g << 8 | r;
 			
 			// Add the current R, G, B value to the texture's color palette HashSet
-			colorPalette.add(new RGBA(r, g, b));			
+			if(a > 0) colorPalette.add(new RGBA(r, g, b));			
 		}
 		
 		TEXTURE_ID = glGenTextures();
@@ -203,12 +244,16 @@ public final class Texture
 	{
 		// Alpha is not stored in the color palette - a color value where alpha is 1.0f should be provided.
 		if(rgba.getAlpha() < 1.0f) return false;		
-		return (colorPalette.contains(rgba));
+		return (colorPalette.hasColor(rgba));
 	}
 	
-	public Texture destroy()
+	public void destroy()
 	{
-		return loadedTextures.remove(this.getName());
+		// Remove the texture from the loadedTextures collection.
+		loadedTextures.remove(this.getName());
+		
+		// Actually delete the texture from the OpenGL context.
+		GL11.glDeleteTextures(TEXTURE_ID);
 	}
 	
 	public void draw(final float x, final float y, final int width, final int height, final int srcX, final int srcY, 
@@ -257,9 +302,9 @@ public final class Texture
 		return colorPalette.size();
 	}
 	
-	public RGBA[] getColorPalette()
+	public ColorPalette getColorPalette()
 	{
-		return colorPalette.toArray(new RGBA[colorPalette.size()]);
+		return colorPalette;
 	}
 	
 	public int getHeight() 
@@ -351,7 +396,8 @@ public final class Texture
 		Graphics.setBuffer(fbo);		
 	}
 	
-	public void swapColors(final RGBA[] colorsToReplace, final RGBA[] replacementColors)
+	@Deprecated
+	private void swapColors(final RGBA[] colorsToReplace, final RGBA[] replacementColors)
 	{
 		if(colorsToReplace.length != replacementColors.length) return;
 		
@@ -393,7 +439,7 @@ public final class Texture
 			INT_BUFFER_SRC[i] = a << 24 | b << 16 | g << 8 | r;
 			
 			// Add the current R, G, B value to the texture's color palette HashSet
-			colorPalette.add(new RGBA(r, g, b));			
+			if(a > 0) colorPalette.add(new RGBA(r, g, b));			
 		}
 				
 		glBindTexture(GL_TEXTURE_2D, TEXTURE_ID);
@@ -403,7 +449,8 @@ public final class Texture
 		glBindTexture(GL_TEXTURE_2D, 0);		
 	}
 	
-	public void swapColor(final RGBA colorToReplace, final RGBA replacementColor)
+	@Deprecated
+	private void swapColor(final RGBA colorToReplace, final RGBA replacementColor)
 	{
 		RGBA[] colorsToReplace = { colorToReplace };
 		RGBA[] replacementColors = { replacementColor };
