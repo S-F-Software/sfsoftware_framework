@@ -128,4 +128,8 @@ public abstract class MathUtils
 	{
 		random = new Random(seed);
 	}
+	
+	private MathUtils()
+	{
+	}
 }

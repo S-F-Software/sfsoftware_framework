@@ -7,7 +7,6 @@ import java.nio.IntBuffer;
 
 public abstract class BufferUtils 
 {	
-	
 	public static ByteBuffer createByteBuffer(final byte[] array)
 	{
 		ByteBuffer result = ByteBuffer.allocateDirect(array.length).order(ByteOrder.nativeOrder());
@@ -27,5 +26,9 @@ public abstract class BufferUtils
 		IntBuffer result = ByteBuffer.allocateDirect(array.length << 2).order(ByteOrder.nativeOrder()).asIntBuffer();
 		result.put(array).flip();
 		return result;
+	}
+	
+	private BufferUtils()
+	{
 	}
 }

@@ -176,5 +176,8 @@ public abstract class StringUtils
 				.map(Integer::parseInt)
 				.orElse(0);
 	}
-
+	
+	private StringUtils()
+	{
+	}
 }

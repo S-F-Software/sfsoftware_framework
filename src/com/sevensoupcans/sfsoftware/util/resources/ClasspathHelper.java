@@ -171,4 +171,8 @@ public abstract class ClasspathHelper
             return FileVisitResult.CONTINUE;
         }
     }
+    
+    private ClasspathHelper()
+    {
+    }
 }

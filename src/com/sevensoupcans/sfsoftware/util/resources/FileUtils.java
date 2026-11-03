@@ -99,4 +99,8 @@ public abstract class FileUtils
     	    //exception handling left as an exercise for the reader
     	}    	
     }
+    
+    private FileUtils()
+    {
+    }
 }

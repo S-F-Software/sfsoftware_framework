@@ -460,5 +460,8 @@ public abstract class Graphics
 	{
 		Display.setVSyncEnabled(vsync);
 	}
-
+	
+	private Graphics()
+	{
+	}
 }
