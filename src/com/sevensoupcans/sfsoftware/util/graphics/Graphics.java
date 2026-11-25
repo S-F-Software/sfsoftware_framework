@@ -1,5 +1,6 @@
 package com.sevensoupcans.sfsoftware.util.graphics;
 
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
@@ -7,18 +8,20 @@ import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.Map;
 
+import javax.imageio.ImageIO;
+
 import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.GLContext;
-import org.newdawn.slick.opengl.PNGDecoder;
-import org.newdawn.slick.util.ResourceLoader;
 
+import com.sevensoupcans.sfsoftware.util.BufferUtils;
 import com.sevensoupcans.sfsoftware.util.graphics.geometry.Quad;
 import com.sevensoupcans.sfsoftware.util.resources.ClasspathHelper;
 import com.sevensoupcans.sfsoftware.util.resources.FileUtils;
+import com.sevensoupcans.sfsoftware.util.resources.ResourceUtils;
 
 public abstract class Graphics 
 {
@@ -312,20 +315,37 @@ public abstract class Graphics
 		
 		return Texture.getLoadedTextures();
 	}
-	
-	/*	Thanks for this one goes out to
-	/	http://www.thehelper.net/threads/java-lwjgl-opengl-display-seticon-question.156958/
-	*/
+
 	private static ByteBuffer loadIcon(final String path) throws IOException 
 	{
-        InputStream inputStream = ResourceLoader.getResourceAsStream(path); //new FileInputStream(path);
+        InputStream inputStream = ResourceUtils.getResourceAsStream(path, Graphics.class);
         try 
         {
-            PNGDecoder decoder = new PNGDecoder(inputStream);
-            ByteBuffer bytebuf = ByteBuffer.allocateDirect(decoder.getWidth()*decoder.getHeight()*4);
-            decoder.decode(bytebuf, decoder.getWidth()*4, PNGDecoder.Format.RGBA);
-            bytebuf.flip();
-            return bytebuf;
+            BufferedImage image = ImageIO.read(inputStream);
+            if (image == null)
+            {
+                throw new IOException("Unsupported or invalid image: " + path);
+            }
+            
+            int width = image.getWidth();
+            int height = image.getHeight();
+            
+            ByteBuffer pixels = BufferUtils.createByteBuffer(width * height * 4);
+
+            for (int y = 0; y < height; y++)
+            {
+                for (int x = 0; x < width; x++)
+                {
+                    int argb = image.getRGB(x, y);
+                    pixels.put((byte) ((argb >>> 16) & 0xFF));
+                    pixels.put((byte) ((argb >>> 8) & 0xFF));
+                    pixels.put((byte) (argb & 0xFF));
+                    pixels.put((byte) ((argb >>> 24) & 0xFF));
+                }
+            }
+
+            pixels.flip();
+            return pixels;
         } 
         finally 
         {

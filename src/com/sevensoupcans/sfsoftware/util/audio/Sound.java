@@ -14,10 +14,10 @@ import org.lwjgl.openal.AL;
 import org.newdawn.slick.openal.Audio;
 import org.newdawn.slick.openal.AudioLoader;
 import org.newdawn.slick.openal.SoundStore;
-import org.newdawn.slick.util.ResourceLoader;
 
 import com.sevensoupcans.sfsoftware.util.resources.ClasspathHelper;
 import com.sevensoupcans.sfsoftware.util.resources.FileUtils;
+import com.sevensoupcans.sfsoftware.util.resources.ResourceUtils;
 
 public final class Sound 
 {
@@ -73,7 +73,7 @@ public final class Sound
 			   .filter(f -> f.toLowerCase().endsWith(".ogg")).forEach(file -> {
 				   try 
 				   {
-					   Audio temp = AudioLoader.getStreamingAudio("OGG", ResourceLoader.getResource("res/audio/" + file));
+					   Audio temp = AudioLoader.getStreamingAudio("OGG", ResourceUtils.getResource("res/audio/" + file, Sound.class));
 					   musicLib.put(file.substring(0, file.indexOf(".")), temp);
 					   if(verbose)
 					   {
@@ -102,7 +102,7 @@ public final class Sound
 		   .filter(f -> f.toLowerCase().endsWith(".wav")).forEach(file -> {
 			   try
 			   {
-				   Audio temp = AudioLoader.getAudio("WAV", ResourceLoader.getResourceAsStream("res/audio/" + file));
+				   Audio temp = AudioLoader.getAudio("WAV", ResourceUtils.getResourceAsStream("res/audio/" + file, Sound.class));
 				   soundLib.put(file.substring(0, file.indexOf(".")), temp);
 				   if(verbose)
 				   {

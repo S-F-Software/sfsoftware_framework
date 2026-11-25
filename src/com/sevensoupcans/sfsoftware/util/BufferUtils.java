@@ -14,6 +14,11 @@ public abstract class BufferUtils
 		return result;
 	}
 	
+	public static ByteBuffer createByteBuffer(int size)
+	{
+		return ByteBuffer.allocateDirect(size);
+	}
+	
 	public static FloatBuffer createFloatBuffer(final float[] array)
 	{
 		FloatBuffer result = ByteBuffer.allocateDirect(array.length << 2).order(ByteOrder.nativeOrder()).asFloatBuffer();
