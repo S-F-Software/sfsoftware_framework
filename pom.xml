@@ -17,36 +17,74 @@
         <maven.compiler.target>1.8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <!-- Existing LWJGL version -->
-        <lwjgl.version>2.9.1</lwjgl.version>
+        <lwjgl.version>3.4.3</lwjgl.version>
+        <!-- Linux remains the configured native target, matching the prior POM. -->
+        <lwjgl.natives>natives-linux</lwjgl.natives>
     </properties>
 
     <dependencies>
-
-        <!-- LWJGL 2 Core -->
+        <!-- LWJGL 3 core and native runtime -->
         <dependency>
-            <groupId>org.lwjgl.lwjgl</groupId>
+            <groupId>org.lwjgl</groupId>
             <artifactId>lwjgl</artifactId>
             <version>${lwjgl.version}</version>
         </dependency>
-
-        <!-- LWJGL 2 Native Libraries (Linux development target) -->
         <dependency>
-            <groupId>org.lwjgl.lwjgl</groupId>
-            <artifactId>lwjgl-platform</artifactId>
+            <groupId>org.lwjgl</groupId>
+            <artifactId>lwjgl</artifactId>
             <version>${lwjgl.version}</version>
-            <classifier>natives-linux</classifier>
+            <classifier>${lwjgl.natives}</classifier>
             <scope>runtime</scope>
         </dependency>
 
-        <!-- JInput -->
+        <!-- GLFW windowing, keyboard, mouse, and joystick support -->
         <dependency>
-            <groupId>net.java.jinput</groupId>
-            <artifactId>jinput</artifactId>
-            <version>2.0.5</version>
+            <groupId>org.lwjgl</groupId>
+            <artifactId>lwjgl-glfw</artifactId>
+            <version>${lwjgl.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.lwjgl</groupId>
+            <artifactId>lwjgl-glfw</artifactId>
+            <version>${lwjgl.version}</version>
+            <classifier>${lwjgl.natives}</classifier>
+            <scope>runtime</scope>
         </dependency>
 
-        <!-- JOrbis -->
+        <!-- OpenGL bindings; OpenGL itself is provided by the system driver. -->
+        <dependency>
+            <groupId>org.lwjgl</groupId>
+            <artifactId>lwjgl-opengl</artifactId>
+            <version>${lwjgl.version}</version>
+        </dependency>
+
+        <!-- OpenAL playback and STB Vorbis decoding for the planned audio migration -->
+        <dependency>
+            <groupId>org.lwjgl</groupId>
+            <artifactId>lwjgl-openal</artifactId>
+            <version>${lwjgl.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.lwjgl</groupId>
+            <artifactId>lwjgl-openal</artifactId>
+            <version>${lwjgl.version}</version>
+            <classifier>${lwjgl.natives}</classifier>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.lwjgl</groupId>
+            <artifactId>lwjgl-stb</artifactId>
+            <version>${lwjgl.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.lwjgl</groupId>
+            <artifactId>lwjgl-stb</artifactId>
+            <version>${lwjgl.version}</version>
+            <classifier>${lwjgl.natives}</classifier>
+            <scope>runtime</scope>
+        </dependency>
+
+        <!-- Retained while the existing Slick/JOrbis audio implementation remains in use. -->
         <dependency>
             <groupId>com.googlecode.soundlibs</groupId>
             <artifactId>jorbis</artifactId>
@@ -59,18 +97,9 @@
             <artifactId>json</artifactId>
             <version>20180813</version>
         </dependency>
-
-        <!--
-            slick-util.jar is intentionally not included yet.
-
-            We need to identify its exact origin/version and determine
-            whether a Maven artifact can replace it without introducing
-            unwanted Slick2D or LWJGL version changes.
-        -->
     </dependencies>
 
     <build>
-
         <!-- Preserve the existing Eclipse source folder -->
         <sourceDirectory>src</sourceDirectory>
 
@@ -78,8 +107,6 @@
         <outputDirectory>bin</outputDirectory>
 
         <plugins>
-
-            <!-- Explicitly use a Java 8-compatible compiler configuration -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -89,38 +116,58 @@
                     <target>1.8</target>
                 </configuration>
             </plugin>
-            
-			<plugin>
-			    <groupId>org.apache.maven.plugins</groupId>
-			    <artifactId>maven-dependency-plugin</artifactId>
-			    <version>3.8.1</version>
-			    <executions>
-			        <execution>
-			            <id>unpack-lwjgl-natives</id>
-			            <phase>process-resources</phase>
-			            <goals>
-			                <goal>unpack</goal>
-			            </goals>
-			            <configuration>
-			                <artifactItems>
-			                    <artifactItem>
-			                        <groupId>org.lwjgl.lwjgl</groupId>
-			                        <artifactId>lwjgl-platform</artifactId>
-			                        <version>${lwjgl.version}</version>
-			                        <classifier>natives-linux</classifier>
-			                        <type>jar</type>
-			                        <outputDirectory>
-			                            ${project.build.directory}/natives
-			                        </outputDirectory>
-			                    </artifactItem>
-			                </artifactItems>
-			            </configuration>
-			        </execution>
-			    </executions>
-			</plugin>
 
+            <!-- Unpack the selected LWJGL 3 platform natives for local execution. -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>3.8.1</version>
+                <executions>
+                    <execution>
+                        <id>unpack-lwjgl-natives</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.lwjgl</groupId>
+                                    <artifactId>lwjgl</artifactId>
+                                    <version>${lwjgl.version}</version>
+                                    <classifier>${lwjgl.natives}</classifier>
+                                    <type>jar</type>
+                                    <outputDirectory>${project.build.directory}/natives</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.lwjgl</groupId>
+                                    <artifactId>lwjgl-glfw</artifactId>
+                                    <version>${lwjgl.version}</version>
+                                    <classifier>${lwjgl.natives}</classifier>
+                                    <type>jar</type>
+                                    <outputDirectory>${project.build.directory}/natives</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.lwjgl</groupId>
+                                    <artifactId>lwjgl-openal</artifactId>
+                                    <version>${lwjgl.version}</version>
+                                    <classifier>${lwjgl.natives}</classifier>
+                                    <type>jar</type>
+                                    <outputDirectory>${project.build.directory}/natives</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.lwjgl</groupId>
+                                    <artifactId>lwjgl-stb</artifactId>
+                                    <version>${lwjgl.version}</version>
+                                    <classifier>${lwjgl.natives}</classifier>
+                                    <type>jar</type>
+                                    <outputDirectory>${project.build.directory}/natives</outputDirectory>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
-
     </build>
-
 </project>
