@@ -3,6 +3,7 @@ package com.sevensoupcans.sfsoftware.util.graphics;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class ColorPalette
 {
@@ -78,7 +79,7 @@ public class ColorPalette
 				.filter(entry -> entry.getValue() != other.colors.getOrDefault(entry.getKey(), entry.getKey()))
 				.map(entry -> new ColorPaletteOverride(fromRGB(entry.getKey()), 
 						fromRGB(other.colors.getOrDefault(entry.getKey(), entry.getKey()))))
-				.toList();
+				.collect(Collectors.toList());
 	}
     
     public boolean hasColor(int sourceRGB)
