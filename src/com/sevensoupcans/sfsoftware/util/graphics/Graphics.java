@@ -18,11 +18,11 @@ import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.system.MemoryStack;
-import org.newdawn.slick.util.ResourceLoader;
 
 import com.sevensoupcans.sfsoftware.util.graphics.geometry.Quad;
 import com.sevensoupcans.sfsoftware.util.resources.ClasspathHelper;
 import com.sevensoupcans.sfsoftware.util.resources.FileUtils;
+import com.sevensoupcans.sfsoftware.util.resources.ResourceUtils;
 
 /** Window, display and legacy immediate-mode rendering helpers. */
 public abstract class Graphics {
@@ -207,7 +207,7 @@ public abstract class Graphics {
 
     /** Decode an icon as tightly packed RGBA pixels for GLFW. */
     private static ByteBuffer loadIcon(String path) throws IOException {
-        try (InputStream inputStream = ResourceLoader.getResourceAsStream(path)) {
+        try (InputStream inputStream = ResourceUtils.getResourceAsStream(path, Graphics.class)) {
             BufferedImage image = ImageIO.read(inputStream);
             if (image == null) throw new IOException("Unsupported or invalid image: " + path);
 

@@ -14,231 +14,109 @@ import org.lwjgl.openal.AL;
 import org.newdawn.slick.openal.Audio;
 import org.newdawn.slick.openal.AudioLoader;
 import org.newdawn.slick.openal.SoundStore;
-import org.newdawn.slick.util.ResourceLoader;
 
 import com.sevensoupcans.sfsoftware.util.resources.ClasspathHelper;
 import com.sevensoupcans.sfsoftware.util.resources.FileUtils;
+import com.sevensoupcans.sfsoftware.util.resources.ResourceUtils;
 
-public final class Sound 
-{
-	public static final String AUDIO_PATH = "res/audio";
-	private static boolean verbose = false;
-	private static float musicVolume = 1.0f;
-	private static float soundEffectVolume = 1.0f;
-	private static Optional<Audio> oggStream = Optional.ofNullable(null);	
-	private static Map<String, Audio> soundLib = new HashMap<String, Audio>();
-	private static Map<String, Audio> musicLib = new HashMap<String, Audio>();		
-	
-	public static void destroy()
-	{
-		AL.destroy();
-	}
-	
-	public static float getMusicVolume()
-	{
-		return musicVolume;
-	}
-	
-	public static Audio getSoundEffect(final String soundName)
-	{
-		return soundLib.get(soundName);
-	}
-	
-	public static float getSoundEffectVolume()
-	{
-		return soundEffectVolume;
-	}
-	
-	public static boolean isMusicPlaying()
-	{
-		return oggStream.isPresent() ? oggStream.get().isPlaying() : false;
-	}
-	
-	public static void loadAudio(final Class<?> invokingClass)
-	{
-		loadAudio(AUDIO_PATH, invokingClass);
-	}
-	
-	public static void loadAudio(final String audioResourcePath, final Class<?> invokingClass)
-	{		
-		loadOggs(audioResourcePath, invokingClass);
-		loadWaves(audioResourcePath, invokingClass);
-	}
-	
-	public static Map<String, Audio> loadOggs(final String audioResourcePath, final Class<?> invokingClass)
-	{
-		try 
-		{
-		   Arrays.stream(FileUtils.getResourceListing(audioResourcePath, "ogg", ClasspathHelper.getClasspath(invokingClass)))
-			   .filter(f -> f.toLowerCase().endsWith(".ogg")).forEach(file -> {
-				   try 
-				   {
-					   Audio temp = AudioLoader.getStreamingAudio("OGG", ResourceLoader.getResource("res/audio/" + file));
-					   musicLib.put(file.substring(0, file.indexOf(".")), temp);
-					   if(verbose)
-					   {
-						   System.out.println("Loaded music file '" + file.substring(0, file.indexOf(".")) + "'");
-					   }					   
-				   }
-				   catch(IOException e)
-				   {
-					   System.out.println("Failed to load music file '" + file.substring(0, file.indexOf(".")) + "'");
-				   }
-			   });
-		} 
-		catch (IOException | URISyntaxException e) 
-		{
-			e.printStackTrace();
-		}	
-		
-		return soundLib;
-	}
-	
-	public static Map<String, Audio> loadWaves(final String audioResourcePath, final Class<?> invokingClass)
-	{
-		try 
-		{			  	  
-		   Arrays.stream(FileUtils.getResourceListing(audioResourcePath, "wav", ClasspathHelper.getClasspath(invokingClass)))
-		   .filter(f -> f.toLowerCase().endsWith(".wav")).forEach(file -> {
-			   try
-			   {
-				   Audio temp = AudioLoader.getAudio("WAV", ResourceLoader.getResourceAsStream("res/audio/" + file));
-				   soundLib.put(file.substring(0, file.indexOf(".")), temp);
-				   if(verbose)
-				   {
-					   System.out.println("Loaded sound '" + file.substring(0, file.indexOf(".")) + "'");
-				   }
-			   }
-			   catch(IOException e)
-			   {
-				   System.out.println("Failed to load sound file '" + file.substring(0, file.indexOf(".")) + "'");
-			   }
-		   });				          
-		} 
-		catch (IOException | URISyntaxException e) 
-		{
-			e.printStackTrace();
-		}	
-		
-		return soundLib;
-	}	
-	
-	public static String playMusic()
-	{
-		String[] s = {};
-		return playMusic(s);
-	}
-	
-	public static void playMusic(final String songName)
-	{
-		playMusic(songName, false);
-	}
-	public static void playMusic(final String songName, final boolean loopSong)
-	{	oggStream = Optional.ofNullable(musicLib.get(songName));
-		if(oggStream.isPresent())
-		{
-			// TODO Gain parameter doesn't seem to work...
-			oggStream.get().playAsMusic(1.0f, musicVolume, loopSong);
-		}
-	}
-	
-	public static String playMusic(final String[] doNotPlayList)
-	{		
-		// Play a random song not contained on the "do not play" list!
-		List<String> keysAsArray = new ArrayList<String>(musicLib.keySet());
-		if(doNotPlayList != null)
-		{				
-			keysAsArray.removeAll(Arrays.asList(doNotPlayList));
-		}
-		Random r = new Random();
-		String songName = keysAsArray.get(r.nextInt(keysAsArray.size()));		
-		
-		playMusic(songName, true);
-		
-		return songName;
-	}
-	
-	public static Sound playSound(final String soundName)
-	{		
-		return playSound(soundName, 1.0f);
-	}
-	
-	public static Sound playSound(final String soundName, final float pitch)
-	{
-		Audio temp = soundLib.get(soundName);
-		if(temp != null)
-		{
-			temp.playAsSoundEffect(pitch, soundEffectVolume, false);
-			return new Sound(temp, soundName);
-		}
-		
-		return null;
-	}
-	
-	public static void pollSoundStore(final int i)
-	{
-		SoundStore.get().poll(i);
-	}
-	
-	public static void setMusicPitch(final float pitch)
-	{
-		SoundStore.get().setMusicPitch(pitch);
-	}
-	
-	public static void setMusicVolume(final float volume)
-	{
-		SoundStore.get().setMusicVolume(volume); 
-		musicVolume = volume;
-	}
-	
-	public static void setSoundEffectVolume(final float volume)
-	{
-		soundEffectVolume = volume;
-	}
-	
-	public static void stopMusic()
-	{
-		if(oggStream.isPresent()) oggStream.get().stop();
-	}
-	
-	private Audio associatedAudio;
-	private String name;
-	
-	public Sound(final Audio audio, final String name)
-	{
-		this.associatedAudio = audio;
-		this.name = name;
-	}
-	
-	public String getName()
-	{
-		return this.name;
-	}
-	
-	public boolean isPlaying()
-	{
-		return this.associatedAudio.isPlaying();
-	}
-	
-	public void play()
-	{
-		this.play(1.0f, false);
-	}
-	
-	public void play(final float pitch)
-	{
-		this.play(pitch, false);
-	}
-	
-	public void play(final float pitch, final boolean loop)
-	{
-		if(this.associatedAudio == null) return;
-		this.associatedAudio.playAsSoundEffect(pitch, soundEffectVolume, loop);
-	}
-	
-	public void stop()
-	{
-		if(this.associatedAudio == null) return;
-		this.associatedAudio.stop();
-	}
+public final class Sound {
+    public static final String AUDIO_PATH = "res/audio";
+    private static boolean verbose = false;
+    private static float musicVolume = 1.0f;
+    private static float soundEffectVolume = 1.0f;
+    private static Optional<Audio> oggStream = Optional.empty();
+    private static Map<String, Audio> soundLib = new HashMap<String, Audio>();
+    private static Map<String, Audio> musicLib = new HashMap<String, Audio>();
+
+    public static void destroy() { AL.destroy(); }
+    public static float getMusicVolume() { return musicVolume; }
+    public static Audio getSoundEffect(String soundName) { return soundLib.get(soundName); }
+    public static float getSoundEffectVolume() { return soundEffectVolume; }
+    public static boolean isMusicPlaying() { return oggStream.isPresent() && oggStream.get().isPlaying(); }
+    public static void loadAudio(Class<?> invokingClass) { loadAudio(AUDIO_PATH, invokingClass); }
+    public static void loadAudio(String audioResourcePath, Class<?> invokingClass) {
+        loadOggs(audioResourcePath, invokingClass);
+        loadWaves(audioResourcePath, invokingClass);
+    }
+
+    public static Map<String, Audio> loadOggs(String audioResourcePath, Class<?> invokingClass) {
+        try {
+            Arrays.stream(FileUtils.getResourceListing(audioResourcePath, "ogg", ClasspathHelper.getClasspath(invokingClass)))
+                .filter(file -> file.toLowerCase().endsWith(".ogg")).forEach(file -> {
+                    String name = file.substring(0, file.indexOf('.'));
+                    try {
+                        String resourcePath = audioResourcePath + "/" + file;
+                        Audio audio = AudioLoader.getStreamingAudio("OGG", ResourceUtils.getResource(resourcePath, invokingClass));
+                        musicLib.put(name, audio);
+                        if (verbose) System.out.println("Loaded music file '" + name + "'");
+                    } catch (IOException e) {
+                        System.out.println("Failed to load music file '" + name + "': " + e.getMessage());
+                    }
+                });
+        } catch (IOException | URISyntaxException e) { e.printStackTrace(); }
+        return soundLib;
+    }
+
+    public static Map<String, Audio> loadWaves(String audioResourcePath, Class<?> invokingClass) {
+        try {
+            Arrays.stream(FileUtils.getResourceListing(audioResourcePath, "wav", ClasspathHelper.getClasspath(invokingClass)))
+                .filter(file -> file.toLowerCase().endsWith(".wav")).forEach(file -> {
+                    String name = file.substring(0, file.indexOf('.'));
+                    try {
+                        String resourcePath = audioResourcePath + "/" + file;
+                        Audio audio;
+                        try (java.io.InputStream stream = ResourceUtils.getResourceAsStream(resourcePath, invokingClass)) {
+                            audio = AudioLoader.getAudio("WAV", stream);
+                        }
+                        soundLib.put(name, audio);
+                        if (verbose) System.out.println("Loaded sound '" + name + "'");
+                    } catch (IOException e) {
+                        System.out.println("Failed to load sound file '" + name + "': " + e.getMessage());
+                    }
+                });
+        } catch (IOException | URISyntaxException e) { e.printStackTrace(); }
+        return soundLib;
+    }
+
+    public static String playMusic() { return playMusic(new String[0]); }
+    public static void playMusic(String songName) { playMusic(songName, false); }
+    public static void playMusic(String songName, boolean loopSong) {
+        oggStream = Optional.ofNullable(musicLib.get(songName));
+        if (oggStream.isPresent()) oggStream.get().playAsMusic(1.0f, musicVolume, loopSong);
+    }
+    public static String playMusic(String[] doNotPlayList) {
+        List<String> keys = new ArrayList<String>(musicLib.keySet());
+        if (doNotPlayList != null) keys.removeAll(Arrays.asList(doNotPlayList));
+        if (keys.isEmpty()) return null;
+        String songName = keys.get(new Random().nextInt(keys.size()));
+        playMusic(songName, true);
+        return songName;
+    }
+    public static Sound playSound(String soundName) { return playSound(soundName, 1.0f); }
+    public static Sound playSound(String soundName, float pitch) {
+        Audio audio = soundLib.get(soundName);
+        if (audio == null) return null;
+        audio.playAsSoundEffect(pitch, soundEffectVolume, false);
+        return new Sound(audio, soundName);
+    }
+    public static void pollSoundStore(int i) { SoundStore.get().poll(i); }
+    public static void setMusicPitch(float pitch) { SoundStore.get().setMusicPitch(pitch); }
+    public static void setMusicVolume(float volume) {
+        SoundStore.get().setMusicVolume(volume);
+        musicVolume = volume;
+    }
+    public static void setSoundEffectVolume(float volume) { soundEffectVolume = volume; }
+    public static void stopMusic() { if (oggStream.isPresent()) oggStream.get().stop(); }
+
+    private Audio associatedAudio;
+    private String name;
+    public Sound(Audio audio, String name) { associatedAudio = audio; this.name = name; }
+    public String getName() { return name; }
+    public boolean isPlaying() { return associatedAudio.isPlaying(); }
+    public void play() { play(1.0f, false); }
+    public void play(float pitch) { play(pitch, false); }
+    public void play(float pitch, boolean loop) {
+        if (associatedAudio != null) associatedAudio.playAsSoundEffect(pitch, soundEffectVolume, loop);
+    }
+    public void stop() { if (associatedAudio != null) associatedAudio.stop(); }
 }
