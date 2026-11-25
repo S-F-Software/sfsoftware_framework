@@ -2,6 +2,7 @@ package com.sevensoupcans.sfsoftware.util.graphics;
 
 import static org.lwjgl.glfw.GLFW.*;
 
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
@@ -10,12 +11,13 @@ import java.nio.IntBuffer;
 import java.util.Arrays;
 import java.util.Map;
 
+import javax.imageio.ImageIO;
+
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.system.MemoryStack;
-import org.newdawn.slick.opengl.PNGDecoder;
 import org.newdawn.slick.util.ResourceLoader;
 
 import com.sevensoupcans.sfsoftware.util.graphics.geometry.Quad;
@@ -203,13 +205,26 @@ public abstract class Graphics {
         return Texture.getLoadedTextures();
     }
 
+    /** Decode an icon as tightly packed RGBA pixels for GLFW. */
     private static ByteBuffer loadIcon(String path) throws IOException {
         try (InputStream inputStream = ResourceLoader.getResourceAsStream(path)) {
-            PNGDecoder decoder = new PNGDecoder(inputStream);
-            ByteBuffer buffer = BufferUtils.createByteBuffer(decoder.getWidth() * decoder.getHeight() * 4);
-            decoder.decode(buffer, decoder.getWidth() * 4, PNGDecoder.Format.RGBA);
-            buffer.flip();
-            return buffer;
+            BufferedImage image = ImageIO.read(inputStream);
+            if (image == null) throw new IOException("Unsupported or invalid image: " + path);
+
+            int width = image.getWidth();
+            int height = image.getHeight();
+            ByteBuffer pixels = BufferUtils.createByteBuffer(width * height * 4);
+            for (int y = 0; y < height; y++) {
+                for (int x = 0; x < width; x++) {
+                    int argb = image.getRGB(x, y);
+                    pixels.put((byte) ((argb >>> 16) & 0xFF));
+                    pixels.put((byte) ((argb >>> 8) & 0xFF));
+                    pixels.put((byte) (argb & 0xFF));
+                    pixels.put((byte) ((argb >>> 24) & 0xFF));
+                }
+            }
+            pixels.flip();
+            return pixels;
         }
     }
     public static void setAppIcon(String icon16, String icon32) {
