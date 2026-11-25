@@ -1,9 +1,16 @@
 package com.sevensoupcans.sfsoftware.util.input;
 
-public class Mouse {
-	
-	public static void setGrabbed(final boolean b) 
-	{
-		org.lwjgl.input.Mouse.setGrabbed(b);
-	}
+import static org.lwjgl.glfw.GLFW.*;
+
+import com.sevensoupcans.sfsoftware.util.graphics.Graphics;
+
+/** Mouse cursor controls backed by GLFW (LWJGL 3). */
+public final class Mouse {
+    private Mouse() { }
+
+    public static void setGrabbed(boolean grabbed) {
+        long window = Graphics.getWindow();
+        if (window == 0L) throw new IllegalStateException("The GLFW window has not been initialized");
+        glfwSetInputMode(window, GLFW_CURSOR, grabbed ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL);
+    }
 }
